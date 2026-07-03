@@ -1,4 +1,4 @@
-﻿# RustMasterTool - Frontend Shell (Phase 0.5)
+# RustMasterTool - Frontend Shell (Phase 0.5)
 
 This is the first visible frontend shell for the RustMasterTool project. It is built as a professional SaaS dashboard using React and Vite.
 
@@ -13,9 +13,11 @@ All data is statically served from src/data/fixtures/ and perfectly matches the 
 
 ## Starting the App
 From the repository root, run:
-\\\ash
+```bash
 npm run dev:web
-\\\
+npm run typecheck:web
+npm run build:web
+```
 
 ## Gated Features
 Several features are visibly gated in the UI to ensure future models do not assume they are implemented:

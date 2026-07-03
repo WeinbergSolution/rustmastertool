@@ -1,4 +1,4 @@
-﻿import { ShieldAlert, Database, AlertCircle } from 'lucide-react';
+import { ShieldAlert, Database, AlertCircle, User } from 'lucide-react';
 
 export function Topbar() {
   return (
@@ -24,7 +24,7 @@ export function Topbar() {
 
       <div className="user-actions">
         <button className="btn-steam" disabled title="Steam sign-in planned for Phase 1">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" width={16} alt="Steam" />
+          <User size={16} />
           Sign in with Steam
         </button>
       </div>

@@ -1,0 +1,12 @@
+# Legal Terms Outreach
+
+Vorlagen / Aufgaben zur rechtlichen Klärung.
+
+## BattleMetrics
+- **Anfrage 1:** Bestätigung kommerzielle Nutzung (Paid Tiers). Preisangebot einholen.
+- **Anfrage 2:** Dürfen öffentliche, SEO-indexierte Server-Detailseiten (Re-Publikation von BM Daten im Web) erstellt werden?
+
+## RustMaps
+- **Anfrage 1:** Kommerzielle Nutzung (Tier & Rate-Limits).
+- **Anfrage 2:** Bild-Caching/Re-Hosting auf eigenen Servern erlaubt?
+- **Anfrage 3:** Genaue Attribution-Vorgaben.

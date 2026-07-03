@@ -1,0 +1,7 @@
+{
+  "name": "rustmastertool-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'WIP Phase 0'"
+  }
+}

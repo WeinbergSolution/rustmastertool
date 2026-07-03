@@ -1,42 +1,23 @@
-# Model Handoff
+﻿# Model Handoff
 
 ## Aktuelle Phase
-Phase: Supabase Environment Preparation
+Phase: 0.6 Supabase Foundation & Data Layer
 
 ## Was geändert wurde
-- `.gitignore` um sichere Ausschlüsse ergänzt.
-- `.env.example` und `.env.local.example` mit Platzhaltern generiert.
-- `docs/setup/` für Supabase-Notizen und Richtlinien angelegt.
-- `ADR-005`, `DECISIONS.md` und `OPEN_QUESTIONS.md` bzgl. Supabase-Kandidatur aktualisiert.
+- Supabase Core Tabellen (profiles, provider_servers, watchlists, alerts) als SQL Migration angelegt.
+- RLS auf allen Tabellen aktiviert.
+- provider_snapshots als separate, dokumentarisch gesperrte Migration (GATED) vorbereitet.
+- Supabase-JS Client im Frontend integriert (nur Anon Key).
+- WatchlistRepository für Fixture und Supabase Mode (inaktiv).
+- Doku (DATA_MODEL.md, phase-0-6-implementation-report.md) erstellt.
+- Env-Templates um VITE_SUPABASE_URL/ANON_KEY ergänzt.
 
 ## Was nicht gemacht wurde
-- Keine produktive Supabase-Integration (Code/Migrationen).
-- Keine echten Secrets, Token oder Passwörter committed.
-- Keine Datenbankverbindungen getestet.
+- Keine DB-Verbindung aufgebaut oder getestet.
+- Keine Migrationen angewendet.
+- Keine Auth implementiert.
+- Keine Live-Provider-Daten geladen.
+- Kein UI-Polishing.
 
 ## Nächster sicherer Schritt
-User fills `.env.local` locally when implementation phase requires it.
-
-## Was das nächste Modell NICHT darf
-- keine Secrets committen
-- keine DB-Verbindung ohne Freigabe testen
-- keine Supabase-Migrationen
-- keine Auth-Implementierung
-- kein Rust+
-- kein Batch 2 ohne Freigabe
-
-### PHASE 0.4-C Status Update (API Contract Audit)
-- Terms-Mails wurden vorbereitet, aber bewusst nicht versendet.
-- Entwicklung wird fortgesetzt.
-- Produktive kommerzielle Nutzung bleibt gated.
-- BattleMetrics API Contract Audit wurde abgeschlossen.
-- Kein Scraping, keine Player-Dossiers, keine RCON/Ban/Admin-Funktionen.
-- Keine Public-SEO-Seiten ohne spätere Freigabe.
-- Keine High-Frequency-Polling-Strategie ohne Rate-Limit-Absicherung.
-
-### Phase 0.5 (Frontend Shell)
-- Frontend Shell created in pps/web (React + Vite + TypeScript).
-- UI utilizes exclusively static Fixture Data based on BattleMetrics API Contract.
-- **NO** live provider calls, **NO** DB calls, **NO** auth, **NO** Rust+ integration.
-- Gated features are visibly marked in the UI to prevent false assumptions.
-- Next recommended step: Claude 4.8 Frontend Shell Review Gate.
+Claude 4.8 Supabase/RLS Review Gate.

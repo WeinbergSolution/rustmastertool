@@ -1,0 +1,15 @@
+automatisiertes gehn und farmen in rust 
+
+screenshots alle paar sekunden, bild durch ki analysieren, note detection anhand form farbe und aussehn. wegberechnung und zielkordinaten bestimunng, ergebnis umwandeln in makros um den spieler automatisch zu steuern, 
+
+2.) 
+
+autoamtisiertes gehn an monumente oder orte meiner wahl durch setzen eines markers oder anwählen des schlafsacks. 
+
+Unsere extra map auf dem zeweiten bildschirm in rustmastertool, hat eine map auf der sind die position von mir und meinen mates sichtbar und die dier monoumente sowaohl das kordinatensystem, es müsste möglich sein, einen utzer dort automatisiert hinlaufen zu lassen, über markos? 
+
+natürliches rust verhalten der tasttur und maus selber tracken über 12 stunden um reales rust play von nutzer zu simiulieren für das automatisierte farmen und die autrun funktion zu orten und monumenten. 
+
+
+
+

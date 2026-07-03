@@ -17,3 +17,8 @@
 - `alert_events.dedup_key` benötigt einen Unique-Index.
 - `player_profiles`: Für v1 gestrichen oder reiner Self-Claim. Keine zentrale Fremdspieler-Datenbank.
 - `team_notes`: Erhält Schutzmechanik (Auto-Expiry, keine teamübergreifende Suche, Melde-/Entfernungsprozess in der Zukunft).
+
+## Phase 0.6 Updates
+- **Supabase Foundation**: Added SQL migrations for user_watchlists, watchlist_items, provider_servers, alert_rules, and alert_events.
+- **Auth**: Not yet implemented. Steam OpenID remains the planned provider.
+- **Snapshots**: provider_snapshots migration is explicitly gated.

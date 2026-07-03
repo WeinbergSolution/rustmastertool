@@ -20,3 +20,8 @@
 - **NO** live provider calls, **NO** DB calls, **NO** auth, **NO** Rust+ integration.
 - Gated features are visibly marked in the UI to prevent false assumptions.
 - Next recommended step: Claude 4.8 Frontend Shell Review Gate.
+
+## Phase 0.6 Risks
+- **Live Provider Ingestion Gated**: We have not enabled live data fetching. Snapshots are gated to avoid API term violations.
+- **Supabase Validated**: Supabase remains the preferred candidate for DB but hasn't been fully validated in production.
+- **Polling Budget**: 300 RPM vs 600 RPM limit is still an open issue.

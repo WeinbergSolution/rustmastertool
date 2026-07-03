@@ -1,4 +1,4 @@
-﻿import { Users, Map as MapIcon, Globe, Clock, Zap } from 'lucide-react';
+import { Users, Map as MapIcon, Globe, Clock, Zap } from 'lucide-react';
 
 export function ServerCard({ server }: { server: any }) {
   const isOnline = server.status === 'online';

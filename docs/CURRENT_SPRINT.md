@@ -1,23 +1,25 @@
-# Current Sprint (Phase 0.3-FIX)
+# Current Sprint (Phase 0.4)
 
-**Sprint:** Phase 0.3-FIX – Repair PoC Batch 1 Yellow Findings
+**Phase:** Supabase Environment Preparation
 
-## Ziel
-Reparatur der Findings aus dem Opus Review (YELLOW Verdict). Die PoCs aus Batch 1 dürfen nicht als verifizierte Produktbasis angesehen werden, sondern bleiben isolierte Experimente.
+## Was geändert wurde
+- Gitignore abgesichert.
+- Env-Templates (`.env.example`, `.env.local.example`) angelegt.
+- Supabase Setup-Doku (`supabase-env.md`, `supabase-project-notes.example.md`) angelegt.
+- ADR-005, DECISIONS und OPEN_QUESTIONS aktualisiert.
 
-## Erlaubter Scope
-- Defensives Refactoring von falsy (`||`) Operatoren zu nullish coalescing (`??`), speziell der y=0 Bug in RustMaps.
-- Entschärfen überzogener Report-Aussagen.
-- Reconciliieren der DoD-Checklisten.
+## Was nicht gemacht wurde
+- Keine echten Keys oder Datenbankverbindungen konfiguriert/committed.
+- Keine Supabase-Integration oder Migrationen implementiert.
+- Keine produktiven Code-Änderungen an Apps.
 
-## Verbotener Scope
-- Kein Rust+ PoC.
-- Kein Map-Format PoC.
-- Kein Discord-Alert PoC.
-- Keine Produktfeatures.
-- Kein Merge ohne Freigabe.
+## Nächster sicherer Schritt
+User fills `.env.local` locally when implementation phase requires it.
 
-## Nächster Schritt
-1. Merge nach main als isoliertes Experiment, wenn Fix-Review sauber ist.
-2. Terms-Outreach sofort starten.
-3. PoC Batch 2 parallel möglich, aber getrennt und nur nach Freigabe.
+## Was das nächste Modell NICHT darf
+- keine Secrets committen
+- keine DB-Verbindung ohne Freigabe testen
+- keine Supabase-Migrationen
+- keine Auth-Implementierung
+- kein Rust+
+- kein Batch 2 ohne Freigabe

@@ -16,3 +16,10 @@ Nicht nur User limitieren, sondern die **Anzahl unterschiedlicher aktiv gepollte
 - "Cold" Server dürfen ggf. nur noch on-demand (bei Aufruf) gepollt werden.
 - Hot-Server-Schutz mit harter Obergrenze pro Tier.
 - Enterprise-Limits abhängig von den noch zu verhandelnden BattleMetrics Terms (Vertragslage).
+
+## BattleMetrics API Contract Note
+- Previous experimental assumption used 600 RPM.
+- BattleMetrics API Contract Audit currently documents 300 RPM authenticated.
+- Budget model must be recalibrated before productive polling.
+- Until recalibrated, product polling remains gated.
+- No high-frequency polling.

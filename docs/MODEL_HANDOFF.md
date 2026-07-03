@@ -31,5 +31,5 @@ User fills `.env.local` locally when implementation phase requires it.
 - Produktive kommerzielle Nutzung bleibt gated.
 - BattleMetrics API Contract Audit wurde abgeschlossen.
 - Kein Scraping, keine Player-Dossiers, keine RCON/Ban/Admin-Funktionen.
-- Keine Public-SEO-Seiten ohne sp‰tere Freigabe.
+- Keine Public-SEO-Seiten ohne sp√§tere Freigabe.
 - Keine High-Frequency-Polling-Strategie ohne Rate-Limit-Absicherung.

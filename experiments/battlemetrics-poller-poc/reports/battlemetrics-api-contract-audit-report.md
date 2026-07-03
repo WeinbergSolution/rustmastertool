@@ -9,7 +9,7 @@
   - Pagination, sparse fieldsets, includes, sorting and filtering are all standardized per JSON API specs.
   - Core server attributes (id, name, players, status, address, ip) are formally defined.
 - **Unknown/Not Documented**:
-  - The exact schema for the ttributes.details object, which contains all Rust-specific data (e.g. ust_world_seed, ust_world_size, ust_last_wipe, ust_fps, map, ust_queued_players), is NOT formally documented. The API simply says "Game and server specific information. Will vary from server to server. You should provide reasonable defaults, nothing is guaranteed."
+  - The exact schema for the attributes.details object, which contains all Rust-specific data (e.g. rust_world_seed, rust_world_size, rust_last_wipe, rust_fps, map, rust_queued_players), is NOT formally documented. The API simply says "Game and server specific information. Will vary from server to server. You should provide reasonable defaults, nothing is guaranteed."
 
 ## Live Smoke Test Execution
 - **Executed**: No (Aborted cleanly because BATTLEMETRICS_LIVE_CALLS_ENABLED was false/missing).

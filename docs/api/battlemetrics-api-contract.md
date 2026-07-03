@@ -28,19 +28,18 @@ https://api.battlemetrics.com
 ## Pagination
 - **Parameters**: page[size], page[key], page[rel], page[offset]
 - **Size Limit**: Default 10, Range 1-100.
-- **Note**: The prev and 
-ext links provide the page[key] value automatically. It's recommended not to manually provide this value.
+- **Note**: The prev and next links provide the page[key] value automatically. It's recommended not to manually provide this value.
 
 ## Filtering
-- **Syntax**: ilter[search], ilter[game]=ark, ilter[status]=online, ilter[countries][]=US. Range: ilter[players][min]=0, ilter[players][max]=100.
+- **Syntax**: filter[search], filter[game]=rust, filter[status]=online, filter[countries][]=US. Range: filter[players][min]=0, filter[players][max]=100.
 
 ## Sorting
 - **Syntax**: Sort order is ascending by default. Prefix a minus (-) symbol to change to descending. Multiple attributes separated by comma.
 - **Example**: sort=rank, sort=-players,name
 
 ## Field Selection (Sparse Fieldsets)
-- **Syntax**: ields[resource]=field1,field2
-- **Example**: ields[server]=name,ip,port
+- **Syntax**: fields[resource]=field1,field2
+- **Example**: fields[server]=name,ip,port
 
 ## Includes/Relationships
 - **Syntax**: include=relation1,relation2
@@ -63,7 +62,7 @@ ext links provide the page[key] value automatically. It's recommended not to man
 - Any /bans, /bans-native, /player-flags, /player-notes, /reserved-slots, /players (for v1 player tracking is excluded)
 
 ## Open Questions
-- Rust specific details in the ttributes.details object are not strongly typed or documented in the official API reference, it just states: "Game and server specific information. Will vary from server to server. You should provide reasonable defaults, nothing is guaranteed."
+- Rust specific details in the attributes.details object are not strongly typed or documented in the official API reference, it just states: "Game and server specific information. Will vary from server to server. You should provide reasonable defaults, nothing is guaranteed."
 
 ## Product Consequences
 - We must handle missing Rust details gracefully.

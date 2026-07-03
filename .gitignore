@@ -19,3 +19,6 @@ secrets/
 !.env.local.example
 *.p12
 *.crt
+
+# Binary document exports / AI review artifacts
+*.pdf

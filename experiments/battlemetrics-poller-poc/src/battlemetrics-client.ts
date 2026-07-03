@@ -7,7 +7,8 @@ export class BattleMetricsClient {
 
   constructor(token?: string) {
     this.token = token;
-    this.useFixture = !token;
+    const liveCallsEnabled = process.env.BATTLEMETRICS_LIVE_CALLS_ENABLED === 'true';
+    this.useFixture = !token || !liveCallsEnabled;
   }
 
   async getServerInfo(serverId: string) {
@@ -27,7 +28,23 @@ export class BattleMetricsClient {
         }
       });
       
+      const rateLimitLimit = response.headers.get('X-Rate-Limit-Limit');
+      const rateLimitRemaining = response.headers.get('X-Rate-Limit-Remaining');
+      console.log(`[Rate Limit] Limit: ${rateLimitLimit || 'unknown'}, Remaining: ${rateLimitRemaining || 'unknown'}`);
+
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error(`API Error: 429 Too Many Requests. Stopping and backing off.`);
+        }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(`API Error: ${response.status} Unauthorized/Forbidden. Check token scopes.`);
+        }
+        if (response.status === 404) {
+          throw new Error(`API Error: 404 Not Found. Resource ${serverId} does not exist.`);
+        }
+        if (response.status >= 500) {
+          throw new Error(`API Error: ${response.status} Server Error. BattleMetrics might be down.`);
+        }
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
       return await response.json();

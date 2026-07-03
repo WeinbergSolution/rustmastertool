@@ -23,3 +23,12 @@ User fills `.env.local` locally when implementation phase requires it.
 - keine Auth-Implementierung
 - kein Rust+
 - kein Batch 2 ohne Freigabe
+
+### PHASE 0.4-C Status Update (API Contract Audit)
+- Terms-Mails wurden vorbereitet, aber bewusst nicht versendet.
+- Entwicklung wird fortgesetzt.
+- Produktive kommerzielle Nutzung bleibt gated.
+- BattleMetrics API Contract Audit wurde abgeschlossen.
+- Kein Scraping, keine Player-Dossiers, keine RCON/Ban/Admin-Funktionen.
+- Keine Public-SEO-Seiten ohne spätere Freigabe.
+- Keine High-Frequency-Polling-Strategie ohne Rate-Limit-Absicherung.

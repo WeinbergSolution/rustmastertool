@@ -1,19 +1,20 @@
 {
-  "name": "battlemetrics-poller-poc",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "start": "tsx src/index.ts",
-    "lint": "echo 'No linting configured for PoC'",
-    "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests configured for PoC'"
-  },
-  "dependencies": {
-    "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3",
-    "@types/node": "^20.10.4"
-  }
+    "name":  "battlemetrics-poller-poc",
+    "version":  "1.0.0",
+    "private":  true,
+    "scripts":  {
+                    "start":  "tsx src/index.ts",
+                    "lint":  "echo \u0027No linting configured for PoC\u0027",
+                    "typecheck":  "tsc --noEmit",
+                    "test":  "echo \u0027No tests configured for PoC\u0027",
+                    "live:smoke":  "tsx src/live-smoke-test.ts"
+                },
+    "dependencies":  {
+                         "dotenv":  "^16.3.1"
+                     },
+    "devDependencies":  {
+                            "tsx":  "^4.7.1",
+                            "typescript":  "^5.3.3",
+                            "@types/node":  "^20.10.4"
+                        }
 }

@@ -11,3 +11,12 @@ Vorlagen / Aufgaben zur rechtlichen Klärung.
 - **Anfrage 1:** Kommerzielle Nutzung (Tier & Rate-Limits).
 - **Anfrage 2:** Bild-Caching/Re-Hosting auf eigenen Servern erlaubt? (PoC referenziert Bilder aktuell nur live).
 - **Anfrage 3:** Genaue Attribution-Vorgaben für Desktop/Mobile UI.
+
+### PHASE 0.4-C Status Update (API Contract Audit)
+- Terms-Mails wurden vorbereitet, aber bewusst nicht versendet.
+- Entwicklung wird fortgesetzt.
+- Produktive kommerzielle Nutzung bleibt gated.
+- BattleMetrics API Contract Audit wurde abgeschlossen.
+- Kein Scraping, keine Player-Dossiers, keine RCON/Ban/Admin-Funktionen.
+- Keine Public-SEO-Seiten ohne spätere Freigabe.
+- Keine High-Frequency-Polling-Strategie ohne Rate-Limit-Absicherung.

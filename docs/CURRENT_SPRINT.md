@@ -1,23 +1,23 @@
-﻿# Current Sprint (Phase 0.2)
+# Current Sprint (Phase 0.3-FIX)
 
-**Sprint:** Phase 0.2 – Initial GitHub Commit & Remote Push
+**Sprint:** Phase 0.3-FIX – Repair PoC Batch 1 Yellow Findings
 
 ## Ziel
-Sicheres Committen und Pushen des Projektfundaments in das GitHub-Repository.
+Reparatur der Findings aus dem Opus Review (YELLOW Verdict). Die PoCs aus Batch 1 dürfen nicht als verifizierte Produktbasis angesehen werden, sondern bleiben isolierte Experimente.
 
 ## Erlaubter Scope
-- Git-Status und Root-Struktur prüfen.
-- Secrets und .gitignore sanity check.
-- Umbenennung von Dateien und Ordnern (ASCII/Pläne).
-- Remote-Einrichtung, Branch-Rename, Commit und Push (sofern Repo privat).
-- Update der Handoff- und Sprint-Doku.
+- Defensives Refactoring von falsy (`||`) Operatoren zu nullish coalescing (`??`), speziell der y=0 Bug in RustMaps.
+- Entschärfen überzogener Report-Aussagen.
+- Reconciliieren der DoD-Checklisten.
 
 ## Verbotener Scope
-- Keine PoC-Implementierungen.
-- Keine produktiven Code-Änderungen.
-- Keine Architecture-Änderungen.
-- Keine echten API-Keys.
-- Kein Force-Push.
+- Kein Rust+ PoC.
+- Kein Map-Format PoC.
+- Kein Discord-Alert PoC.
+- Keine Produktfeatures.
+- Kein Merge ohne Freigabe.
 
 ## Nächster Schritt
-Start von PoC Batch 1 (BattleMetrics + RustMaps).
+1. Merge nach main als isoliertes Experiment, wenn Fix-Review sauber ist.
+2. Terms-Outreach sofort starten.
+3. PoC Batch 2 parallel möglich, aber getrennt und nur nach Freigabe.

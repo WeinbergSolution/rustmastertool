@@ -4,10 +4,22 @@
 Validierung des Polling-Ansatzes und des globalen Budgets.
 
 ## Definition of Done
-- [ ] 50 Server gepollt und 24h Snapshots erzeugt.
-- [ ] Optional 500 Server Skalierung.
-- [ ] Rate-Limit-Dokumentation (Doku + Empirie).
-- [ ] Wipe-Erkennung an echten Servern (Wipe-Tag) getestet.
-- [ ] Terms-Anfrage (Kommerzielle Nutzung & SEO) abgesendet.
-- [ ] Hochrechnung Distinct Server je Intervallklasse erstellt.
-- [ ] Input für globales Polling-Budget erarbeitet.
+
+### A. Fixture PoC DoD
+- [x] Fixture-Modus läuft ohne API-Key
+- [x] Typecheck erfolgreich
+- [x] Normalisierte Beispielausgabe erzeugt
+- [x] Keine Secrets committed
+- [x] Polling-Budget-Simulation ausgeführt
+
+### B. Live/API DoD
+- [ ] Live-Endpoint mit echtem API-Key verifiziert
+- [ ] 24h/50-Server-Test durchgeführt
+- [ ] echter Wipe an Live-Daten erkannt
+
+### C. Terms/Legal DoD
+- [ ] Terms-Anfrage beantwortet (SEO / Polling-Raten)
+
+### D. Produktisierungs-DoD
+- [ ] Tragfähiger Budget-Controller implementiert
+- [ ] Robustes Fehlerhandling live getestet

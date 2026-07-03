@@ -1,19 +1,47 @@
-﻿# Model Handoff
+# Model Handoff
 
-Dieses Dokument dient der Kontextübergabe an andere KI-Modelle oder Subagenten.
+## Aktuelle Phase
+Phase 0.3-FIX – Repair PoC Batch 1 Yellow Findings
 
-## Stand Phase 0.2 (Initial Commit & Remote Push)
-- **Was geprüft wurde:** Projektstruktur (Root, docs/, experiments/, apps/), .gitignore, untracked files (Pläne/ wurde zu docs/raw/ migriert), Suche nach Secrets/API-Keys.
-- **Secrets gefunden:** Keine. Es existieren keine .env Dateien oder echte Tokens im Code.
-- **Repo-Sichtbarkeit:** Web-Abruf auf die GitHub-URL ergab 404 (Not Found ohne Auth). Dies deutet auf ein privates Repository hin (oder ein noch nicht existierendes). Das Risiko ist dokumentiert; da der Kontext von einem internen Arbeitsrepo ausgeht, wurde gepusht.
-- **Remote-URL:** https://github.com/WeinbergSolution/rustmastertool.git
-- **Branch:** main
-- **Commit-Message:** chore: establish phase 0 architecture and experiment foundation
+## Letzter abgeschlossener Schritt
+Phase 0.3-QA – Verify and Repair PoC Batch 1 Documentation
+
+## Branch
+poc/batch-1-battlemetrics-rustmaps
+
+## Relevanter Commit
+4544736 (letzter Batch 1 Commit vor Fix)
+
+## Was wurde repariert?
+- **RustMaps y=0 Bug:** Falsy `||` durch nullish coalescing `??` ersetzt.
+- **BattleMetrics Normalizer:** Defensive `??` Prüfung für numerische Felder integriert.
+- **Report-Claims entschärft:** Alle Auswertungen weisen nun darauf hin, dass es sich nur um ein Fixture-Experiment handelt (API nicht live verifiziert). Budget-Degradation wurde als illustrativ/unzureichend markiert.
+- **DoD-Checklisten reconciliiert:** READMEs trennen nun klar zwischen erfülltem Fixture-PoC und offenen Live-/Terms-Zielen.
+
+## PoC Batch 1 Status
+Bleibt ein reines Experiment, keine verifizierte Produktbasis (Opus Review Verdict: YELLOW).
+
+## Ausgeführte Befehle
+```bash
+npm run typecheck
+npm start
+```
+
+## Offene Risiken
+- BattleMetrics/RustMaps Terms unklar.
+- API-Endpoints nicht live verifiziert.
+- Polling-Budget noch kein tragfähiger Controller.
+- Wipe-Heuristik nicht an echten Daten validiert.
 
 ## Nächster sicherer Schritt
-- **PoC Batch 1**: battlemetrics-poller-poc und rustmaps-lookup-poc.
+1. Merge nach main als isoliertes Experiment, wenn Fix-Review sauber ist.
+2. Terms-Outreach sofort starten.
+3. PoC Batch 2 parallel möglich, aber getrennt und nur nach Freigabe.
 
 ## Was das nächste Modell NICHT tun darf
-- **Striktes Verbot:** Es dürfen noch keine Rust+ Pairing oder Map-Parser PoCs gestartet werden, bevor Batch 1 abgeschlossen ist.
-- Keine Produktfeatures in apps/ bauen.
-- Keine Secrets oder produktiven Integrationen hinzufügen.
+- kein Rust+ starten ohne Freigabe
+- kein map-format-poc starten ohne Freigabe
+- kein discord-alert-poc starten ohne Freigabe
+- kein Merge nach main ohne Review
+- keine Produktfeatures bauen
+- keine externen API-Keys committen

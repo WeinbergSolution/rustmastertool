@@ -27,7 +27,6 @@ Die beiden PoC Reports und dieses Model Handoff wurden überarbeitet, um strikt 
 npm run typecheck
 npm start
 ```
-(ausgeführt in den PoC-Ordnern, nur Fixtures)
 
 ## Testergebnisse
 Der Typecheck (`tsc --noEmit`) lief fehlerfrei durch, der Fixture-Lauf der PoCs (`npm start`) lieferte wie erwartet die normalisierten Ausgaben für beide Experimente.

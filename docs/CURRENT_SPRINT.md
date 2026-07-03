@@ -32,3 +32,10 @@ User fills `.env.local` locally when implementation phase requires it.
 - Kein Scraping, keine Player-Dossiers, keine RCON/Ban/Admin-Funktionen.
 - Keine Public-SEO-Seiten ohne spätere Freigabe.
 - Keine High-Frequency-Polling-Strategie ohne Rate-Limit-Absicherung.
+
+### Phase 0.5 (Frontend Shell)
+- Frontend Shell created in pps/web (React + Vite + TypeScript).
+- UI utilizes exclusively static Fixture Data based on BattleMetrics API Contract.
+- **NO** live provider calls, **NO** DB calls, **NO** auth, **NO** Rust+ integration.
+- Gated features are visibly marked in the UI to prevent false assumptions.
+- Next recommended step: Claude 4.8 Frontend Shell Review Gate.

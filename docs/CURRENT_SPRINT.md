@@ -1,25 +1,12 @@
-# Current Sprint (Phase 0.4)
+# Current Sprint (Phase 0.4-A)
 
-**Phase:** Supabase Environment Preparation
+**Sprint:** Phase 0.4-A – Terms Outreach BattleMetrics/RustMaps vorbereiten
 
 ## Was geändert wurde
-- Gitignore abgesichert.
-- Env-Templates (`.env.example`, `.env.local.example`) angelegt.
-- Supabase Setup-Doku (`supabase-env.md`, `supabase-project-notes.example.md`) angelegt.
-- ADR-005, DECISIONS und OPEN_QUESTIONS aktualisiert.
+- Outreach-Dokumente und Decision-Matrix in `docs/terms/` erstellt.
+- Legal- und Risk-Docs aktualisiert.
+- OPEN_QUESTIONS bzgl. Steam OpenID aktualisiert.
 
-## Was nicht gemacht wurde
-- Keine echten Keys oder Datenbankverbindungen konfiguriert/committed.
-- Keine Supabase-Integration oder Migrationen implementiert.
-- Keine produktiven Code-Änderungen an Apps.
-
-## Nächster sicherer Schritt
-User fills `.env.local` locally when implementation phase requires it.
-
-## Was das nächste Modell NICHT darf
-- keine Secrets committen
-- keine DB-Verbindung ohne Freigabe testen
-- keine Supabase-Migrationen
-- keine Auth-Implementierung
-- kein Rust+
-- kein Batch 2 ohne Freigabe
+## Nächster Schritt
+- Pascal prüft die Drafts, sendet die Anfragen und dokumentiert die Antworten.
+- Danach darf PoC Batch 2 parallel geplant werden.

@@ -1,26 +1,24 @@
 # Model Handoff
 
 ## Aktuelle Phase
-Phase: Supabase Environment Preparation
+Phase 0.4-A – Terms Outreach BattleMetrics/RustMaps vorbereiten
 
 ## Was geändert wurde
-- `.gitignore` um sichere Ausschlüsse ergänzt.
-- `.env.example` und `.env.local.example` mit Platzhaltern generiert.
-- `docs/setup/` für Supabase-Notizen und Richtlinien angelegt.
-- `ADR-005`, `DECISIONS.md` und `OPEN_QUESTIONS.md` bzgl. Supabase-Kandidatur aktualisiert.
+- `docs/terms/*` mit E-Mail Drafts und Formularen erstellt.
+- Dokumentation auf "Outreach prepared, awaiting send" aktualisiert.
+- Steam OpenID Notiz in OPEN_QUESTIONS.md hinterlegt.
 
-## Was nicht gemacht wurde
-- Keine produktive Supabase-Integration (Code/Migrationen).
-- Keine echten Secrets, Token oder Passwörter committed.
-- Keine Datenbankverbindungen getestet.
+## Was gesperrt bleibt (bis Antwort)
+- BattleMetrics Live-Produktintegration & High-Frequency Polling
+- öffentliche SEO-Seiten
+- RustMaps Bild-Caching/Rehosting
+- kommerzielle Nutzung beider Datenquellen
 
 ## Nächster sicherer Schritt
-User fills `.env.local` locally when implementation phase requires it.
+Pascal prüft die Drafts, sendet die Anfragen und dokumentiert die Antworten.
+Danach darf PoC Batch 2 parallel geplant werden.
 
 ## Was das nächste Modell NICHT darf
-- keine Secrets committen
-- keine DB-Verbindung ohne Freigabe testen
-- keine Supabase-Migrationen
-- keine Auth-Implementierung
-- kein Rust+
-- kein Batch 2 ohne Freigabe
+- Keine Live-API Integrationen
+- Keine produktiven Code-Änderungen an Apps
+- Keine Secrets einchecken

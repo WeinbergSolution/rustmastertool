@@ -22,34 +22,34 @@ npm start
 ```
 
 ## Fixture-Modus Ergebnis
-Erfolgreiche Normalisierung der Fixture. Monumente und URLs werden korrekt extrahiert.
+Monument-Normalisierung ist nur mit Fixture-Daten validiert. Der `y=0` Bug wurde repariert, nullish coalescing (`??`) ist implementiert.
 
 ## Optionaler Live-Modus
-Der Client unterstützt `RUSTMAPS_API_KEY` via `.env.local` für Live-Abfragen, lief im PoC aber standardmäßig über Fixtures.
+Der Client unterstützt `RUSTMAPS_API_KEY` via `.env.local` für Live-Abfragen. Live-Endpoint, API-Shape und Terms sind jedoch nicht bestätigt.
 
 ## Normalisierte Felder
 `source`, `mapId`, `seed`, `size`, `mapImageUrl`, `thumbnailUrl`, `rustmapsUrl`, `generationStatus`, `monuments`, `rawKeys`.
 
 ## Map-Bild-URL Umgang
-Bilder werden nicht heruntergeladen oder gecacht. Es werden ausschließlich die URLs (`mapImageUrl`, `thumbnailUrl`) aus der API für spätere Referenzierung normalisiert.
+Bilder werden nicht heruntergeladen oder gecacht. Es werden ausschließlich die URLs (`mapImageUrl`, `thumbnailUrl`) referenziert. Keine Bildspeicherung, kein Rehosting.
 
 ## Monument-Daten
-Monumente werden mit `name`, `type`, `x`, `y` (oder `z`) und `gridRef` normalisiert, um Inkonsistenzen in den Koordinaten abzufangen.
+Monumente werden mit `name`, `type`, `x`, `y` (oder `z`) und `gridRef` normalisiert. 
 
 ## Attribution Notes
-RustMaps verlangt zwingend sichtbare Verlinkung. Rehosting ist ohne explizite vertragliche Klärung verboten.
+RustMaps verlangt sichtbare Verlinkung. Rehosting ist ohne explizite vertragliche Klärung verboten.
 
 ## Offene API-Fragen
-Sind die Monument-Kategorien stabil? Wie verhält sich die API bei asynchroner Generierung von neuen Maps?
+API-Endpunkte/Terms bleiben Prüfpunkt. Wie verhält sich die API bei asynchroner Generierung von neuen Maps?
 
 ## Offene Terms-Fragen
-Ist Bild-Caching/Re-Hosting auf eigenen Servern unter bestimmten Bedingungen (Attribution) erlaubt?
+Ist Bild-Caching/Re-Hosting auf eigenen Servern unter bestimmten Bedingungen erlaubt?
 
 ## Risiken
-Abhängigkeit von den Caching-/Rehosting-Regeln der RustMaps Terms. Koordinaten-Differenzen bei Game-Updates.
+Abhängigkeit von den Caching-/Rehosting-Regeln der RustMaps Terms. 
 
 ## Empfehlung
-RustMaps liefert die perfekten Metadaten für die Map-Intelligence-Säule und sollte genutzt werden.
+RustMaps liefert gute Metadaten, bleibt aber ein reines Experiment. Nicht produktionsreif.
 
 ## Grenzen / Nicht erlaubt
 - keine Bildspeicherung

@@ -24,38 +24,38 @@ npm start
 ```
 
 ## Fixture-Modus Ergebnis
-Erfolgreich normalisiert. Die Fixture-Daten (`123456`) werden korrekt verarbeitet.
+Im Fixture-Modus erfolgreich verifiziert. Die Fixture-Daten (`123456`) werden geparst.
 
 ## Optionaler Live-Modus
-Ein Live-Modus über `BATTLEMETRICS_TOKEN` in `.env.local` wurde im Code vorbereitet, aber im Rahmen des PoCs standardmäßig nicht ausgeführt.
+Ein Live-Modus über `BATTLEMETRICS_TOKEN` in `.env.local` wurde im Code vorbereitet, ist aber noch nicht live verifiziert.
 
 ## Normalisierte Felder
 `source`, `battlemetricsServerId`, `name`, `status`, `players`, `maxPlayers`, `queue`, `rank`, `country`, `address`, `port`, `queryPort`, `mapName`, `rustWorldSeed`, `rustWorldSize`, `rustLastWipe`, `rustLastSeedChange`, `rustBorn`, `rustEntityCount`, `rustFps`, `rustFpsAvg`, `updatedAt`, `rawDetailsKeys`.
 
 ## Server-ID/URL Parser Ergebnis
-Der Parser kann erfolgreich Server-IDs aus BattleMetrics-URLs und direkten ID-Strings extrahieren.
+Der Parser extrahiert Server-IDs aus den getesteten BattleMetrics-URLs und direkten ID-Strings. Nur Experiment-Stand.
 
 ## Wipe-Detector Ergebnis
-Die Wipe-Detection funktioniert zuverlässig. Bei Änderungen an `rustLastWipe`, `rustWorldSeed` oder signifikantem Einbruch von `rustEntityCount` schlägt die Erkennung (`confidence: high/medium`) an.
+Die Wipe-Detection ist ein reines Experiment. Sie wurde nur mit Fixtures getestet, nicht mit echten Wipe-Daten.
 
 ## Polling-Budget-Simulation
-Simuliert wurden 50 bis 50.000 Server. Die ideale Rate (Hot=1m, Warm=5m, Cold=60m) überschreitet ab 5.000 Servern das fiktive Limit von 600 RPM.
+Die Polling-Budget-Simulation ist rein illustrativ. Die simulierte Degradation löst das 600-RPM-Problem bei 5.000/50.000 Servern NICHT vollständig. Ein echter Budget-Controller braucht stärkere Drosselung, Cold-Pause/on-demand, Hot-Deckelung oder vertragliche Enterprise-Limits.
 
 ## Erkenntnisse zum Distinct-Server-Problem
-Die zentrale Erkenntnis: Ein globales Budgeting und eine dynamische Degradation für Warm/Cold Server ist zwingend. Bei 50.000 Servern erfordert die Skalierung eine Drosselung auf Warm=15m und Cold=3h, um die Hot-Server (Live-Nutzer) zu schützen.
+Ein globales Budgeting ist zwingend. Bei 50.000 Servern reicht eine einfache Degradation nicht aus, um fiktive Rate-Limits einzuhalten.
 
 ## Offene API-Fragen
-Ist die Normalisierung der `rawDetailsKeys` stabil über alle Serverversionen hinweg? Wie strikt sind die tatsächlichen Rate-Limits für Enterprise-Tiers beim Polling?
+API-Endpunkte/Terms bleiben Prüfpunkt. Ist die Normalisierung der `rawDetailsKeys` stabil über alle Serverversionen hinweg? 
 
 ## Offene Terms-Fragen
 - Dürfen Server-Detailseiten für SEO re-publiziert werden?
 - Sind hohe Polling-Raten für reine Watchlisten zulässig?
 
 ## Risiken
-Änderungen der API-Struktur durch BattleMetrics; Limitierungen durch Terms of Service.
+Änderungen der API-Struktur durch BattleMetrics; Limitierungen durch Terms of Service. API nicht live verifiziert.
 
 ## Empfehlung
-BattleMetrics ist technisch extrem gut als erste Server-Intelligence-Basis geeignet, sofern die Terms das Polling erlauben.
+BattleMetrics ist technisch potenziell geeignet, bleibt aber bis zur Terms-Klärung ein reines isoliertes Experiment. Nicht produktionsreif.
 
 ## Grenzen / Nicht erlaubt
 - keine SEO-Freigabe

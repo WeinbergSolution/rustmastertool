@@ -1,24 +1,23 @@
-# Current Sprint (Phase 0.3)
+# Current Sprint (Phase 0.3-FIX)
 
-**Sprint:** Phase 0.3 – PoC Batch 1: BattleMetrics + RustMaps
+**Sprint:** Phase 0.3-FIX – Repair PoC Batch 1 Yellow Findings
 
 ## Ziel
-Sichere Implementierung isolierter PoCs für Server-Intelligence (BattleMetrics) und Map-Intelligence (RustMaps) ohne produktiven App-Code.
+Reparatur der Findings aus dem Opus Review (YELLOW Verdict). Die PoCs aus Batch 1 dürfen nicht als verifizierte Produktbasis angesehen werden, sondern bleiben isolierte Experimente.
 
 ## Erlaubter Scope
-- TypeScript-Setup für PoCs.
-- Fixture-basierte Clients und Normalizer.
-- Polling Budget Simulation.
-- Ausführung von `pnpm start` in den PoCs.
+- Defensives Refactoring von falsy (`||`) Operatoren zu nullish coalescing (`??`), speziell der y=0 Bug in RustMaps.
+- Entschärfen überzogener Report-Aussagen.
+- Reconciliieren der DoD-Checklisten.
 
 ## Verbotener Scope
-- Keine PoCs für Rust+ oder Map-Parser.
-- Kein produktiver Code unter `apps/`.
-- Kein Einchecken echter Tokens.
-- Keine öffentlichen SEO-Seiten.
-
-## Ergebnisse
-PoCs laufen im Fixture-Modus stabil. Wichtige Grenzen bzgl. Polling-Volumen (BattleMetrics) und Caching/Attribution (RustMaps) wurden validiert und im Report fixiert.
+- Kein Rust+ PoC.
+- Kein Map-Format PoC.
+- Kein Discord-Alert PoC.
+- Keine Produktfeatures.
+- Kein Merge ohne Freigabe.
 
 ## Nächster Schritt
-PoC Batch 2 (Rust+ Pairing und Map-Format).
+1. Merge nach main als isoliertes Experiment, wenn Fix-Review sauber ist.
+2. Terms-Outreach sofort starten.
+3. PoC Batch 2 parallel möglich, aber getrennt und nur nach Freigabe.

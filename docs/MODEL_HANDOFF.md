@@ -1,19 +1,17 @@
-﻿# Model Handoff
+# Model Handoff
 
 Dieses Dokument dient der Kontextübergabe an andere KI-Modelle oder Subagenten.
 
-## Stand Phase 0.2 (Initial Commit & Remote Push)
-- **Was geprüft wurde:** Projektstruktur (Root, docs/, experiments/, apps/), .gitignore, untracked files (Pläne/ wurde zu docs/raw/ migriert), Suche nach Secrets/API-Keys.
-- **Secrets gefunden:** Keine. Es existieren keine .env Dateien oder echte Tokens im Code.
-- **Repo-Sichtbarkeit:** Web-Abruf auf die GitHub-URL ergab 404 (Not Found ohne Auth). Dies deutet auf ein privates Repository hin (oder ein noch nicht existierendes). Das Risiko ist dokumentiert; da der Kontext von einem internen Arbeitsrepo ausgeht, wurde gepusht.
-- **Remote-URL:** https://github.com/WeinbergSolution/rustmastertool.git
-- **Branch:** main
-- **Commit-Message:** chore: establish phase 0 architecture and experiment foundation
+## Stand Phase 0.3 (PoC Batch 1)
+- **Status:** Abgeschlossen.
+- **Erledigt:** `battlemetrics-poller-poc` und `rustmaps-lookup-poc` wurden erfolgreich als isolierte TypeScript-Experimente im Fixture-Modus gebaut und getestet.
+- **Ergebnisse:** Die Normalisierung und die heuristische Wipe-Detection funktionieren. Der Polling-Simulator zeigt, dass eine globale Degradation ab 5000+ Servern zwingend wird. RustMaps-Bilder werden strikt referenziert, nicht gespeichert.
+- **Geänderte Dateien:** `/experiments/battlemetrics-poller-poc/*`, `/experiments/rustmaps-lookup-poc/*`, `docs/*`.
 
 ## Nächster sicherer Schritt
-- **PoC Batch 1**: battlemetrics-poller-poc und rustmaps-lookup-poc.
+Phase 0.4: PoC Batch 2 (Rust+ Pairing Machbarkeit und Map-Format Persistenz). Dies sind die kritischen Architektur-Risiken!
 
 ## Was das nächste Modell NICHT tun darf
-- **Striktes Verbot:** Es dürfen noch keine Rust+ Pairing oder Map-Parser PoCs gestartet werden, bevor Batch 1 abgeschlossen ist.
-- Keine Produktfeatures in apps/ bauen.
-- Keine Secrets oder produktiven Integrationen hinzufügen.
+- Keine Produktfeatures in `apps/` bauen.
+- Keine API-Keys in Code einchecken.
+- Keine produktiven Integrationen.

@@ -1,0 +1,28 @@
+{
+  "mapId": "abc-123",
+  "seed": 123456789,
+  "size": 4500,
+  "status": "COMPLETED",
+  "url": "https://rustmaps.com/map/abc-123",
+  "imageUrls": {
+    "full": "https://rustmaps.com/img/full.jpg",
+    "icon": "https://rustmaps.com/img/icon.jpg",
+    "thumbnail": "https://rustmaps.com/img/thumb.jpg"
+  },
+  "monuments": [
+    {
+      "name": "Launch Site",
+      "category": "Tier 3",
+      "x": 1000,
+      "y": -500,
+      "grid": "H4"
+    },
+    {
+      "name": "Outpost",
+      "category": "Safe Zone",
+      "x": 0,
+      "y": 0,
+      "grid": "M12"
+    }
+  ]
+}

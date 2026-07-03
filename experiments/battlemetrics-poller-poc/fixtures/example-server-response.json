@@ -1,0 +1,32 @@
+{
+  "data": {
+    "type": "server",
+    "id": "123456",
+    "attributes": {
+      "id": "123456",
+      "name": "[EU] Rustafied.com - Main",
+      "address": "1.2.3.4",
+      "ip": "1.2.3.4",
+      "port": 28015,
+      "portQuery": 28015,
+      "players": 150,
+      "maxPlayers": 500,
+      "rank": 5,
+      "status": "online",
+      "country": "DE",
+      "updatedAt": "2024-01-01T12:00:00Z",
+      "details": {
+        "map": "Procedural Map",
+        "rust_world_seed": 123456789,
+        "rust_world_size": 4500,
+        "rust_last_wipe": "2024-01-01T10:00:00Z",
+        "rust_last_seed_change": "2024-01-01T10:00:00Z",
+        "rust_born": "2024-01-01T10:00:00Z",
+        "rust_ent_cnt_i": 25000,
+        "rust_fps": 250,
+        "rust_fps_avg": 245,
+        "rust_queued_players": 50
+      }
+    }
+  }
+}

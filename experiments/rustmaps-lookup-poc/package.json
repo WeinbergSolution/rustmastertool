@@ -1,0 +1,19 @@
+{
+  "name": "rustmaps-lookup-poc",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "lint": "echo 'No linting configured for PoC'",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests configured for PoC'"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.4"
+  }
+}

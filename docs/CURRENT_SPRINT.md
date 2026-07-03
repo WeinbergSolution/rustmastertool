@@ -1,23 +1,24 @@
-﻿# Current Sprint (Phase 0.2)
+# Current Sprint (Phase 0.3)
 
-**Sprint:** Phase 0.2 – Initial GitHub Commit & Remote Push
+**Sprint:** Phase 0.3 – PoC Batch 1: BattleMetrics + RustMaps
 
 ## Ziel
-Sicheres Committen und Pushen des Projektfundaments in das GitHub-Repository.
+Sichere Implementierung isolierter PoCs für Server-Intelligence (BattleMetrics) und Map-Intelligence (RustMaps) ohne produktiven App-Code.
 
 ## Erlaubter Scope
-- Git-Status und Root-Struktur prüfen.
-- Secrets und .gitignore sanity check.
-- Umbenennung von Dateien und Ordnern (ASCII/Pläne).
-- Remote-Einrichtung, Branch-Rename, Commit und Push (sofern Repo privat).
-- Update der Handoff- und Sprint-Doku.
+- TypeScript-Setup für PoCs.
+- Fixture-basierte Clients und Normalizer.
+- Polling Budget Simulation.
+- Ausführung von `pnpm start` in den PoCs.
 
 ## Verbotener Scope
-- Keine PoC-Implementierungen.
-- Keine produktiven Code-Änderungen.
-- Keine Architecture-Änderungen.
-- Keine echten API-Keys.
-- Kein Force-Push.
+- Keine PoCs für Rust+ oder Map-Parser.
+- Kein produktiver Code unter `apps/`.
+- Kein Einchecken echter Tokens.
+- Keine öffentlichen SEO-Seiten.
+
+## Ergebnisse
+PoCs laufen im Fixture-Modus stabil. Wichtige Grenzen bzgl. Polling-Volumen (BattleMetrics) und Caching/Attribution (RustMaps) wurden validiert und im Report fixiert.
 
 ## Nächster Schritt
-Start von PoC Batch 1 (BattleMetrics + RustMaps).
+PoC Batch 2 (Rust+ Pairing und Map-Format).

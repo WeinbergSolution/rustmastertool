@@ -10,3 +10,5 @@ Offene Entscheidungen (Status: Proposed / Open):
 - ADR-006: Auth (Build vs. Buy)
 - ADR-007: Multi-Tenancy Pattern
 - ADR-010: Rust+ Pairing Variante
+
+- Supabase is now the preferred candidate for Database/Auth/Storage. Status: Proposed / Pending Validation. No secrets committed. No implementation yet. Steam OpenID should be considered early Auth Foundation, but ADR-014 will be created later.

@@ -1,5 +1,4 @@
 import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Clock, Zap } from 'lucide-react';
-import { NormalizedServer } from '../../lib/data/types';
 
 interface ServerDetailPanelProps {
   server: any; // using any to match ServerCard deferred cleanup constraint, but conceptually it is NormalizedServer

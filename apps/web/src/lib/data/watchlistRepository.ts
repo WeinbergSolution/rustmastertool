@@ -6,12 +6,12 @@ export interface WatchlistRepository {
   getUserWatchlists(userId: string): Promise<Watchlist[]>;
   getWatchlistItems(watchlistId: string): Promise<WatchlistItem[]>;
 
-  getWatchedServerIds(): string[];
-  setWatchedServerIds(ids: string[]): void;
-  addServer(serverId: string): string[];
-  removeServer(serverId: string): string[];
-  toggleServer(serverId: string): string[];
-  isWatched(serverId: string): boolean;
+  getWatchedServerIds(): Promise<string[]>;
+  setWatchedServerIds(ids: string[]): Promise<void>;
+  addServer(serverId: string): Promise<string[]>;
+  removeServer(serverId: string): Promise<string[]>;
+  toggleServer(serverId: string): Promise<string[]>;
+  isWatched(serverId: string): Promise<boolean>;
 }
 
 const WATCHLIST_STORAGE_KEY = 'rm_fixture_watchlist';
@@ -31,7 +31,7 @@ class FixtureWatchlistRepository implements WatchlistRepository {
   }
 
   async getWatchlistItems(watchlistId: string): Promise<WatchlistItem[]> {
-    const watchedIds = this.getWatchedServerIds();
+    const watchedIds = await this.getWatchedServerIds();
     return MOCK_SERVERS
       .filter((server: any) => watchedIds.includes(server.id))
       .map((server: any, index: number) => ({
@@ -43,7 +43,7 @@ class FixtureWatchlistRepository implements WatchlistRepository {
       }));
   }
 
-  getWatchedServerIds(): string[] {
+  async getWatchedServerIds(): Promise<string[]> {
     try {
       if (typeof window === 'undefined') return [];
       
@@ -59,7 +59,7 @@ class FixtureWatchlistRepository implements WatchlistRepository {
     }
   }
 
-  setWatchedServerIds(ids: string[]): void {
+  async setWatchedServerIds(ids: string[]): Promise<void> {
     try {
       if (typeof window !== 'undefined') {
         // deduplicate
@@ -71,33 +71,34 @@ class FixtureWatchlistRepository implements WatchlistRepository {
     }
   }
 
-  addServer(serverId: string): string[] {
-    const current = this.getWatchedServerIds();
+  async addServer(serverId: string): Promise<string[]> {
+    const current = await this.getWatchedServerIds();
     if (!current.includes(serverId)) {
       const updated = [...current, serverId];
-      this.setWatchedServerIds(updated);
+      await this.setWatchedServerIds(updated);
       return updated;
     }
     return current;
   }
 
-  removeServer(serverId: string): string[] {
-    const current = this.getWatchedServerIds();
+  async removeServer(serverId: string): Promise<string[]> {
+    const current = await this.getWatchedServerIds();
     const updated = current.filter(id => id !== serverId);
-    this.setWatchedServerIds(updated);
+    await this.setWatchedServerIds(updated);
     return updated;
   }
 
-  toggleServer(serverId: string): string[] {
-    const current = this.getWatchedServerIds();
+  async toggleServer(serverId: string): Promise<string[]> {
+    const current = await this.getWatchedServerIds();
     if (current.includes(serverId)) {
       return this.removeServer(serverId);
     }
     return this.addServer(serverId);
   }
 
-  isWatched(serverId: string): boolean {
-    return this.getWatchedServerIds().includes(serverId);
+  async isWatched(serverId: string): Promise<boolean> {
+    const current = await this.getWatchedServerIds();
+    return current.includes(serverId);
   }
 }
 
@@ -120,27 +121,27 @@ class SupabaseWatchlistRepository implements WatchlistRepository {
     return [];
   }
 
-  getWatchedServerIds(): string[] {
+  async getWatchedServerIds(): Promise<string[]> {
     return [];
   }
 
-  setWatchedServerIds(_ids: string[]): void {
+  async setWatchedServerIds(_ids: string[]): Promise<void> {
     // No-op for now
   }
 
-  addServer(_serverId: string): string[] {
+  async addServer(_serverId: string): Promise<string[]> {
     return [];
   }
 
-  removeServer(_serverId: string): string[] {
+  async removeServer(_serverId: string): Promise<string[]> {
     return [];
   }
 
-  toggleServer(_serverId: string): string[] {
+  async toggleServer(_serverId: string): Promise<string[]> {
     return [];
   }
 
-  isWatched(_serverId: string): boolean {
+  async isWatched(_serverId: string): Promise<boolean> {
     return false;
   }
 }

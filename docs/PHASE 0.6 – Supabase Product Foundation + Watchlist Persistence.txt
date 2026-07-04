@@ -1,0 +1,54 @@
+PHASE 0.6 – Supabase Product Foundation + Watchlist Persistence wurde erfolgreich umgesetzt!
+
+Hier ist der detaillierte Abschlussbericht:
+
+1. Branch
+feature/phase-0-6-supabase-foundation
+
+2. Commit-Hash
+eca0e11 ("feat: add supabase foundation and watchlist data layer")
+
+3. Push-Status
+Erfolgreich nach origin/feature/phase-0-6-supabase-foundation gepusht.
+
+4. Erstellte/Geänderte Dateien
+Supabase (SQL/Config):
+
+supabase/config.toml (Project Reference gesetzt)
+supabase/migrations/20260704014000_core_foundation.sql (Tabellen, FKs, Unique Constraints, eigene set_updated_at-Trigger)
+supabase/migrations_gated/20260704014000_0002_provider_snapshots_GATED.sql (isoliert, dokumentarisch gesperrt)
+supabase/seed.sql (synthetische Fixture-Einträge)
+Frontend (Data Layer):
+
+apps/web/package.json (@supabase/supabase-js hinzugefügt)
+apps/web/src/lib/supabaseClient.ts
+apps/web/src/lib/data/types.ts
+apps/web/src/lib/data/watchlistRepository.ts
+Docs & Env:
+
+.env.example und .env.local.example (um VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY sowie VITE_DATA_MODE erweitert)
+docs/DATA_MODEL.md (Tabellenübersicht, RLS Matrix, Security Boundaries)
+docs/reviews/phase-0-6-implementation-report.md
+docs/adr/ADR-014-auth-foundation-steam-openid.md (als Proposed)
+Sowie Updates in ARCHITECTURE.md, CURRENT_SPRINT.md, MODEL_HANDOFF.md, RISK_REGISTER.md und OPEN_QUESTIONS.md.
+Hinweis: ServerCard.tsx wurde nicht verändert (any), um die Deferred-Cleanup-Regel aus Phase 0.5 strikt zu respektieren.
+
+5. Supabase & Sicherheits-Boundaries
+Keine DB-Verbindung/Migration ausgeführt: Weder lokal noch remote wurde eine DB-Verbindung aufgebaut oder supabase db push ausgeführt.
+Nur Vorbereitung: Alle SQL-Skripte sind rein deklarativ vorbereitet.
+Supabase Client Boundary: Im Frontend wird absolut kein Service-Role Key genutzt. Die envs fragen nur die anonyme Key-Referenz ab. Der Client fällt gracefully auf null zurück, falls die Keys (noch) nicht im .env.local sind.
+RLS-Abdeckung: Jede Tabelle im core_foundation.sql Script besitzt den zwingenden Befehl ALTER TABLE <name> ENABLE ROW LEVEL SECURITY;. Die entsprechenden Policies steuern Lese/Schreibrechte exakt nach dem Claude-Plan.
+6. Testergebnisse
+npm run typecheck:web → Pass
+npm run build:web → Pass
+RLS Grep → Bestanden (ENABLE ROW LEVEL SECURITY 8x gefunden)
+7. Secret-Check-Ergebnis
+Sicher! Der Check auf harte Secrets hat nur die erlaubten Integritäts-Hashes in der package-lock.json gefunden. Keine Service Role Keys, keine API-Token, keine .env.local im Repo.
+
+8. Offene Risiken & Gated Features
+Provider Snapshots: Bleiben strikt gated in migrations_gated. Wir müssen das Polling-Budget von 300 RPM endgültig validieren, bevor wir historische Logs speichern.
+Auth: Frontend Repository stubs sind da, aber Steam OpenID ist noch nicht implementiert (geplant für Phase 0.7 oder 1.0).
+Nächster empfohlener Schritt
+Claude 4.8 Supabase/RLS Review Gate.
+
+Ich stoppe nun strikt meine Arbeit.

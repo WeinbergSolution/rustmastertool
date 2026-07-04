@@ -7,3 +7,7 @@
 - **[Prüfpunkt]** DB-Infrastruktur: Hetzner managed Postgres + TimescaleDB-Unterstützung? Alternativen?
 
 - **[Prüfpunkt]** Supabase is now the preferred candidate for Database/Auth/Storage. Status: Proposed / Pending Validation. No secrets committed. No implementation yet. Steam OpenID should be considered early Auth Foundation, but ADR-014 will be created later.
+
+## Phase 0.6 Questions
+- **Polling Budget**: Is the BattleMetrics polling budget 300 RPM or 600 RPM?
+- **Auth**: Auth is not implemented. Steam OpenID remains planned.

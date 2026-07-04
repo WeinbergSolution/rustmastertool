@@ -218,8 +218,12 @@ BEGIN
     END;
 
     -- 16. anon sieht keine user_watchlists.
-    SELECT count(*) INTO count_res FROM public.user_watchlists;
-    IF count_res <> 0 THEN RAISE EXCEPTION 'RLS LEAK: Case 16 Failed'; END IF;
+    BEGIN
+        SELECT count(*) INTO count_res FROM public.user_watchlists;
+        RAISE EXCEPTION 'RLS LEAK: Case 16 Failed - SELECT allowed but should be denied by GRANT!';
+    EXCEPTION WHEN insufficient_privilege THEN
+        -- Expected
+    END;
 
 END $$;
 

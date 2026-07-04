@@ -1,7 +1,7 @@
 # Phase 1.0 Supabase RLS Smoke Report
 
 ## Übersicht
-In Phase 1.0 (Fix) wurde das lokale Supabase RLS-Smoke-SQL-Skript exakt an das existierende `core_foundation` Schema angepasst und danach in Phase 1.0-RUNTIME-FIX idempotent gegen initiale Seed-Daten (`supabase/seed.sql`) gemacht.
+In Phase 1.0 (Fix) wurde das lokale Supabase RLS-Smoke-SQL-Skript exakt an das existierende `core_foundation` Schema angepasst, danach in Phase 1.0-RUNTIME-FIX idempotent gegen initiale Seed-Daten (`supabase/seed.sql`) gemacht. Im anschließenden Runtime-Fix-2 wurden zudem Least-Privilege GRANTs für die Client-Rollen implementiert.
 
 ## Durchgeführte Fixes
 - **M1 (Schema Angleichung)**: Alle falschen Spalten (z.B. `steam_id` -> `username`, `provider` -> `provider_type`, etc.) im Insert-Setup-Block und in den Views korrigiert.
@@ -9,11 +9,12 @@ In Phase 1.0 (Fix) wurde das lokale Supabase RLS-Smoke-SQL-Skript exakt an das e
 - **M3 (Unique Constraints)**: Die Struktur-Prüfungen auf `pg_index` und `pg_attribute` für die vier geforderten Tabellen (`provider_servers`, `user_watchlists`, `watchlist_items`, `alert_events`) wurden im Setup-Block ergänzt, um Unique-Coverage zu verifizieren.
 - **M4 (Runner repariert)**: Das Verifikationsscript `verify-supabase-local.mjs` testet nun explizit auf `psql --version`. Statt des Supabase-CLI-Wrappers wird die `psql`-Ausführung (`psql -h 127.0.0.1 -p 54322 ...`) benutzt, um PGPASSWORD direkt im Prozess-Environment zu binden und Secrets in Logs zu vermeiden.
 - **M5 (Ehrlicher Report)**: Status des Reports dokumentiert den wahren Zustand (siehe unten).
-- **M6 (Runtime Idempotency)**: Nach dem lokalen Testlauf des Owners schlug das Setup-Script zunächst fehl, da `supabase/seed.sql` bereits `provider_source_status` Einträge für `'battlemetrics'` angelegt hatte. Dies führte zu einer Unique Constraint Kollision. Die `INSERT`-Statements im Setup-Block von `phase-1-0-rls-smoke.sql` wurden nun mit `ON CONFLICT DO NOTHING` versehen, um verlässlich gegen beliebig existierende Fixture-Daten aus `seed.sql` zu bestehen, ohne die RLS-Testdaten selbst zu beschädigen.
+- **M6 (Runtime Idempotency)**: Nach dem lokalen Testlauf des Owners schlug das Setup-Script zunächst fehl, da `supabase/seed.sql` bereits `provider_source_status` Einträge für `'battlemetrics'` angelegt hatte. Dies führte zu einer Unique Constraint Kollision. Die `INSERT`-Statements im Setup-Block von `phase-1-0-rls-smoke.sql` wurden nun mit `ON CONFLICT DO NOTHING` versehen.
+- **M7 (Least-Privilege Grants)**: Beim erneuten Runtime-Lauf traten Berechtigungsfehler auf, da die Client-Rollen (`anon` und `authenticated`) keine Rechte für die Tabellen besaßen. Es wurde eine neue Migration (`supabase/migrations/20260704015000_core_client_grants.sql`) erstellt. Sie gewährt Read-Only Zugriffe auf Public-Daten und Least-Privilege CRUD-Rechte auf User-Daten (wobei bspw. `alert_events` für den Client nicht insertierbar ist und `anon` keinen Zugriff auf nutzerbezogene Tabellen hat). Der RLS-Test (Case 16) wurde angepasst, um den `permission denied` Fehler beim `anon`-Lesezugriff abzufangen.
 
-## Ausführungsstatus: YELLOW 🟡 (Prepared / Runtime Fixed)
-- **Artifacts vorbereitet**: Ja, die Scripte und SQL-Dateien sind fertig, Schema-konsistent und nun idempotent gegen `seed.sql`.
-- **Lokal ausgeführt (Owner)**: Ja, der Owner hat den Test via Windows ausführen können. Die `supabase db reset` Instanz hat erfolgreich Migration und `seed.sql` übernommen. Der anschließend ausgelöste Unique-Error wurde durch diesen Fix behoben.
+## Ausführungsstatus: YELLOW 🟡 (Prepared / Runtime Fixed 2)
+- **Artifacts vorbereitet**: Ja, Scripte, SQL-Dateien und GRANTs sind fertig.
+- **Lokal ausgeführt (Owner)**: Ja, der Owner hat den Test via Windows ausführen können. Der Unique-Fehler wurde bestätigt. Nach diesem Fix muss der Owner die Smoke-Tests erneut ausführen, um die GRANTs und RLS endgültig zu verifizieren.
 - **Lokal ausgeführt (KI-Umgebung)**: Nein. Da die Umgebung keinen Zugriff auf `psql`, `docker` oder die `supabase cli` gewährt, wurde die Verifizierung übersprungen.
 - **Migrationen ausgeführt**: Nur lokal vom Owner.
 - **DB-Verbindung getestet**: Nur lokal vom Owner (127.0.0.1:54322).
@@ -21,8 +22,8 @@ In Phase 1.0 (Fix) wurde das lokale Supabase RLS-Smoke-SQL-Skript exakt an das e
 - **Secrets geleakt**: Nein.
 
 ## Nächste Schritte
-Da der Unique-Constraint-Fehler nun behoben ist, muss der Owner den Befehl in seiner lokalen Docker-Umgebung erneut ausführen:
+Der Owner muss den Test in seiner lokalen Docker-Umgebung erneut ausführen:
 ```bash
 npm run db:verify:local
 ```
-Erfolgreiche Ausführung dieses erneuten Laufs hebt den Status final auf GREEN-B und bestätigt die Sicherheit der RLS.
+Erfolgreiche Ausführung dieses erneuten Laufs hebt den Status final auf GREEN-B und bestätigt die Sicherheit der RLS inklusive der Client-Grants.

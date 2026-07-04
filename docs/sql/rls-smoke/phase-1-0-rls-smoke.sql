@@ -19,7 +19,49 @@ BEGIN
     ASSERT (SELECT rowsecurity FROM pg_tables WHERE schemaname = 'public' AND tablename = 'watchlist_items');
     ASSERT (SELECT rowsecurity FROM pg_tables WHERE schemaname = 'public' AND tablename = 'alert_rules');
     ASSERT (SELECT rowsecurity FROM pg_tables WHERE schemaname = 'public' AND tablename = 'alert_events');
+
+    -- B) Unique Constraint Checks (M3)
+    -- provider_servers unique(provider_type, provider_id)
+    ASSERT (SELECT EXISTS(
+        SELECT 1 FROM pg_index i
+        JOIN pg_class c ON c.oid = i.indrelid
+        JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(i.indkey)
+        WHERE c.relname = 'provider_servers' AND i.indisunique = true
+        GROUP BY i.indexrelid
+        HAVING string_agg(a.attname, ',' ORDER BY a.attname) = 'provider_id,provider_type'
+    ));
+
+    -- user_watchlists unique(user_id, name)
+    ASSERT (SELECT EXISTS(
+        SELECT 1 FROM pg_index i
+        JOIN pg_class c ON c.oid = i.indrelid
+        JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(i.indkey)
+        WHERE c.relname = 'user_watchlists' AND i.indisunique = true
+        GROUP BY i.indexrelid
+        HAVING string_agg(a.attname, ',' ORDER BY a.attname) = 'name,user_id'
+    ));
+
+    -- watchlist_items unique(watchlist_id, provider_server_id)
+    ASSERT (SELECT EXISTS(
+        SELECT 1 FROM pg_index i
+        JOIN pg_class c ON c.oid = i.indrelid
+        JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(i.indkey)
+        WHERE c.relname = 'watchlist_items' AND i.indisunique = true
+        GROUP BY i.indexrelid
+        HAVING string_agg(a.attname, ',' ORDER BY a.attname) = 'provider_server_id,watchlist_id'
+    ));
+
+    -- alert_events unique(user_id, dedup_key)
+    ASSERT (SELECT EXISTS(
+        SELECT 1 FROM pg_index i
+        JOIN pg_class c ON c.oid = i.indrelid
+        JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum = ANY(i.indkey)
+        WHERE c.relname = 'alert_events' AND i.indisunique = true
+        GROUP BY i.indexrelid
+        HAVING string_agg(a.attname, ',' ORDER BY a.attname) = 'dedup_key,user_id'
+    ));
 END $$;
+
 
 -- RLS Test Matrix
 BEGIN; -- Wrap all inserts in a transaction so we can rollback
@@ -34,24 +76,22 @@ DECLARE
     watchlist_a_id uuid := 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
     watchlist_b_id uuid := 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 BEGIN
-    -- Disable RLS triggers for this session if needed (we are postgres role so we bypass RLS anyway)
     
     -- insert users
     INSERT INTO auth.users (id, email) VALUES (user_a_id, 'userA@example.com'), (user_b_id, 'userB@example.com');
 
-    -- Note: profiles might be auto-created by triggers, if not insert:
-    -- (Assuming trigger creates profiles for now, if not we ignore or insert manually)
-    INSERT INTO public.profiles (id, steam_id, display_name) VALUES (user_a_id, '123A', 'User A') ON CONFLICT DO NOTHING;
-    INSERT INTO public.profiles (id, steam_id, display_name) VALUES (user_b_id, '123B', 'User B') ON CONFLICT DO NOTHING;
+    -- insert profiles
+    INSERT INTO public.profiles (id, username, avatar_url) VALUES (user_a_id, 'UserA', 'urlA') ON CONFLICT DO NOTHING;
+    INSERT INTO public.profiles (id, username, avatar_url) VALUES (user_b_id, 'UserB', 'urlB') ON CONFLICT DO NOTHING;
 
     -- insert provider servers
-    INSERT INTO public.provider_servers (id, provider, provider_id, name, country, status) 
+    INSERT INTO public.provider_servers (id, provider_type, provider_id, name, country, status) 
     VALUES 
     (provider_server_id_1, 'battlemetrics', 'bm_1', 'Server 1', 'US', 'online'),
     (provider_server_id_2, 'battlemetrics', 'bm_2', 'Server 2', 'US', 'online');
 
     -- insert provider source status
-    INSERT INTO public.provider_source_status (provider, last_successful_sync_at, status) VALUES ('battlemetrics', now(), 'pending');
+    INSERT INTO public.provider_source_status (provider_type, last_check_at, status) VALUES ('battlemetrics', now(), 'pending');
 
     -- insert user watchlists
     INSERT INTO public.user_watchlists (id, user_id, name, is_default) VALUES (watchlist_a_id, user_a_id, 'Watchlist A', true);
@@ -62,15 +102,15 @@ BEGIN
     INSERT INTO public.watchlist_items (watchlist_id, provider_server_id) VALUES (watchlist_b_id, provider_server_id_2);
 
     -- insert alert rules
-    INSERT INTO public.alert_rules (user_id, provider_server_id, metric, condition, threshold) 
-    VALUES (user_a_id, provider_server_id_1, 'players', 'above', 100);
+    INSERT INTO public.alert_rules (user_id, provider_server_id, rule_type, threshold_value) 
+    VALUES (user_a_id, provider_server_id_1, 'population_spike', 100);
 
     -- insert alert events
-    INSERT INTO public.alert_events (user_id, alert_rule_id, metric, triggered_value, dedup_key)
-    VALUES (user_a_id, (SELECT id FROM public.alert_rules LIMIT 1), 'players', 105, 'dedup_a');
+    INSERT INTO public.alert_events (user_id, alert_rule_id, status, message, dedup_key)
+    VALUES (user_a_id, (SELECT id FROM public.alert_rules LIMIT 1), 'unread', 'event a', 'dedup_a');
     
-    INSERT INTO public.alert_events (user_id, alert_rule_id, metric, triggered_value, dedup_key)
-    VALUES (user_b_id, (SELECT id FROM public.alert_rules LIMIT 1), 'players', 105, 'dedup_b');
+    INSERT INTO public.alert_events (user_id, alert_rule_id, status, message, dedup_key)
+    VALUES (user_b_id, (SELECT id FROM public.alert_rules LIMIT 1), 'unread', 'event b', 'dedup_b');
 END $$;
 
 
@@ -80,6 +120,7 @@ DECLARE
     user_a_id uuid := '00000000-0000-0000-0000-00000000000a';
     user_b_id uuid := '00000000-0000-0000-0000-00000000000b';
     provider_server_id_1 uuid := '11111111-1111-1111-1111-111111111111';
+    provider_server_id_2 uuid := '22222222-2222-2222-2222-222222222222';
     watchlist_b_id uuid := 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
     count_res int;
 BEGIN
@@ -99,16 +140,16 @@ BEGIN
     IF count_res <> 0 THEN RAISE EXCEPTION 'RLS LEAK: Case 2 Failed'; END IF;
 
     -- 3. authenticated User A kann eigenes watchlist_item insertieren.
-    -- We can insert into watchlist_a_id (we need to select it first since we are user A)
     INSERT INTO public.watchlist_items (watchlist_id, provider_server_id) 
     SELECT id, provider_server_id_2 FROM public.user_watchlists WHERE user_id = user_a_id LIMIT 1;
 
     -- 4. authenticated User A kann kein watchlist_item in User-B Watchlist insertieren.
     BEGIN
+        -- Setting all NOT NULL columns explicitly
         INSERT INTO public.watchlist_items (watchlist_id, provider_server_id) VALUES (watchlist_b_id, provider_server_id_1);
-        RAISE EXCEPTION 'RLS LEAK: Case 4 Failed';
+        RAISE EXCEPTION 'RLS LEAK: Case 4 Failed - Insert allowed!';
     EXCEPTION WHEN insufficient_privilege THEN
-        -- Expected
+        -- Expected SQLSTATE 42501
     END;
 
     -- 5. authenticated User A sieht keine User-B watchlist_items.
@@ -128,11 +169,12 @@ BEGIN
 
     -- 9. authenticated User A kann kein alert_event clientseitig insertieren.
     BEGIN
-        INSERT INTO public.alert_events (user_id, alert_rule_id, metric, triggered_value, dedup_key) 
-        VALUES (user_a_id, (SELECT id FROM public.alert_rules LIMIT 1), 'players', 105, 'dedup_test');
-        RAISE EXCEPTION 'RLS LEAK: Case 9 Failed';
+        -- Set all NOT NULL columns!
+        INSERT INTO public.alert_events (user_id, alert_rule_id, status, message, dedup_key) 
+        VALUES (user_a_id, (SELECT id FROM public.alert_rules LIMIT 1), 'unread', 'test', 'dedup_test');
+        RAISE EXCEPTION 'RLS LEAK: Case 9 Failed - Insert allowed!';
     EXCEPTION WHEN insufficient_privilege THEN
-        -- Expected
+        -- Expected SQLSTATE 42501
     END;
 
     -- 10. authenticated User A sieht nur eigenes profile.
@@ -155,8 +197,8 @@ BEGIN
 
     -- 13. anon/auth kann provider_servers nicht insert/update/delete.
     BEGIN
-        INSERT INTO public.provider_servers (provider, provider_id, name, country, status) VALUES ('test', 't1', 't', 'US', 'online');
-        RAISE EXCEPTION 'RLS LEAK: Case 13 Failed';
+        INSERT INTO public.provider_servers (provider_type, provider_id, name, status) VALUES ('test', 't1', 't', 'online');
+        RAISE EXCEPTION 'RLS LEAK: Case 13 Failed - Insert allowed!';
     EXCEPTION WHEN insufficient_privilege THEN
         -- Expected
     END;
@@ -167,8 +209,8 @@ BEGIN
 
     -- 15. anon/auth kann provider_source_status nicht insertieren.
     BEGIN
-        INSERT INTO public.provider_source_status (provider, status) VALUES ('test2', 'pending');
-        RAISE EXCEPTION 'RLS LEAK: Case 15 Failed';
+        INSERT INTO public.provider_source_status (provider_type, status) VALUES ('test2', 'pending');
+        RAISE EXCEPTION 'RLS LEAK: Case 15 Failed - Insert allowed!';
     EXCEPTION WHEN insufficient_privilege THEN
         -- Expected
     END;

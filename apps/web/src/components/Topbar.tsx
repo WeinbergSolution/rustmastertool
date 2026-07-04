@@ -1,6 +1,8 @@
 import { ShieldAlert, Database, AlertCircle, User } from 'lucide-react';
+import { useAuth } from '../lib/auth/useAuth';
 
 export function Topbar() {
+  const { status } = useAuth();
   return (
     <header className="topbar">
       <div className="brand">
@@ -22,7 +24,10 @@ export function Topbar() {
         </div>
       </div>
 
-      <div className="user-actions">
+      <div className="user-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+          {status === 'unauthenticated' ? 'Local Mode — not signed in' : status}
+        </div>
         <button className="btn-steam" disabled title="Steam sign-in planned for Phase 1">
           <User size={16} />
           Sign in with Steam

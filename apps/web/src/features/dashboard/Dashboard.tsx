@@ -8,17 +8,27 @@ import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search } from 'lucide-react';
 import { watchlistRepository } from '../../lib/data/watchlistRepository';
 
 export function Dashboard() {
-  const [watchedServerIds, setWatchedServerIds] = useState<string[]>(() => watchlistRepository.getWatchedServerIds());
+  const [watchedServerIds, setWatchedServerIds] = useState<string[]>([]);
+  const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Sync state changes back to repository (this covers add/remove toggles)
+  // Initial load
   useEffect(() => {
-    watchlistRepository.setWatchedServerIds(watchedServerIds);
-  }, [watchedServerIds]);
+    let mounted = true;
+    watchlistRepository.getWatchedServerIds().then((ids) => {
+      if (mounted) {
+        setWatchedServerIds(ids);
+        setIsWatchlistLoading(false);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-  const toggleWatch = (id: string) => {
-    const updated = watchlistRepository.toggleServer(id);
+  const toggleWatch = async (id: string) => {
+    const updated = await watchlistRepository.toggleServer(id);
     setWatchedServerIds(updated);
   };
 
@@ -138,7 +148,11 @@ export function Dashboard() {
         <div className="card col-span-6">
           <div className="card-title">Watchlist Preview</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {watchedServers.length === 0 ? (
+            {isWatchlistLoading ? (
+              <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
+                Loading watchlist...
+              </div>
+            ) : watchedServers.length === 0 ? (
               <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
                 No servers currently in watchlist. Click a server to add it.
               </div>

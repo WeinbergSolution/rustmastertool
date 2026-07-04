@@ -15,6 +15,7 @@
 - [x] Phase 0.5: Frontend Shell + Dashboard mit Fixture Data
 - [x] Phase 0.6: Supabase Product Foundation + Watchlist Persistence
 - [x] Phase 0.7: Watchlist UI Integration + Server Detail Flow
+- [x] Phase 0.8: Repository-backed Watchlist + Server Explorer Foundation
 
 ## Was nicht gemacht wurde
 - Keine DB-Verbindung aufgebaut oder getestet.

@@ -1,51 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
 import { MOCK_SERVERS } from '../../data/fixtures/servers';
 import { MOCK_MAPS } from '../../data/fixtures/maps';
 import { MOCK_ALERTS } from '../../data/fixtures/alerts';
-import { Activity, ShieldAlert, Zap, Bell, X, Eye } from 'lucide-react';
-
-const WATCHLIST_STORAGE_KEY = 'rm_fixture_watchlist';
-
-function loadFixtureWatchlist(): string[] {
-  try {
-    if (typeof window === 'undefined') return [];
-    
-    const saved = window.localStorage.getItem(WATCHLIST_STORAGE_KEY);
-    if (!saved) return [];
-    
-    const parsed = JSON.parse(saved);
-    if (!Array.isArray(parsed)) return [];
-    
-    return parsed.filter((value): value is string => typeof value === 'string');
-  } catch {
-    return [];
-  }
-}
+import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search } from 'lucide-react';
+import { watchlistRepository } from '../../lib/data/watchlistRepository';
 
 export function Dashboard() {
-  const [watchedServerIds, setWatchedServerIds] = useState<string[]>(loadFixtureWatchlist);
+  const [watchedServerIds, setWatchedServerIds] = useState<string[]>(() => watchlistRepository.getWatchedServerIds());
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
+  // Sync state changes back to repository (this covers add/remove toggles)
   useEffect(() => {
-    try {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(watchedServerIds));
-      }
-    } catch {
-      // Local fixture persistence is optional. Ignore storage failures.
-    }
+    watchlistRepository.setWatchedServerIds(watchedServerIds);
   }, [watchedServerIds]);
 
   const toggleWatch = (id: string) => {
-    setWatchedServerIds(prev => 
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    );
+    setWatchedServerIds(prev => {
+      const updated = prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id];
+      return updated;
+    });
   };
 
   const selectedServer = MOCK_SERVERS.find(s => s.id === selectedServerId);
   const watchedServers = MOCK_SERVERS.filter(s => watchedServerIds.includes(s.id));
+
+  const filteredServers = useMemo(() => {
+    if (!searchQuery) return MOCK_SERVERS;
+    const lower = searchQuery.toLowerCase();
+    return MOCK_SERVERS.filter(s => 
+      s.name.toLowerCase().includes(lower) || 
+      s.country.toLowerCase().includes(lower) ||
+      s.status.toLowerCase().includes(lower)
+    );
+  }, [searchQuery]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
@@ -54,11 +44,11 @@ export function Dashboard() {
       <div className="card" style={{ backgroundColor: 'var(--bg-hover)', borderLeft: '4px solid var(--accent-rust)' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Rust Companion Dashboard</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          Fixture mode active. This is a static UI shell demonstrating Phase 0.7 product flow. Live provider calls are explicitly gated.
+          Fixture mode active. This is a static UI shell demonstrating Phase 0.8 product flow. Live provider calls are explicitly gated.
         </p>
         <div className="status-list">
           <div className="status-chip success"><Zap size={16}/> BM Contract Audited</div>
-          <div className="status-chip success"><Eye size={16}/> Watchlist Local Mode</div>
+          <div className="status-chip success"><Eye size={16}/> Repository Data Layer</div>
           <div className="status-chip pending"><ShieldAlert size={16}/> Supabase Prepared</div>
           <div className="status-chip future"><Activity size={16}/> Steam Auth Planned</div>
         </div>
@@ -68,19 +58,49 @@ export function Dashboard() {
         
         {/* Servers Intelligence */}
         <div className="card col-span-8">
-          <div className="card-title">
-            Server Intelligence
-            <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>{MOCK_SERVERS.length} Tracking</span>
+          <div className="card-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              Server Explorer Foundation
+              <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>{filteredServers.length} Tracking</span>
+            </div>
           </div>
-          <div className="server-list">
-            {MOCK_SERVERS.map(server => (
-              <ServerCard 
-                key={server.id} 
-                server={server} 
-                onSelect={() => setSelectedServerId(server.id)}
-              />
-            ))}
+          
+          <div style={{ marginBottom: '1rem', position: 'relative' }}>
+            <div style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+              <Search size={16} />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Fixture server search (Name, Country, Status) - Live provider search gated..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem 0.75rem 2.5rem',
+                backgroundColor: 'var(--bg-panel)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '4px',
+                color: 'var(--text-primary)',
+                fontSize: '0.875rem'
+              }}
+            />
           </div>
+
+          {filteredServers.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
+              No servers match your fixture search query.
+            </div>
+          ) : (
+            <div className="server-list">
+              {filteredServers.map(server => (
+                <ServerCard 
+                  key={server.id} 
+                  server={server} 
+                  onSelect={() => setSelectedServerId(server.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Population Trend & Alerts */}

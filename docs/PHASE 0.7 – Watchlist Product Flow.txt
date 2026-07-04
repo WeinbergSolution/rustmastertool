@@ -1,0 +1,32 @@
+PHASE 0.7 – Watchlist Product Flow ist erfolgreich abgeschlossen!
+
+Hier ist der Abschlussbericht:
+
+Branch: feature/phase-0-7-watchlist-product-flow
+Commit-Hash: 789a447
+Push-Status: Erfolgreich auf origin hochgeladen.
+Geänderte / Hinzugefügte Dateien:
+apps/web/src/features/dashboard/Dashboard.tsx
+apps/web/src/features/dashboard/ServerCard.tsx
+apps/web/src/features/dashboard/ServerDetailPanel.tsx (Neu)
+docs/CURRENT_SPRINT.md
+docs/MODEL_HANDOFF.md
+docs/reviews/phase-0-7-implementation-report.md (Neu)
+Funktionale Ergebnisse
+Watchlist Flow: Die Watchlist-Funktion wurde im Fixture-Modus implementiert. Klickt man auf "Add to Watchlist" oder entfernt man Server aus der Watchlist-Preview-Sektion, wird das Frontend aktualisiert. Der State bleibt in localStorage unter rm_fixture_watchlist gespeichert (Local Mode).
+Server Detail Flow: Ein Klick auf eine Server Card öffnet am rechten Rand ein Detail Panel (ServerDetailPanel). Es zeigt alle verfügbaren Eigenschaften wie Spieler, Land, Map-Typ und Rank. Performance-Daten wie FPS oder Entity Counts sind als "Gated Intelligence" markiert und werden ehrlich gehandhabt.
+Alert Preview/Gating: Das Alert Center zeigt nun eine Warnung ("Alert rules prepared. Requires Auth + Provider Ingestion."), die dem Nutzer klar kommuniziert, dass dies im Local/Fixture Mode verbleibt, bis Auth verfügbar ist.
+Data Mode: Weiterhin als Fixture / Local Mode markiert; keine falsche Erwartungshaltung gegenüber Live-Daten.
+Guardrail-Bestätigung
+Keine Supabase Query: Es wurde nicht versucht, echte Daten in Supabase zu schreiben. Alles läuft im Local Storage Mode.
+Keine Auth implementiert: Auth-Buttons bleiben als "Auth Required / Coming Later" markiert. Es wurde keine Fake-Auth vorgegaukelt.
+Keine Migration ausgeführt: DB-Bestand unberührt.
+Checks-Ergebnisse
+Typecheck Ergebnis: Pass (npm run typecheck:web)
+Build Ergebnis: Pass (npm run build:web)
+External Host Check: Pass (Keine externen Hotlink-Abfragen auf Assets gefunden)
+Secret Check: Pass (Keine Secrets geleakt oder committet)
+Offene Risiken
+Die UI im Fixture Mode stößt langsam an ihre Skalierungsgrenze (Watchlist-Arrays könnten im Memory wachsen, wenn nicht gecleared).
+Langfristig muss die tatsächliche Anbindung von echten Supabase-Responses in SupabaseWatchlistRepository erfolgen, wenn Auth greift.
+Nächster empfohlener Schritt: Claude/Opus 4.8 Frontend Product Flow Review Gate.

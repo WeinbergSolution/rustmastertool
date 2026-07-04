@@ -1,6 +1,6 @@
-# Current Sprint (Phase 1.0)
+# Current Sprint (Phase 1.1)
 
-**Phase:** Supabase Local Migration / RLS Verification Smoke
+**Phase:** Supabase Remote/Staging Migration Runbook
 
 ## Was geändert wurde
 - [x] Phase 0.4-C: BattleMetrics API Contract Audit
@@ -11,10 +11,10 @@
 - [x] Phase 0.8.1: Data-Layer Completion & Repo Hygiene
 - [x] Phase 0.9: Auth Boundary + Async Repository Preparation
 - [x] Phase 1.0: Supabase Local RLS Smoke (GREEN-B)
-  - RLS Smoke-Test-Infrastruktur aufgebaut.
-  - Idempotenz gegen `seed.sql` sichergestellt.
-  - Least-Privilege GRANTs für Client-Rollen (`anon`, `authenticated`) eingerichtet.
-  - Lokale Verifikation durch Owner war erfolgreich.
+- [x] Phase 1.1-A: Remote/Staging Migration Runbook
+  - Dokumentiert die Voraussetzungen für eine sichere Remote-Migration.
+  - Definiert Preconditions, Runbooks und Go/No-Go Metriken.
+  - Es wurden **keine** Remote-Ausführungen vorgenommen.
 
 ## Was nicht gemacht wurde
 - Keine DB-Verbindung (Remote) aufgebaut oder getestet.
@@ -23,8 +23,8 @@
 - Keine Live-Provider-Daten geladen oder gespeichert.
 - Kein UI-Polishing.
 
-## Aktueller Fokus (Phase 1.0)
-Abschluss der RLS-Verifikationsphase.
+## Aktueller Fokus (Phase 1.1)
+Absicherung und Planung der Remote/Staging Migration.
 
 ## Nächster sicherer Schritt
-Claude/Opus 4.8 Mini-Re-Review des vollständigen Runtime-Fix-Branches vor Merge nach main.
+Claude/Opus 4.8 Review Gate für Phase 1.1-A Remote/Staging Migration Runbook (gefolgt von Phase 1.1-B Execution Planning).

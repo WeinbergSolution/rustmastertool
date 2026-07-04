@@ -18,10 +18,8 @@ export function Dashboard() {
   }, [watchedServerIds]);
 
   const toggleWatch = (id: string) => {
-    setWatchedServerIds(prev => {
-      const updated = prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id];
-      return updated;
-    });
+    const updated = watchlistRepository.toggleServer(id);
+    setWatchedServerIds(updated);
   };
 
   const selectedServer = MOCK_SERVERS.find(s => s.id === selectedServerId);

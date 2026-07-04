@@ -4,6 +4,7 @@
 Phase: 0.6 Supabase Foundation & Data Layer
 
 ## Was geändert wurde
+- Opus-YELLOW-Fixes implementiert (Constraints für user_watchlists und alert_events).
 - Supabase Core Tabellen (profiles, provider_servers, watchlists, alerts) als SQL Migration angelegt.
 - RLS auf allen Tabellen aktiviert.
 - provider_snapshots als separate, dokumentarisch gesperrte Migration (GATED) vorbereitet.
@@ -21,3 +22,4 @@ Phase: 0.6 Supabase Foundation & Data Layer
 
 ## Nächster sicherer Schritt
 Claude 4.8 Supabase/RLS Review Gate.
+

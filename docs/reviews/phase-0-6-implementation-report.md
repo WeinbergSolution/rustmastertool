@@ -1,6 +1,8 @@
-# Phase 0.6 Implementation Report
+﻿# Phase 0.6 Implementation Report
 
 ## Implemented Features
+- Added UNIQUE constraint (user_id, name) to user_watchlists.
+- Added dedup_key with UNIQUE constraint (user_id, dedup_key) to alert_events.
 - Scaffolding of Supabase configuration (`supabase/config.toml`).
 - Auth-aware Data Model using Supabase Postgres with complete Row Level Security (RLS) policies.
 - Gated Historical Snapshots migration to prevent accidental deployment without Terms review.
@@ -21,3 +23,4 @@
 - `npm run build:web`
 - RLS Grep validation to ensure every active table enforces Row Level Security.
 - Secrets Scan to guarantee no API tokens or passwords were inadvertently committed.
+

@@ -1,14 +1,14 @@
-# Data Model
+﻿# Data Model
 
 ## Table Overview
 
 - **profiles**: Core user data linked to auth.users.
 - **provider_servers**: Synchronized/Normalized game servers from BattleMetrics/RustMaps.
 - **provider_source_status**: Health tracking of data ingestion from providers.
-- **user_watchlists**: User-created lists to organize servers.
+- **user_watchlists**: User-created lists to organize servers. Unique constraint on (user_id, name).
 - **watchlist_items**: Junction table connecting watchlists to provider servers.
 - **alert_rules**: User-defined rules for notifications (e.g. pop spike, wipe).
-- **alert_events**: Instantiated alerts sent to users.
+- **alert_events**: Instantiated alerts sent to users. Uses dedup_key with unique constraint (user_id, dedup_key) to prevent duplicate spam.
 
 ### Gated Tables
 - **provider_snapshots**: Historical server polling data. Currently gated and not actively migrated due to BattleMetrics terms and polling budget constraints.
@@ -33,3 +33,4 @@
 ## Migrations Status
 - Core foundation tables are applied or ready to apply.
 - `provider_snapshots` is heavily gated. The migration script for this table is prefixed with `DO NOT APPLY` and placed in `supabase/migrations_gated`.
+

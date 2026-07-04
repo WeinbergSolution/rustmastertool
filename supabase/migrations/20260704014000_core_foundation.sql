@@ -73,7 +73,8 @@ CREATE TABLE public.user_watchlists (
   name text NOT NULL,
   is_default boolean DEFAULT false NOT NULL,
   created_at timestamptz DEFAULT now() NOT NULL,
-  updated_at timestamptz DEFAULT now() NOT NULL
+  updated_at timestamptz DEFAULT now() NOT NULL,
+  UNIQUE(user_id, name)
 );
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.user_watchlists FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
@@ -121,7 +122,9 @@ CREATE TABLE public.alert_events (
   user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   status text NOT NULL DEFAULT 'unread', -- 'unread', 'read', 'archived'
   message text NOT NULL,
-  fired_at timestamptz DEFAULT now() NOT NULL
+  dedup_key text NOT NULL,
+  fired_at timestamptz DEFAULT now() NOT NULL,
+  UNIQUE(user_id, dedup_key)
 );
 
 ALTER TABLE public.alert_events ENABLE ROW LEVEL SECURITY;

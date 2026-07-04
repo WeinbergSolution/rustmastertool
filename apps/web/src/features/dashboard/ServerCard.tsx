@@ -1,6 +1,27 @@
 import { Users, Map as MapIcon, Globe, Clock, Zap } from 'lucide-react';
 
-export function ServerCard({ server, onSelect }: { server: any, onSelect?: () => void }) {
+// Use generic type to allow mock data without forcing full DB schema in fixtures
+export type ServerCardData = {
+  id: string;
+  name: string;
+  status: string;
+  players?: number;
+  maxPlayers?: number;
+  country?: string;
+  address?: string;
+  port?: number;
+  queue?: number;
+  rank?: number | null;
+  mapName?: string;
+  lastWipe?: string | null;
+  fps?: number | null;
+  worldSeed?: number | null;
+  worldSize?: number | null;
+  entityCount?: number | null;
+  [key: string]: any;
+};
+
+export function ServerCard({ server, onSelect }: { server: ServerCardData, onSelect?: () => void }) {
   const isOnline = server.status === 'online';
   
   return (
@@ -18,8 +39,8 @@ export function ServerCard({ server, onSelect }: { server: any, onSelect?: () =>
         <div className="server-meta">
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Users size={14} /> 
-            <span className="value-highlight">{server.players}</span>/{server.maxPlayers}
-            {server.queue > 0 && <span style={{ color: 'var(--status-warning)', marginLeft: '4px' }}>(+{server.queue})</span>}
+            <span className="value-highlight">{server.players || 0}</span>/{server.maxPlayers || 0}
+            {(server.queue ?? 0) > 0 && <span style={{ color: 'var(--status-warning)', marginLeft: '4px' }}>(+{server.queue})</span>}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <MapIcon size={14} /> {server.mapName || 'Unknown'}

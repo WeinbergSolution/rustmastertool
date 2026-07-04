@@ -1,10 +1,10 @@
 import { Users, Map as MapIcon, Globe, Clock, Zap } from 'lucide-react';
 
-export function ServerCard({ server }: { server: any }) {
+export function ServerCard({ server, onSelect }: { server: any, onSelect?: () => void }) {
   const isOnline = server.status === 'online';
   
   return (
-    <div className="server-item">
+    <div className="server-item" onClick={onSelect} style={{ cursor: onSelect ? 'pointer' : 'default' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', margin: 0 }}>
           <span style={{ 

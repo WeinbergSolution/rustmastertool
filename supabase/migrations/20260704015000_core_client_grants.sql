@@ -19,7 +19,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.watchlist_items TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.alert_rules TO authenticated;
 
 -- 4. Alert Events
--- Client can read, update (mark as read), and delete own alerts. Client CANNOT insert.
-GRANT SELECT, UPDATE, DELETE ON public.alert_events TO authenticated;
+-- Client can only read own alerts. Client CANNOT insert, update, or delete.
+GRANT SELECT ON public.alert_events TO authenticated;
 
 -- No grants for anon on user tables (profiles, user_watchlists, watchlist_items, alert_rules, alert_events)

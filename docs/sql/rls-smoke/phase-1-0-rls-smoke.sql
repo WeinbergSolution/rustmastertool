@@ -179,6 +179,22 @@ BEGIN
         -- Expected SQLSTATE 42501
     END;
 
+    -- 9b. authenticated User A kann kein alert_event clientseitig updaten.
+    BEGIN
+        UPDATE public.alert_events SET status = 'read' WHERE user_id = user_a_id;
+        RAISE EXCEPTION 'RLS LEAK: Case 9b Failed - Update allowed!';
+    EXCEPTION WHEN insufficient_privilege THEN
+        -- Expected SQLSTATE 42501
+    END;
+
+    -- 9c. authenticated User A kann kein alert_event clientseitig löschen.
+    BEGIN
+        DELETE FROM public.alert_events WHERE user_id = user_a_id;
+        RAISE EXCEPTION 'RLS LEAK: Case 9c Failed - Delete allowed!';
+    EXCEPTION WHEN insufficient_privilege THEN
+        -- Expected SQLSTATE 42501
+    END;
+
     -- 10. authenticated User A sieht nur eigenes profile.
     SELECT count(*) INTO count_res FROM public.profiles;
     IF count_res <> 1 THEN RAISE EXCEPTION 'RLS LEAK: Case 10 Failed'; END IF;

@@ -88,10 +88,12 @@ BEGIN
     INSERT INTO public.provider_servers (id, provider_type, provider_id, name, country, status) 
     VALUES 
     (provider_server_id_1, 'battlemetrics', 'bm_1', 'Server 1', 'US', 'online'),
-    (provider_server_id_2, 'battlemetrics', 'bm_2', 'Server 2', 'US', 'online');
+    (provider_server_id_2, 'battlemetrics', 'bm_2', 'Server 2', 'US', 'online')
+    ON CONFLICT (provider_type, provider_id) DO NOTHING;
 
     -- insert provider source status
-    INSERT INTO public.provider_source_status (provider_type, last_check_at, status) VALUES ('battlemetrics', now(), 'pending');
+    INSERT INTO public.provider_source_status (provider_type, last_check_at, status) VALUES ('battlemetrics', now(), 'pending')
+    ON CONFLICT (provider_type) DO NOTHING;
 
     -- insert user watchlists
     INSERT INTO public.user_watchlists (id, user_id, name, is_default) VALUES (watchlist_a_id, user_a_id, 'Watchlist A', true);

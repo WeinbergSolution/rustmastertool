@@ -6,15 +6,36 @@ import { MOCK_MAPS } from '../../data/fixtures/maps';
 import { MOCK_ALERTS } from '../../data/fixtures/alerts';
 import { Activity, ShieldAlert, Zap, Bell, X, Eye } from 'lucide-react';
 
+const WATCHLIST_STORAGE_KEY = 'rm_fixture_watchlist';
+
+function loadFixtureWatchlist(): string[] {
+  try {
+    if (typeof window === 'undefined') return [];
+    
+    const saved = window.localStorage.getItem(WATCHLIST_STORAGE_KEY);
+    if (!saved) return [];
+    
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+    
+    return parsed.filter((value): value is string => typeof value === 'string');
+  } catch {
+    return [];
+  }
+}
+
 export function Dashboard() {
-  const [watchedServerIds, setWatchedServerIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem('rm_fixture_watchlist');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [watchedServerIds, setWatchedServerIds] = useState<string[]>(loadFixtureWatchlist);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
-    localStorage.setItem('rm_fixture_watchlist', JSON.stringify(watchedServerIds));
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(watchedServerIds));
+      }
+    } catch {
+      // Local fixture persistence is optional. Ignore storage failures.
+    }
   }, [watchedServerIds]);
 
   const toggleWatch = (id: string) => {

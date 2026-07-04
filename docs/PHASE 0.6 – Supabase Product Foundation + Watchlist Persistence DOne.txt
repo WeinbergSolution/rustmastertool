@@ -1,0 +1,36 @@
+PHASE 0.6-FIX – Supabase RLS Review Findings erfolgreich ausgeführt!
+
+Hier ist der Abschlussbericht:
+
+1. Branch
+feature/phase-0-6-supabase-foundation
+
+2. Commit-Hash
+b89fb36 ("fix: add missing watchlist and alert constraints")
+
+3. Push-Status
+Erfolgreich nach origin/feature/phase-0-6-supabase-foundation gepusht.
+
+4. Geänderte Dateien
+supabase/migrations/20260704014000_core_foundation.sql
+docs/DATA_MODEL.md
+docs/reviews/phase-0-6-implementation-report.md
+docs/CURRENT_SPRINT.md
+docs/MODEL_HANDOFF.md
+5. Ergänzte Constraints
+user_watchlists: Ein UNIQUE(user_id, name) Constraint wurde erfolgreich am Ende der Tabellendefinition (vor dem schließenden Klammern) hinzugefügt.
+alert_events: Die Spalte dedup_key text NOT NULL wurde ergänzt sowie ein UNIQUE(user_id, dedup_key) Constraint hinzugefügt.
+6. Bestätigungen
+Bestätigung: Es wurde keine Migration (db push / db reset) gegen eine Datenbank ausgeführt.
+Bestätigung: Es wurde keine DB-Verbindung aufgebaut oder getestet.
+7. Prüfergebnisse
+Typecheck (npm run typecheck:web): Pass
+Build (npm run build:web): Pass
+RLS Static Check: Pass. Der RLS-Check hat ENABLE ROW LEVEL SECURITY weiterhin zuverlässig in allen 8 Tabellendefinitionen der Migrationen gefunden.
+Secret-Check-Ergebnis: Pass. Keine API-Schlüssel, Service Role Keys oder Passwörter wurden im Code gefunden. Die Suche hat als einziges False Positive den erlaubten Integrity Hash aus der package-lock.json aufgelistet, was im Rahmen der Erwartungen ist.
+8. Offene Deferred Punkte
+Keine Änderungen an ServerCard any (Deferred Cleanup aus Phase 0.5 unangetastet).
+Gating der provider_snapshots Migration bleibt bestehen.
+Auth bleibt un-implementiert (für Phase 0.7/1.0 aufgeschoben).
+Nächster empfohlener Schritt:
+Opus/Claude 4.8 Mini-Re-Review nur auf den SQL-/Doku-Diff.

@@ -1,6 +1,6 @@
 # Current Sprint (Phase 1.2)
 
-**Phase:** Supabase Auth Foundation + Profile Trigger (Phase 1.2-A)
+**Phase:** Steam-first Auth Boundary (Phase 1.2-A Correction)
 
 ## Was geändert wurde
 - [x] Phase 0.4-C: BattleMetrics API Contract Audit
@@ -13,18 +13,20 @@
 - [x] Phase 1.0: Supabase Local RLS Smoke (GREEN-B)
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
 - [x] Phase 1.1-B: Remote/Staging Migration Execution (GREEN)
-- [x] Phase 1.2-A: Auth Foundation + Profile Trigger
-  - Magic Link OTP Authentication im Frontend (`useAuth` Hook, `AuthUI`).
-  - Neue Supabase Migration (`20260705200000_profile_auto_create.sql`) erstellt, die nach `auth.users` Registrierung automatisch einen Record in `public.profiles` generiert.
-  - Remote RLS Smoke Test um Check für den Auto-Profile-Trigger erweitert.
+- [x] Phase 1.2-A: Auth Foundation + Profile Trigger (Korrigiert auf Steam-first)
+  - AuthUI zeigt als Haupt-Option "Sign in with Steam" an (derzeit disabled).
+  - Email Magic Link wurde als reines Dev-Feature versteckt (`VITE_ENABLE_DEV_MAGIC_LINK`).
+  - Neue Supabase Migration (`20260705200000_profile_auto_create.sql`) beibehalten als generischer Trigger für `public.profiles`.
+  - Remote RLS Smoke Test enthält Check für den Auto-Profile-Trigger.
 
 ## Was nicht gemacht wurde
-- Phase 1.2-A Remote-Migration (Profile Trigger) ist **noch nicht angewendet** (Wartet auf Owner Confirm).
-- Cloud Watchlist Persistence (SupabaseWatchlistRepository) bleibt inaktiv (wird in 1.2-B umgesetzt).
-- Live-Provider-Daten und UI-Polishing sind nicht umgesetzt.
+- **Steam OpenID ist noch nicht implementiert** (kein Backend Callback, kein echter Steam Login).
+- Phase 1.2-A Remote-Migration (Profile Trigger) ist **noch nicht angewendet**.
+- Cloud Watchlist Persistence (SupabaseWatchlistRepository) bleibt inaktiv.
+- Kein Remote Push ausgeführt.
 
 ## Aktueller Fokus
-Warten auf Owner-Bestätigung für die Ausführung des `db push` der Profile-Trigger-Migration.
+Warten auf Architektur-Replan/Review durch Opus/Claude 4.8 für die korrekte Steam Auth + Supabase Identity Architektur.
 
 ## Nächster sicherer Schritt
-Owner muss exakt bestätigen: `CONFIRM AUTH FOUNDATION MIGRATION TO fcmjevwfuwzqtpozwigf STAGING`
+Architektur-Planung für Steam OpenID. Keine Remote Pushes zulässig.

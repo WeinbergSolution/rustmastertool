@@ -1,6 +1,6 @@
-# Phase 1.2-A Implementation Report
+# Phase 1.2-A Implementation Report (Steam-First Correction)
 
-## Status: YELLOW 🟡 (Pending Remote Trigger Execution)
+## Status: YELLOW 🟡 (Pending Architecture Replan & Remote Execution)
 
 ## Discovery Phase
 *Hinweis: Die KI-Umgebung besitzt kein authentifiziertes Supabase CLI und keine Zugangsdaten, um sich remote zu verbinden. Der Owner muss die folgenden Discovery-Schritte lokal auf seinem Rechner durchführen.*
@@ -9,35 +9,27 @@
 - **Environment:** Staging / Development
 - **Linked Project:** Ja (Owner-Discovery)
 
-## Execution Phase
-- **Gebaut wurde:**
-  - `supabase/migrations/20260705200000_profile_auto_create.sql`: Trigger-Migration für automatische `profiles`-Erstellung nach `auth.users` Insert.
-  - `apps/web/src/lib/auth/useAuth.ts`: Vollwertige Integration von echten Supabase-Sessions mit `supabase.auth.getSession()` und `onAuthStateChange`. Beinhaltet `ensureProfile` als Fallback-Mechanismus.
-  - `apps/web/src/components/AuthUI.tsx`: Minimale Magic Link UI implementiert (Email-Input, Submit, Sign Out).
-  - `apps/web/src/components/Topbar.tsx`: AuthUI in die Topbar integriert.
-  - Smoke-Test-Skript: Trigger-Tests eingefügt, die prüfen, dass durch Insert in `auth.users` korrekte Profile angelegt werden.
-  - Env-Templates: `.env.example` und `.env.local.example` mit klaren Hinweisen aktualisiert.
+## Execution Phase (Correction)
+- Ursprünglich wurde Email Magic Link umgesetzt, aber der Owner hat korrigiert: Das Produktziel für RustMasterTool ist **Steam Authentication**.
+- **Gebaut (Korrektur):**
+  - `apps/web/src/components/AuthUI.tsx`: Produkt-UI wurde auf eine Steam-first Boundary geändert (Steam-Button vorbereitet, aber noch disabled).
+  - Dev-only Fallback: Email Magic Link wurde hinter eine Env-Flag (`VITE_ENABLE_DEV_MAGIC_LINK=true`) versteckt, ausschließlich für Entwickler-Tests.
+  - `apps/web/src/lib/auth/useAuth.ts`: Beibehalten als generische Supabase Session Foundation (ohne Email-spezifische Annahmen).
+  - `supabase/migrations/20260705200000_profile_auto_create.sql`: Beibehalten als generische Profile Foundation (erstellt nur `profiles(id)`).
+  - Env-Templates: `.env.example` aktualisiert (`VITE_ENABLE_DEV_MAGIC_LINK=false` als Default).
   
-- **Nicht gebaut wurde:**
-  - **Keine** Watchlist Cloud Persistence (`SupabaseWatchlistRepository` bleibt inaktiv).
-  - Fixture Mode bleibt Default (`VITE_DATA_MODE=fixture`).
-  - Keine Backend-Features wie Steam, Rust+ etc.
-  - Kein Redesign der UI.
+- **Was NICHT gebaut wurde:**
+  - **Steam OpenID ist noch NICHT implementiert.**
+  - Keine Backend Callbacks, keine Live Steam Calls.
+  - Keine Cloud Watchlist Persistence (`SupabaseWatchlistRepository` bleibt inaktiv).
+  - Watchlist bleibt fixture/local.
+  - **Kein Remote db push ausgeführt.**
 
 ## Sicherheits- und Gate-Checks
 - **Secrets:** Es befinden sich **keine** Secrets im Repository. Der Service Role Key wird im Frontend **nicht** verwendet.
 - **Auth-Lüge:** Die Auth-Stati spiegeln exakt die Supabase-Session wider. Kein Fake-User.
-- **Safety Diff Checks:** Bestanden (keine geleakten Secrets, keine unerlaubten Files).
+- **Safety Diff Checks:** Bestanden.
 
 ## Nächste Schritte (Owner-Aktion erforderlich)
-1. Lokale Verifikation über `npm run db:verify:local`. Magic Link lokal testen (falls Inbucket / Local Stack konfiguriert ist).
-2. Führe ein Discovery/Dry-run auf dem Remote-Staging-Projekt aus:
-   ```bash
-   npx supabase migration list --linked
-   npx supabase db push --dry-run
-   ```
-3. Wenn der dry-run keine unerwarteten oder destruktiven Statements zeigt, **stoppe**.
-4. Bestätige mir exakt mit folgendem Satz die Freigabe zur Staging-Migration:
-   **`CONFIRM AUTH FOUNDATION MIGRATION TO fcmjevwfuwzqtpozwigf STAGING`**
-
-*Kein `db push` ohne explizites Owner-Confirm.*
+1. **Claude/Opus 4.8 Replan/Review:** Steam Auth + Supabase Identity Architecture definieren, bevor irgendetwas an Remote-Supabase gepusht wird.
+2. Keine Remote Push Bestätigung wird in diesem Schritt angefragt.

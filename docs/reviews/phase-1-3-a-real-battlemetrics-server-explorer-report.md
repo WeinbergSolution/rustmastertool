@@ -2,24 +2,27 @@
 
 ## 1. Goal
 Implement a real, live BattleMetrics Server Explorer integrated into the existing product UI without exposing any backend secrets to the frontend.
+Fix Watchlist regression to allow storing live servers locally until Cloud DB is ready.
 
 ## 2. Verification Status
-- **Code committed/pushed**: Ja. Der Owner hat den Code manuell auf `origin/feature/phase-1-3-a-real-battlemetrics-server-explorer` mit Commit `30a93dd` gepusht.
+- **Code committed/pushed**: Ja. 
 - **Remote Branch existiert**: Ja.
-- **Git Status Tracked-Clean**: Ja. Keine uncommitted tracked changes.
-- **Edge Function deployed**: YELLOW. Ein vorheriger Versuch von mir meldete "Deployed Functions", aber ein erneuter List-Check (`npx supabase functions list`) ergab einen 403-Fehler (mangelnde Privilegien auf dem Endpunkt). Daher kann der Deploy-Status der Edge Function von meiner Seite nicht mit absoluter Sicherheit garantiert werden, ohne dass der Owner es verifiziert.
-- **Live Smoke getestet**: Nein, aufgrund der unsicheren Remote-Funktion konnte ich keinen Live-Smoke-Test bestätigen.
-- **Browser-Test durchgeführt**: Nein, ich habe den Vite Server gestartet, aber ein manueller Browser-Test durch den Owner steht noch aus.
-- **Keine Fake-Daten**: Bestätigt. MOCK_SERVERS wird nicht mehr für den Server Explorer genutzt.
-- **Keine Secrets**: Bestätigt. `typecheck:web`, `build:web` und Secret-Check (`grep`) liefen erfolgreich. Es sind keine Tokens oder Service Role Keys ins Frontend gelangt.
+- **Git Status Tracked-Clean**: Ja.
+- **Edge Function deployed**: YELLOW. Status unklar aus Agenten-Sicht (403), aber Owner hat manuell verifiziert, dass Live-Daten im Browser geladen werden.
+- **Watchlist Regression gefixt**: Ja. Die Watchlist speichert nun vollständige BattleMetricsServerSummary-Objekte im LocalStorage.
+- **Watchlist Persistenz**: Bleibt komplett lokal, Cloud Persistenz ist weiterhin inaktiv.
+- **Keine Fake-Daten**: Bestätigt. Die Mock-Server sind für den Watchlist-Fallback aus dem Live-Modus entfernt worden.
+- **Keine Secrets**: Bestätigt. `typecheck:web`, `build:web` und Secret-Check (`grep`) liefen erfolgreich.
 
 ## 3. Implementation Summary
 - **Edge Function Proxy**: `supabase/functions/battlemetrics/index.ts` existiert.
 - **Frontend API Contract**: `apps/web/src/lib/api/battlemetrics.ts` existiert.
-- **UI Integration**: Dashboard, ServerCard und ServerDetailPanel nutzen den realen BattleMetrics API Contract via Edge Function. Kein direkter api.battlemetrics.com Call im Frontend. Keine SupabaseWatchlistRepository-Aktivierung.
+- **UI Integration**: 
+  - Dashboard, ServerCard und ServerDetailPanel nutzen die Live-Daten. 
+  - Watchlist-Hinzufügen funktioniert wieder.
+  - Topbar-Badges zeigen nun ehrlich den Live-Status statt Fake-Warnungen an.
 
 ## 4. Next Steps / Owner Action Required
 - **Owner-seitig offen**: 
-  - Verifizieren, ob die Edge Function auf Staging wirklich erfolgreich läuft (z.B. über Supabase Dashboard).
-  - Browser-Test auf `localhost:5173` durchführen.
+  - Finaler Browser Smoke-Test der gefixten Watchlist-Integration auf `localhost:5173`.
   - Wenn alles GREEN ist, den Branch nach `main` mergen.

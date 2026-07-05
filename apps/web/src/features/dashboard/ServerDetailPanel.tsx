@@ -38,6 +38,9 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch 
     };
   }, [serverId]);
 
+  const dataMode = import.meta.env.VITE_DATA_MODE || 'fixture';
+  const isLive = dataMode === 'supabase';
+
   return (
     <div style={{
       position: 'fixed', top: 0, right: 0, bottom: 0, width: '400px',
@@ -84,7 +87,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch 
                 fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center'
               }}
             >
-              {isWatched ? '★ Watching (Fixture)' : '☆ Add to Fixture Watchlist'}
+              {isWatched ? `★ ${isLive ? 'Remove from Watchlist' : 'Remove from Local Watchlist'}` : `☆ ${isLive ? 'Add to Watchlist' : 'Add to Local Watchlist'}`}
             </button>
           </div>
 

@@ -4,12 +4,10 @@ import { ServerDetailPanel } from './ServerDetailPanel';
 import { MOCK_MAPS } from '../../data/fixtures/maps';
 import { MOCK_ALERTS } from '../../data/fixtures/alerts';
 import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search, AlertTriangle, Loader2 } from 'lucide-react';
-import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
-import { MOCK_SERVERS } from '../../data/fixtures/servers'; // Kept for watchlist fixture fallback if needed
 
 export function Dashboard() {
-  const [watchedServerIds, setWatchedServerIds] = useState<string[]>([]);
+  const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
   const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   
@@ -23,12 +21,16 @@ export function Dashboard() {
   // Initial load
   useEffect(() => {
     let mounted = true;
-    watchlistRepository.getWatchedServerIds().then((ids) => {
-      if (mounted) {
-        setWatchedServerIds(ids);
-        setIsWatchlistLoading(false);
+    try {
+      const saved = window.localStorage.getItem('rm_local_watched_servers');
+      if (saved && mounted) {
+        setWatchedServers(JSON.parse(saved));
       }
-    });
+    } catch (e) {
+      console.warn('Failed to load local watchlist', e);
+    } finally {
+      if (mounted) setIsWatchlistLoading(false);
+    }
     return () => {
       mounted = false;
     };
@@ -53,14 +55,31 @@ export function Dashboard() {
     }
   };
 
-  const toggleWatch = async (id: string) => {
-    const updated = await watchlistRepository.toggleServer(id);
-    setWatchedServerIds(updated);
+  const toggleWatch = (id: string) => {
+    const existingIndex = watchedServers.findIndex(s => s.id === id);
+    let newServers: BattleMetricsServerSummary[];
+    
+    if (existingIndex >= 0) {
+      newServers = watchedServers.filter(s => s.id !== id);
+    } else {
+      const serverToAdd = servers.find(s => s.id === id);
+      if (serverToAdd) {
+        newServers = [...watchedServers, serverToAdd];
+      } else {
+        return; // Should not happen in current flow
+      }
+    }
+    
+    setWatchedServers(newServers);
+    try {
+      window.localStorage.setItem('rm_local_watched_servers', JSON.stringify(newServers));
+    } catch (e) {
+      console.warn('Failed to save local watchlist', e);
+    }
   };
 
-  // Keep fixture watchlist mapping since we aren't saving details to DB yet
-  // In a real scenario, watchlist would pull from DB/provider
-  const watchedServers = MOCK_SERVERS.filter(s => watchedServerIds.includes(s.id));
+  const dataMode = import.meta.env.VITE_DATA_MODE || 'fixture';
+  const isLive = dataMode === 'supabase';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
@@ -197,7 +216,7 @@ export function Dashboard() {
 
         {/* Watchlist & Map Intel */}
         <div className="card col-span-6">
-          <div className="card-title">Watchlist Preview (Fixture)</div>
+          <div className="card-title">{isLive ? 'Local Watchlist Preview' : 'Watchlist Preview (Fixture)'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {isWatchlistLoading ? (
               <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
@@ -249,7 +268,7 @@ export function Dashboard() {
       {selectedServerId && (
         <ServerDetailPanel 
           serverId={selectedServerId}
-          isWatched={watchedServerIds.includes(selectedServerId)}
+          isWatched={watchedServers.some(s => s.id === selectedServerId)}
           onClose={() => setSelectedServerId(null)}
           onToggleWatch={() => toggleWatch(selectedServerId)}
         />

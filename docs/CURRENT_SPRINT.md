@@ -18,20 +18,22 @@
 - [x] Phase 1.1-B-FIX: Restrict alert_events Client Grants
   - Fix-Migration erstellt und remote erfolgreich angewendet.
 - [x] Phase 1.1-B-FIX-2: Restrict Provider Table Client Write Grants
-  - Remote Smoke Test offenbarte, dass `anon` und `authenticated` Schreibrechte auf Provider-Tabellen hatten.
-  - Fix-2-Migration erstellt (Least Privilege: SELECT-only).
-  - Remote Smoke SQL Assertions erweitert.
+  - Fix-2-Migration erstellt und remote erfolgreich angewendet.
+- [x] Phase 1.1-B-FIX-3: Restrict anon access on user-owned tables
+  - Remote Smoke Test offenbarte, dass `anon` SELECT-Rechte auf user-owned Tabellen hatte.
+  - Fix-3-Migration erstellt (REVOKE ALL für `anon` auf profiles, watchlists, alert rules/events).
+  - Remote Smoke SQL Assertions detailliert.
 
 ## Was nicht gemacht wurde
-- Phase 1.1-B ist nach Remote Push **noch nicht GREEN** (wartet auf Fix-2-Bestätigung).
-- Fix-2-Migration wurde noch nicht angewendet (Stop-and-Confirm anstehend).
+- Phase 1.1-B ist nach Remote Push **noch nicht GREEN** (wartet auf Fix-3-Bestätigung).
+- Fix-3-Migration wurde noch nicht angewendet (Stop-and-Confirm anstehend).
 - Keine Auth implementiert.
 - Keine Live-Provider-Daten geladen oder gespeichert.
 - Kein UI-Polishing.
 - Keine Secrets/Keys gespeichert.
 
-## Aktueller Fokus (Phase 1.1-B-FIX-2)
-Warten auf Owner-Bestätigung für den Fix der Provider-Tabellen Grants.
+## Aktueller Fokus (Phase 1.1-B-FIX-3)
+Warten auf Owner-Bestätigung für den Fix der `anon` User-Owned Grants.
 
 ## Nächster sicherer Schritt
-Owner muss exakt bestätigen: `CONFIRM PROVIDER GRANT FIX TO fcmjevwfuwzqtpozwigf STAGING`
+Owner muss exakt bestätigen: `CONFIRM USER OWNED GRANT FIX TO fcmjevwfuwzqtpozwigf STAGING`

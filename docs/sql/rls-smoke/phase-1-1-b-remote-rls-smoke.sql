@@ -106,8 +106,20 @@ BEGIN
         RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.alert_rules';
     END IF;
 
-    IF has_table_privilege('anon', 'public.profiles', 'SELECT') OR has_table_privilege('anon', 'public.user_watchlists', 'SELECT') OR has_table_privilege('anon', 'public.watchlist_items', 'SELECT') OR has_table_privilege('anon', 'public.alert_rules', 'SELECT') OR has_table_privilege('anon', 'public.alert_events', 'SELECT') THEN
-        RAISE EXCEPTION 'Grant violation: anon has SELECT access on user-owned tables';
+    IF has_table_privilege('anon', 'public.profiles', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon has SELECT on public.profiles';
+    END IF;
+    IF has_table_privilege('anon', 'public.user_watchlists', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon has SELECT on public.user_watchlists';
+    END IF;
+    IF has_table_privilege('anon', 'public.watchlist_items', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon has SELECT on public.watchlist_items';
+    END IF;
+    IF has_table_privilege('anon', 'public.alert_rules', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon has SELECT on public.alert_rules';
+    END IF;
+    IF has_table_privilege('anon', 'public.alert_events', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon has SELECT on public.alert_events';
     END IF;
 
     -- alert_events

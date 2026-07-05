@@ -1,6 +1,6 @@
 # Current Sprint (Phase 1.2)
 
-**Phase:** Steam-first Auth Boundary (Phase 1.2-A Correction)
+**Phase:** Steam-first Auth Boundary (Phase 1.2-A Cleanup)
 
 ## Was geändert wurde
 - [x] Phase 0.4-C: BattleMetrics API Contract Audit
@@ -13,20 +13,22 @@
 - [x] Phase 1.0: Supabase Local RLS Smoke (GREEN-B)
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
 - [x] Phase 1.1-B: Remote/Staging Migration Execution (GREEN)
-- [x] Phase 1.2-A: Auth Foundation + Profile Trigger (Korrigiert auf Steam-first)
+- [x] Phase 1.2-A: Auth Foundation + Profile Trigger (Korrigiert auf Steam-first & Cleanup)
   - AuthUI zeigt als Haupt-Option "Sign in with Steam" an (derzeit disabled).
-  - Email Magic Link wurde als reines Dev-Feature versteckt (`VITE_ENABLE_DEV_MAGIC_LINK`).
+  - Produktziel ist **Steam Authentication**. Email Magic Link ist **NICHT** Produkt-Auth.
+  - Dev Magic Link ist nur Test-Scaffolding und per Default aus (`VITE_ENABLE_DEV_MAGIC_LINK=false`).
   - Neue Supabase Migration (`20260705200000_profile_auto_create.sql`) beibehalten als generischer Trigger für `public.profiles`.
-  - Remote RLS Smoke Test enthält Check für den Auto-Profile-Trigger.
+  - Repo-Hygiene: Versehentlich committete Review-Dumps aus `docs/` entfernt und `.gitignore` gehärtet.
 
 ## Was nicht gemacht wurde
 - **Steam OpenID ist noch nicht implementiert** (kein Backend Callback, kein echter Steam Login).
-- Phase 1.2-A Remote-Migration (Profile Trigger) ist **noch nicht angewendet**.
-- Cloud Watchlist Persistence (SupabaseWatchlistRepository) bleibt inaktiv.
-- Kein Remote Push ausgeführt.
+- Profile Trigger Migration bleibt **YELLOW/pending remote**.
+- **Kein Remote Push wurde ausgeführt**.
+- SupabaseWatchlistRepository bleibt inaktiv.
+- Fixture Mode bleibt default.
 
 ## Aktueller Fokus
-Warten auf Architektur-Replan/Review durch Opus/Claude 4.8 für die korrekte Steam Auth + Supabase Identity Architektur.
+Steam Auth ADR/Spike ist der nächste Architektur-Schritt.
 
 ## Nächster sicherer Schritt
 Architektur-Planung für Steam OpenID. Keine Remote Pushes zulässig.

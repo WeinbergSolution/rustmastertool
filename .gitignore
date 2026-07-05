@@ -31,3 +31,11 @@ supabase/.temp/
 supabase/.branches/
 
 
+
+# AI Review Dumps and Junk Files
+docs/PHASE*.txt
+docs/*erfolgreich*.txt
+docs/Create a high-end cinematic character design sheet*.txt
+docs/*.docx
+docs/*Abschlussbericht.txt
+

@@ -1,4 +1,4 @@
-# Phase 1.2-A Implementation Report (Steam-First Correction)
+# Phase 1.2-A Implementation Report (Steam-First Correction & Cleanup)
 
 ## Status: YELLOW 🟡 (Pending Architecture Replan & Remote Execution)
 
@@ -9,27 +9,27 @@
 - **Environment:** Staging / Development
 - **Linked Project:** Ja (Owner-Discovery)
 
-## Execution Phase (Correction)
+## Execution Phase (Correction & Cleanup)
 - Ursprünglich wurde Email Magic Link umgesetzt, aber der Owner hat korrigiert: Das Produktziel für RustMasterTool ist **Steam Authentication**.
-- **Gebaut (Korrektur):**
-  - `apps/web/src/components/AuthUI.tsx`: Produkt-UI wurde auf eine Steam-first Boundary geändert (Steam-Button vorbereitet, aber noch disabled).
-  - Dev-only Fallback: Email Magic Link wurde hinter eine Env-Flag (`VITE_ENABLE_DEV_MAGIC_LINK=true`) versteckt, ausschließlich für Entwickler-Tests.
-  - `apps/web/src/lib/auth/useAuth.ts`: Beibehalten als generische Supabase Session Foundation (ohne Email-spezifische Annahmen).
-  - `supabase/migrations/20260705200000_profile_auto_create.sql`: Beibehalten als generische Profile Foundation (erstellt nur `profiles(id)`).
-  - Env-Templates: `.env.example` aktualisiert (`VITE_ENABLE_DEV_MAGIC_LINK=false` als Default).
+- **Gebaut (Korrektur & Repo-Hygiene):**
+  - `apps/web/src/components/AuthUI.tsx`: Produkt-UI auf Steam-first Boundary geändert (Steam-Button vorbereitet, aber disabled). Email Magic Link ist **NICHT** Produkt-Auth.
+  - Dev-only Fallback: Email Magic Link wurde hinter eine Env-Flag (`VITE_ENABLE_DEV_MAGIC_LINK=true`) versteckt, ausschließlich als Test-Scaffolding und per Default aus.
+  - `apps/web/src/lib/auth/useAuth.ts`: Beibehalten als generische Supabase Session Foundation.
+  - `supabase/migrations/20260705200000_profile_auto_create.sql`: Beibehalten als generische Profile Foundation. Bleibt YELLOW/pending remote.
+  - Repo-Hygiene: Versehentlich committete Review-Dumps und Junk-Dateien in `docs/` entfernt und `.gitignore` gehärtet.
   
 - **Was NICHT gebaut wurde:**
-  - **Steam OpenID ist noch NICHT implementiert.**
+  - **Steam OpenID ist noch nicht implementiert.**
   - Keine Backend Callbacks, keine Live Steam Calls.
   - Keine Cloud Watchlist Persistence (`SupabaseWatchlistRepository` bleibt inaktiv).
-  - Watchlist bleibt fixture/local.
-  - **Kein Remote db push ausgeführt.**
+  - Watchlist bleibt fixture/local (Fixture Mode bleibt default).
+  - **Kein Remote Push wurde ausgeführt.**
 
 ## Sicherheits- und Gate-Checks
 - **Secrets:** Es befinden sich **keine** Secrets im Repository. Der Service Role Key wird im Frontend **nicht** verwendet.
 - **Auth-Lüge:** Die Auth-Stati spiegeln exakt die Supabase-Session wider. Kein Fake-User.
-- **Safety Diff Checks:** Bestanden.
+- **Junk Files:** Aus dem Repo entfernt und via `.gitignore` geblockt.
 
 ## Nächste Schritte (Owner-Aktion erforderlich)
-1. **Claude/Opus 4.8 Replan/Review:** Steam Auth + Supabase Identity Architecture definieren, bevor irgendetwas an Remote-Supabase gepusht wird.
+1. **Claude/Opus 4.8 Replan/Review:** Steam Auth ADR/Spike (Steam Auth + Supabase Identity Architecture definieren), bevor irgendetwas an Remote-Supabase gepusht wird.
 2. Keine Remote Push Bestätigung wird in diesem Schritt angefragt.

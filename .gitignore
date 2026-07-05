@@ -22,3 +22,12 @@ secrets/
 
 # Binary document exports / AI review artifacts
 *.pdf
+
+
+# Supabase metadata
+
+supabase/.temp/
+
+supabase/.branches/
+
+

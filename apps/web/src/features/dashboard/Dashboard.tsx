@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
-import { MOCK_MAPS } from '../../data/fixtures/maps';
-import { MOCK_ALERTS } from '../../data/fixtures/alerts';
-import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search, AlertTriangle, Loader2 } from 'lucide-react';
+import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search, AlertTriangle, Loader2, User } from 'lucide-react';
 import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
+import { useAuth } from '../../lib/auth/useAuth';
+import { watchlistRepository } from '../../lib/data/watchlistRepository';
+import { supabase } from '../../lib/supabaseClient';
 
 export function Dashboard() {
+  const { status, user } = useAuth();
   const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
   const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
@@ -18,23 +20,58 @@ export function Dashboard() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Active Server State
+  const [activeServerId, setActiveServerId] = useState<string | null>(null);
+
+  // Cloud Watchlist Repo
+  const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
+
   // Initial load
   useEffect(() => {
     let mounted = true;
-    try {
-      const saved = window.localStorage.getItem('rm_local_watched_servers');
-      if (saved && mounted) {
-        setWatchedServers(JSON.parse(saved));
+    
+    async function loadData() {
+      setIsWatchlistLoading(true);
+      try {
+        if (status === 'authenticated' && cloudRepo && user) {
+           try {
+             const cloudLists = await cloudRepo.getUserWatchlists(user.id);
+             // We just fetch them to test the connection for now.
+             if (cloudLists.length > 0) {
+               console.log('Found cloud watchlists');
+             }
+           } catch(e) {
+             console.warn('Cloud watchlist load failed', e);
+           }
+        }
+        
+        // Load local watchlist as fallback/primary for full objects
+        const saved = window.localStorage.getItem('rm_local_watched_servers');
+        if (saved && mounted) {
+          setWatchedServers(JSON.parse(saved));
+        }
+
+        if (status === 'authenticated' && supabase && user) {
+           const { data: profile } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
+           if (profile?.active_server_id && mounted) {
+              setActiveServerId(profile.active_server_id);
+           }
+        }
+      } catch (e) {
+        console.warn('Failed to load data', e);
+      } finally {
+        if (mounted) setIsWatchlistLoading(false);
       }
-    } catch (e) {
-      console.warn('Failed to load local watchlist', e);
-    } finally {
-      if (mounted) setIsWatchlistLoading(false);
     }
+    
+    if (status !== 'auth_pending') {
+      loadData();
+    }
+
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [status, user]);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -55,7 +92,7 @@ export function Dashboard() {
     }
   };
 
-  const toggleWatch = (id: string) => {
+  const toggleWatch = async (id: string) => {
     const existingIndex = watchedServers.findIndex(s => s.id === id);
     let newServers: BattleMetricsServerSummary[];
     
@@ -66,7 +103,7 @@ export function Dashboard() {
       if (serverToAdd) {
         newServers = [...watchedServers, serverToAdd];
       } else {
-        return; // Should not happen in current flow
+        return; 
       }
     }
     
@@ -76,26 +113,77 @@ export function Dashboard() {
     } catch (e) {
       console.warn('Failed to save local watchlist', e);
     }
+
+    // Attempt Cloud Sync if authenticated
+    if (status === 'authenticated' && cloudRepo) {
+       console.log('Would sync to cloud here, but need UUID mapping first.');
+    }
   };
 
-  const dataMode = import.meta.env.VITE_DATA_MODE || 'fixture';
-  const isLive = dataMode === 'supabase';
+  const handleSetActiveServer = async (_serverId: string, internalUuid?: string) => {
+    if (status !== 'authenticated' || !supabase || !user) return;
+    
+    // We need the internal_uuid (provider_servers.id) to set profiles.active_server_id
+    if (internalUuid) {
+       try {
+         const { error } = await supabase.from('profiles').update({ active_server_id: internalUuid }).eq('id', user.id);
+         if (error) {
+           console.error('Failed to set active server', error);
+         } else {
+           setActiveServerId(internalUuid);
+         }
+       } catch (e) {
+         console.error('Error updating profile active server', e);
+       }
+    } else {
+       console.warn('Cannot set active server without internal_uuid. Make sure it was upserted properly.');
+    }
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
       
-      {/* Hero Panel */}
+      {/* Hero Panel / My Rust Context */}
       <div className="card" style={{ backgroundColor: 'var(--bg-hover)', borderLeft: '4px solid var(--accent-rust)' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Rust Companion Dashboard</h2>
-        <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          Real Provider Mode active. The Server Explorer now fetches live data from BattleMetrics.
-        </p>
-        <div className="status-list">
-          <div className="status-chip success"><Zap size={16}/> BM Edge Function Proxy</div>
-          <div className="status-chip success"><Eye size={16}/> Live Provider Integration</div>
-          <div className="status-chip pending"><ShieldAlert size={16}/> Cloud Persistence Pending</div>
-          <div className="status-chip future"><Activity size={16}/> Steam Auth Planned</div>
-        </div>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>My Rust Context</h2>
+        
+        {status === 'authenticated' ? (
+          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+               {user?.user_metadata?.avatar ? (
+                 <img src={user.user_metadata.avatar} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '4px' }} />
+               ) : (
+                 <div style={{ width: '48px', height: '48px', borderRadius: '4px', backgroundColor: 'var(--bg-panel)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <User size={24} />
+                 </div>
+               )}
+               <div>
+                 <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{user?.user_metadata?.persona || 'Unknown Survivor'}</div>
+                 <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Steam Identity Verified</div>
+               </div>
+            </div>
+            
+            <div style={{ paddingLeft: '2rem', borderLeft: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+               <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Active Server</div>
+               {activeServerId ? (
+                 <div style={{ fontWeight: 'bold', color: 'var(--accent-rust)' }}>Set via Internal ID: {activeServerId.substring(0,8)}...</div>
+               ) : (
+                 <div style={{ color: 'var(--text-disabled)' }}>No active server set</div>
+               )}
+            </div>
+          </div>
+        ) : (
+          <>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              Real Provider Mode active. The Server Explorer now fetches live data from BattleMetrics.
+            </p>
+            <div className="status-list">
+              <div className="status-chip success"><Zap size={16}/> BM Edge Function Proxy</div>
+              <div className="status-chip success"><Eye size={16}/> Live Provider Integration</div>
+              <div className="status-chip pending"><Activity size={16}/> Steam Login Required for Context</div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="dashboard-grid">
@@ -198,16 +286,10 @@ export function Dashboard() {
             <div className="card-title">Alert Center <Bell size={18} style={{ color: 'var(--text-muted)' }}/></div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <ShieldAlert size={12}/> Alert rules prepared. Requires Auth + Provider Ingestion.
+                <ShieldAlert size={12}/> Roadmap Feature.
               </div>
-              {MOCK_ALERTS.map(alert => (
-                <div key={alert.id} style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
-                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{alert.time}   {alert.serverName}</div>
-                   <div style={{ fontSize: '0.875rem' }}>{alert.message}</div>
-                </div>
-              ))}
               <button disabled style={{ marginTop: '0.5rem', padding: '0.5rem', width: '100%', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-disabled)', borderRadius: '4px', cursor: 'not-allowed' }}>
-                Open Discord Delivery (Coming Later)
+                Manage Alerts (Coming Later)
               </button>
             </div>
           </div>
@@ -216,7 +298,7 @@ export function Dashboard() {
 
         {/* Watchlist & Map Intel */}
         <div className="card col-span-6">
-          <div className="card-title">{isLive ? 'Local Watchlist Preview' : 'Watchlist Preview (Fixture)'}</div>
+          <div className="card-title">{status === 'authenticated' ? 'Watchlist' : 'Local Watchlist Preview'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {isWatchlistLoading ? (
               <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
@@ -238,29 +320,19 @@ export function Dashboard() {
                 ))}
               </div>
             )}
-            <button disabled style={{ padding: '0.5rem 1rem', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', color: 'var(--text-disabled)', borderRadius: '4px', cursor: 'not-allowed' }}>
-              + Sync Watchlist to Cloud (Auth Required)
-            </button>
+            {status !== 'authenticated' && (
+              <button disabled style={{ padding: '0.5rem 1rem', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', color: 'var(--text-disabled)', borderRadius: '4px', cursor: 'not-allowed' }}>
+                + Sync Watchlist to Cloud (Auth Required)
+              </button>
+            )}
           </div>
         </div>
 
         <div className="card col-span-6">
           <div className="card-title">Map Intelligence Preview</div>
-          {MOCK_MAPS.map(map => (
-            <div key={map.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem' }}>
-                 <span><span className="value-highlight">Seed:</span> {map.seed}</span>
-                 <span><span className="value-highlight">Size:</span> {map.size}</span>
-                 <span><span className="value-highlight">Monuments:</span> {map.monuments}</span>
-              </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                 Top: {map.topMonuments.join(', ')}
-              </div>
-              <div className="gated-overlay" style={{ height: '140px', backgroundColor: 'var(--bg-panel)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-color)' }}>
-                 <p style={{ fontSize: '0.875rem', color: 'var(--text-disabled)' }}>Map provider attribution pending. Image rehosting gated.</p>
-              </div>
-            </div>
-          ))}
+          <div className="gated-overlay" style={{ height: '140px', backgroundColor: 'var(--bg-panel)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-color)' }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-disabled)' }}>Coming with RustMaps integration.</p>
+          </div>
         </div>
 
       </div>
@@ -271,6 +343,9 @@ export function Dashboard() {
           isWatched={watchedServers.some(s => s.id === selectedServerId)}
           onClose={() => setSelectedServerId(null)}
           onToggleWatch={() => toggleWatch(selectedServerId)}
+          onSetActiveServer={handleSetActiveServer}
+          isActiveServer={servers.find(s => s.id === selectedServerId)?.id === activeServerId || false}
+          isAuthenticated={status === 'authenticated'}
         />
       )}
     </div>

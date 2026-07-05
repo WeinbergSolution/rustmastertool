@@ -51,12 +51,20 @@ export function AuthUI() {
     );
   }
 
+  const handleSteamLogin = () => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) return;
+    const origin = encodeURIComponent(window.location.origin);
+    const edgeFunctionUrl = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
+    window.location.href = edgeFunctionUrl;
+  };
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }} title="RustMasterTool accounts will use Steam identity. Email sign-in is not part of the production auth flow.">
-        Steam authentication coming soon
+        Authenticating with Steam
       </div>
-      <button className="btn-steam" disabled title="Steam sign-in planned for Phase 1">
+      <button className="btn-steam" onClick={handleSteamLogin} title="Sign in securely via Steam">
         <User size={16} />
         Sign in with Steam
       </button>

@@ -7,9 +7,12 @@ interface ServerDetailPanelProps {
   isWatched: boolean;
   onClose: () => void;
   onToggleWatch: () => void;
+  onSetActiveServer?: (serverId: string, internalUuid?: string) => void;
+  isActiveServer?: boolean;
+  isAuthenticated?: boolean;
 }
 
-export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch }: ServerDetailPanelProps) {
+export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch, onSetActiveServer, isActiveServer, isAuthenticated }: ServerDetailPanelProps) {
   const [server, setServer] = useState<BattleMetricsServerDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +79,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch 
         </div>
       ) : !server ? null : (
         <>
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <button 
               onClick={onToggleWatch}
               style={{ 
@@ -89,6 +92,22 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch 
             >
               {isWatched ? `★ ${isLive ? 'Remove from Watchlist' : 'Remove from Local Watchlist'}` : `☆ ${isLive ? 'Add to Watchlist' : 'Add to Local Watchlist'}`}
             </button>
+            {isAuthenticated && (
+              <button 
+                onClick={() => onSetActiveServer && onSetActiveServer(server.id, server.internal_uuid)}
+                disabled={isActiveServer}
+                style={{ 
+                  width: '100%', padding: '0.75rem', borderRadius: '4px',
+                  cursor: isActiveServer ? 'default' : 'pointer',
+                  backgroundColor: isActiveServer ? 'var(--status-success)' : 'transparent',
+                  color: isActiveServer ? '#fff' : 'var(--text-primary)',
+                  border: isActiveServer ? 'none' : '1px solid var(--border-color)',
+                  fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center'
+                }}
+              >
+                {isActiveServer ? '✓ Active Server' : 'Set as Active Server'}
+              </button>
+            )}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

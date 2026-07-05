@@ -61,6 +61,53 @@ serve(async (req) => {
     }
 
     const data = await response.json()
+
+    // If it's a details request and we have a valid server response, upsert it to provider_servers
+    if (action === 'details' && data?.data?.type === 'server') {
+      const server = data.data;
+      const attrs = server.attributes;
+      
+      const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+      
+      if (supabaseUrl && supabaseServiceKey) {
+        // Dynamically import createClient to avoid heavy cold start if not needed for search
+        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.39.0');
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+          auth: { persistSession: false, autoRefreshToken: false }
+        });
+        
+        try {
+          const { data: upsertedData, error } = await supabaseAdmin.from('provider_servers').upsert({
+            provider_type: 'battlemetrics',
+            provider_id: server.id,
+            name: attrs.name || 'Unknown',
+            address: attrs.ip,
+            port: attrs.port,
+            status: attrs.status === 'online' ? 'online' : 'offline',
+            players: attrs.players || 0,
+            max_players: attrs.maxPlayers || 0,
+            country: attrs.country,
+            map_name: attrs.details?.map || '',
+            fps: attrs.details?.fps,
+            entity_count: attrs.details?.rust_ent_cnt_i,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'provider_type,provider_id' })
+          .select('id')
+          .single();
+          
+          if (error) {
+            console.error('Failed to upsert provider_server', error);
+          } else if (upsertedData) {
+            // Append the internal UUID to the response so the frontend knows the active_server_id
+            data.data.internal_uuid = upsertedData.id;
+          }
+        } catch (dbError) {
+          console.error('DB Upsert Error', dbError);
+        }
+      }
+    }
+
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

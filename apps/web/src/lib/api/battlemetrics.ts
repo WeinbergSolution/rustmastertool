@@ -11,6 +11,7 @@ export interface BattleMetricsServerSummary {
   ip?: string
   port?: number
   updatedAt: string
+  internal_uuid?: string
 }
 
 export interface BattleMetricsServerDetail extends BattleMetricsServerSummary {

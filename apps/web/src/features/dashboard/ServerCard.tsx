@@ -9,11 +9,14 @@ export type ServerCardData = {
   maxPlayers?: number;
   country?: string;
   address?: string;
+  ip?: string;
   port?: number;
   queue?: number;
   rank?: number | null;
   mapName?: string;
+  map?: string;
   lastWipe?: string | null;
+  updatedAt?: string;
   fps?: number | null;
   worldSeed?: number | null;
   worldSize?: number | null;
@@ -43,13 +46,13 @@ export function ServerCard({ server, onSelect }: { server: ServerCardData, onSel
             {(server.queue ?? 0) > 0 && <span style={{ color: 'var(--status-warning)', marginLeft: '4px' }}>(+{server.queue})</span>}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <MapIcon size={14} /> {server.mapName || 'Unknown'}
+            <MapIcon size={14} /> {server.map || server.mapName || 'Unknown'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Globe size={14} /> {server.country}
+            <Globe size={14} /> {server.country || 'Unknown'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Clock size={14} /> {server.lastWipe ? new Date(server.lastWipe).toLocaleDateString() : 'Not provided'}
+            <Clock size={14} /> {server.updatedAt ? new Date(server.updatedAt).toLocaleDateString() : server.lastWipe ? new Date(server.lastWipe).toLocaleDateString() : 'Not provided'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Zap size={14} /> {server.fps ? `${server.fps} fps` : 'Gated'}
@@ -60,7 +63,7 @@ export function ServerCard({ server, onSelect }: { server: ServerCardData, onSel
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem', fontSize: '0.75rem', color: 'var(--text-disabled)' }}>
         <span>Seed: {server.worldSeed || 'Unknown'} | Size: {server.worldSize || 'Unknown'}</span>
         <span>Entities: {server.entityCount?.toLocaleString() || 'Fixture only'}</span>
-        <span>{server.address}:{server.port}</span>
+        <span>{server.ip || server.address || 'Unknown'}:{server.port}</span>
       </div>
     </div>
   );

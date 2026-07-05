@@ -1,28 +1,26 @@
 # Model Handoff
 
 ## 1. Project Context
-RustMasterTool is a server intelligence dashboard for Rust server owners, currently operating at the end of Phase 1.1-B (Remote/Staging Migration Execution).
+RustMasterTool is a server intelligence dashboard for Rust server owners, currently operating in Phase 1.2-A Auth Foundation (GREEN). The primary goal is Steam Authentication. Email Magic Link is NOT product auth.
 
 ## 2. Recent Progress
-- Remote/Staging Migration Execution complete.
-- Applied migrations list:
-  - `20260704014000_core_foundation.sql`
-  - `20260704015000_core_client_grants.sql`
-  - `20260705173000_restrict_alert_events_client_grants.sql`
-  - `20260705180000_restrict_provider_table_client_grants.sql`
-  - `20260705183000_restrict_anon_user_owned_table_grants.sql`
-- Final Remote Smoke result: Success / No rows returned.
-- Final status GREEN.
+- `useAuth` hook has been integrated with real Supabase Auth `getSession` and `onAuthStateChange`, kept generic without Email-specific constraints.
+- Product UI (`AuthUI.tsx`) has been corrected to display a disabled "Sign in with Steam" button as the primary auth mechanism. Steam OpenID is NOT yet implemented.
+- Email Magic Link has been hidden behind a DEV flag (`VITE_ENABLE_DEV_MAGIC_LINK=true`) and is strictly test-scaffolding, off by default.
+- Auto-profile trigger migration (`20260705200000_profile_auto_create.sql`) kept as a generic foundation for `public.profiles`. **Remote gate passed (applied remotely).**
+- Repo Hygiene: Cleaned up accidentally committed review-dump files from `docs/` and hardened `.gitignore`.
 
 ## 3. Current State
-- `feature/phase-1-1-b-remote-migration-exec` contains the final successful state of the remote migration phase.
-- No frontend/auth/provider-live changes were made.
+- `feature/phase-1-2-a-auth-foundation` is GREEN and ready for merge.
+- SupabaseWatchlistRepository remains inactive.
+- Data Mode `fixture` remains the default.
 
 ## 4. Guardrails in Effect
 - **NO LIVE CALLS**.
-- **NO AUTH IMPLEMENTED**.
+- **NO CLOUD WATCHLIST PERSISTENCE (yet)**.
 - **NO SECRETS EXPOSED**.
 
 ## 5. Next Recommended Step
-- **Claude/Opus Review Gate** for Phase 1.1-B Remote/Staging Migration Execution.
-- After review, merge the branch into `main`.
+- **Claude/Opus Final Review Gate for Phase 1.2-A**.
+- **Merge to main** when GREEN.
+- **Steam Auth ADR/Spike**: Steam Auth + Supabase Identity Architecture needs to be planned (by Opus/Claude 4.8) before any further implementation.

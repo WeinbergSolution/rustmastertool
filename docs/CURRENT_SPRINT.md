@@ -1,6 +1,6 @@
-# Current Sprint (Phase 1.1)
+# Current Sprint (Phase 1.2)
 
-**Phase:** Supabase Remote/Staging Migration Execution & Verification (Phase 1.1-B)
+**Phase:** Phase 1.2-A Auth Foundation (GREEN)
 
 ## Was geändert wurde
 - [x] Phase 0.4-C: BattleMetrics API Contract Audit
@@ -8,25 +8,25 @@
 - [x] Phase 0.6: Supabase Product Foundation + Watchlist Persistence
 - [x] Phase 0.7: Watchlist UI Integration + Server Detail Flow
 - [x] Phase 0.8: Repository-backed Watchlist + Server Explorer Foundation
-- [x] Phase 0.8.1: Data-Layer Completion & Repo Repo Hygiene
+- [x] Phase 0.8.1: Data-Layer Completion & Repo Hygiene
 - [x] Phase 0.9: Auth Boundary + Async Repository Preparation
 - [x] Phase 1.0: Supabase Local RLS Smoke (GREEN-B)
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
 - [x] Phase 1.1-B: Remote/Staging Migration Execution (GREEN)
-  - Remote/Staging DB `fcmjevwfuwzqtpozwigf` wurde migriert.
-  - Alle fünf Migrationen sind remote angewendet (Foundation, Client Grants, Alert Events Fix, Provider Grants Fix, User-Owned Grants Fix).
-  - Remote Smoke Test ist bestanden.
+- [x] Phase 1.2-A: Auth Foundation + Profile Trigger (GREEN)
+  - AuthUI zeigt als Haupt-Option "Sign in with Steam" an (derzeit disabled).
+  - Produktziel ist **Steam Authentication**. Email Magic Link ist **NICHT** Produkt-Auth.
+  - Dev Magic Link ist nur Test-Scaffolding und per Default aus (`VITE_ENABLE_DEV_MAGIC_LINK=false`).
+  - Neue Supabase Migration (`20260705200000_profile_auto_create.sql`) als generischer Trigger für `public.profiles`. **Remote angewendet und via Smoke Test (Success. No rows returned) bestätigt.**
+  - Repo-Hygiene abgeschlossen.
 
 ## Was nicht gemacht wurde
-- Keine Auth implementiert.
-- Keine Live-Provider-Daten geladen oder gespeichert.
-- Kein UI-Polishing.
-- Keine Secrets/Keys gespeichert.
+- **Steam OpenID ist noch nicht implementiert** (kein Backend Callback, kein echter Steam Login).
+- SupabaseWatchlistRepository bleibt inaktiv.
+- Fixture Mode bleibt default.
 
 ## Aktueller Fokus
-Phase 1.1-B Remote/Staging Migration Execution ist GREEN.
+Claude/Opus Final Review Gate für Phase 1.2-A. Danach Merge nach main.
 
-## Nächste Schritte
-- Opus/Claude Review Gate für Phase 1.1-B.
-- Danach bei GREEN: Merge nach main.
-- Danach: Größerer Sprint Phase 1.2 – Supabase Auth + Watchlist Persistence MVP.
+## Nächster sicherer Schritt
+Merge nach main, wenn GREEN. Danach separat: Steam Auth ADR/Spike für echte Steam Authentication.

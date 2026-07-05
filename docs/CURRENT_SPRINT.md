@@ -1,6 +1,6 @@
 # Current Sprint (Phase 1.3)
 
-**Phase:** Phase 1.3-A Real BattleMetrics Server Explorer (GREEN)
+**Phase:** Phase 1.3-A Real BattleMetrics Server Explorer (YELLOW - Owner Verification Required)
 
 ## Was geändert wurde
 - [x] Phase 0.4-C: BattleMetrics API Contract Audit
@@ -14,19 +14,20 @@
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
 - [x] Phase 1.1-B: Remote/Staging Migration Execution (GREEN)
 - [x] Phase 1.2-A: Auth Foundation + Profile Trigger (GREEN)
-- [x] Phase 1.3-A: Real BattleMetrics Server Explorer (GREEN)
-  - Supabase Edge Function `battlemetrics` als Proxy implementiert.
-  - Live Provider Suche im Frontend Dashboard integriert.
-  - ServerDetailPanel auf Live-Daten (BattleMetrics) umgestellt.
-  - Keine Secrets (Tokens) im Frontend exponiert.
+- [x] Phase 1.3-A: Real BattleMetrics Server Explorer (YELLOW)
+  - Code ist committed (`30a93dd`) und gepusht von Owner (Git Tracked-Clean bestätigt).
+  - Supabase Edge Function `battlemetrics` Proxy-Logik implementiert.
+  - Frontend-Integration auf Live-Daten umgestellt, Mock-Server im Explorer entfernt.
+  - Secret Check erfolgreich (keine Token/Service_Roles im Frontend oder git trackt).
+  - Edge Function Remote Deploy-Status unklar (CLI meldet 403 auf `functions list`).
 
 ## Was nicht gemacht wurde
-- **Steam OpenID ist noch nicht implementiert** (kein Backend Callback, kein echter Steam Login).
-- SupabaseWatchlistRepository bleibt inaktiv, da Cloud-Persistenz Auth voraussetzt.
-- Auth UI bleibt disabled, bis Steam Auth Phase umgesetzt wird.
+- **Keine Live Smoke / Browser Bestätigung durch AI möglich**, da Edge Function Status ungewiss.
+- **Steam OpenID ist noch nicht implementiert**.
+- SupabaseWatchlistRepository bleibt inaktiv.
 
 ## Aktueller Fokus
-Owner Gate: Runbook `phase-1-3-a-battlemetrics-edge-function.md` durchführen, um Edge Function auf Staging zu deployen. Danach Merge nach `main`.
+Owner Gate: Verifikation des Edge Function Deployments auf Staging und manueller Browser-Test.
 
 ## Nächster sicherer Schritt
-Nach Deployment und Smoke-Test auf Staging: Merge nach main. Danach Phase 1.4 oder direkt Steam Auth ADR/Spike für echte Steam Authentication anvisieren.
+Owner-Bestätigung (Smoke Test). Wenn erfolgreich, Merge nach main. Danach Phase 1.4 oder Steam Auth ADR/Spike.

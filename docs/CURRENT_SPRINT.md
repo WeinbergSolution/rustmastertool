@@ -1,6 +1,6 @@
-# Current Sprint (Phase 1.2)
+# Current Sprint (Phase 1.3)
 
-**Phase:** Phase 1.2-A Auth Foundation (GREEN)
+**Phase:** Phase 1.3-A Real BattleMetrics Server Explorer (GREEN - Owner Verification Required)
 
 ## Was geändert wurde
 - [x] Phase 0.4-C: BattleMetrics API Contract Audit
@@ -14,19 +14,20 @@
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
 - [x] Phase 1.1-B: Remote/Staging Migration Execution (GREEN)
 - [x] Phase 1.2-A: Auth Foundation + Profile Trigger (GREEN)
-  - AuthUI zeigt als Haupt-Option "Sign in with Steam" an (derzeit disabled).
-  - Produktziel ist **Steam Authentication**. Email Magic Link ist **NICHT** Produkt-Auth.
-  - Dev Magic Link ist nur Test-Scaffolding und per Default aus (`VITE_ENABLE_DEV_MAGIC_LINK=false`).
-  - Neue Supabase Migration (`20260705200000_profile_auto_create.sql`) als generischer Trigger für `public.profiles`. **Remote angewendet und via Smoke Test (Success. No rows returned) bestätigt.**
-  - Repo-Hygiene abgeschlossen.
+- [x] Phase 1.3-A: Real BattleMetrics Server Explorer (GREEN)
+  - Code ist committed (`30a93dd`) und gepusht von Owner (Git Tracked-Clean bestätigt).
+  - Supabase Edge Function `battlemetrics` Proxy-Logik implementiert.
+  - Frontend-Integration auf Live-Daten umgestellt, Mock-Server im Explorer entfernt.
+  - Secret Check erfolgreich (keine Token/Service_Roles im Frontend oder git trackt).
+  - Edge Function Remote Deploy-Status unklar per CLI, aber Owner hat Funktion live verifiziert.
+  - **Runtime Fix:** Watchlist-Regression gefixt. Speichert nun echte Live-Server in der lokalen Watchlist und die Topbar zeigt ehrlich den Status "Live Provider Mode" anstelle von Fixture-Warnungen an.
 
 ## Was nicht gemacht wurde
-- **Steam OpenID ist noch nicht implementiert** (kein Backend Callback, kein echter Steam Login).
+- **Steam OpenID ist noch nicht implementiert**.
 - SupabaseWatchlistRepository bleibt inaktiv.
-- Fixture Mode bleibt default.
 
 ## Aktueller Fokus
-Claude/Opus Final Review Gate für Phase 1.2-A. Danach Merge nach main.
+Owner Gate: Finaler manueller Browser-Test der korrigierten Watchlist-UI.
 
 ## Nächster sicherer Schritt
-Merge nach main, wenn GREEN. Danach separat: Steam Auth ADR/Spike für echte Steam Authentication.
+Owner-Bestätigung (Smoke Test). Wenn erfolgreich, Merge nach main. Danach Phase 1.4 oder Steam Auth ADR/Spike.

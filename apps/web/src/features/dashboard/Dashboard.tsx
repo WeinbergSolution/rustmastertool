@@ -1,49 +1,85 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
-import { MOCK_SERVERS } from '../../data/fixtures/servers';
 import { MOCK_MAPS } from '../../data/fixtures/maps';
 import { MOCK_ALERTS } from '../../data/fixtures/alerts';
-import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search } from 'lucide-react';
-import { watchlistRepository } from '../../lib/data/watchlistRepository';
+import { Activity, ShieldAlert, Zap, Bell, X, Eye, Search, AlertTriangle, Loader2 } from 'lucide-react';
+import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 
 export function Dashboard() {
-  const [watchedServerIds, setWatchedServerIds] = useState<string[]>([]);
+  const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
   const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
+  
+  // Live Explorer State
   const [searchQuery, setSearchQuery] = useState('');
+  const [servers, setServers] = useState<BattleMetricsServerSummary[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Initial load
   useEffect(() => {
     let mounted = true;
-    watchlistRepository.getWatchedServerIds().then((ids) => {
-      if (mounted) {
-        setWatchedServerIds(ids);
-        setIsWatchlistLoading(false);
+    try {
+      const saved = window.localStorage.getItem('rm_local_watched_servers');
+      if (saved && mounted) {
+        setWatchedServers(JSON.parse(saved));
       }
-    });
+    } catch (e) {
+      console.warn('Failed to load local watchlist', e);
+    } finally {
+      if (mounted) setIsWatchlistLoading(false);
+    }
     return () => {
       mounted = false;
     };
   }, []);
 
-  const toggleWatch = async (id: string) => {
-    const updated = await watchlistRepository.toggleServer(id);
-    setWatchedServerIds(updated);
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    setSearchError(null);
+    setHasSearched(true);
+
+    try {
+      const results = await searchServers(searchQuery);
+      setServers(results);
+    } catch (err: any) {
+      setSearchError(err.message || 'Failed to search servers');
+      setServers([]);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
-  const selectedServer = MOCK_SERVERS.find(s => s.id === selectedServerId);
-  const watchedServers = MOCK_SERVERS.filter(s => watchedServerIds.includes(s.id));
+  const toggleWatch = (id: string) => {
+    const existingIndex = watchedServers.findIndex(s => s.id === id);
+    let newServers: BattleMetricsServerSummary[];
+    
+    if (existingIndex >= 0) {
+      newServers = watchedServers.filter(s => s.id !== id);
+    } else {
+      const serverToAdd = servers.find(s => s.id === id);
+      if (serverToAdd) {
+        newServers = [...watchedServers, serverToAdd];
+      } else {
+        return; // Should not happen in current flow
+      }
+    }
+    
+    setWatchedServers(newServers);
+    try {
+      window.localStorage.setItem('rm_local_watched_servers', JSON.stringify(newServers));
+    } catch (e) {
+      console.warn('Failed to save local watchlist', e);
+    }
+  };
 
-  const filteredServers = useMemo(() => {
-    if (!searchQuery) return MOCK_SERVERS;
-    const lower = searchQuery.toLowerCase();
-    return MOCK_SERVERS.filter(s => 
-      s.name.toLowerCase().includes(lower) || 
-      s.country.toLowerCase().includes(lower) ||
-      s.status.toLowerCase().includes(lower)
-    );
-  }, [searchQuery]);
+  const dataMode = import.meta.env.VITE_DATA_MODE || 'fixture';
+  const isLive = dataMode === 'supabase';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
@@ -52,12 +88,12 @@ export function Dashboard() {
       <div className="card" style={{ backgroundColor: 'var(--bg-hover)', borderLeft: '4px solid var(--accent-rust)' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Rust Companion Dashboard</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          Fixture mode active. This is a static UI shell demonstrating Phase 0.8 product flow. Live provider calls are explicitly gated.
+          Real Provider Mode active. The Server Explorer now fetches live data from BattleMetrics.
         </p>
         <div className="status-list">
-          <div className="status-chip success"><Zap size={16}/> BM Contract Audited</div>
-          <div className="status-chip success"><Eye size={16}/> Repository Data Layer</div>
-          <div className="status-chip pending"><ShieldAlert size={16}/> Supabase Prepared</div>
+          <div className="status-chip success"><Zap size={16}/> BM Edge Function Proxy</div>
+          <div className="status-chip success"><Eye size={16}/> Live Provider Integration</div>
+          <div className="status-chip pending"><ShieldAlert size={16}/> Cloud Persistence Pending</div>
           <div className="status-chip future"><Activity size={16}/> Steam Auth Planned</div>
         </div>
       </div>
@@ -68,45 +104,79 @@ export function Dashboard() {
         <div className="card col-span-8">
           <div className="card-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              Server Explorer Foundation
-              <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>{filteredServers.length} Tracking</span>
+              Real Server Explorer
+              <span className="badge" style={{ backgroundColor: 'var(--accent-rust)' }}>BattleMetrics live data</span>
             </div>
           </div>
           
-          <div style={{ marginBottom: '1rem', position: 'relative' }}>
-            <div style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
-              <Search size={16} />
+          <form onSubmit={handleSearch} style={{ marginBottom: '1rem', position: 'relative', display: 'flex', gap: '0.5rem' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <div style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+                <Search size={16} />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Search live Rust servers by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem 0.75rem 2.5rem',
+                  backgroundColor: 'var(--bg-panel)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '4px',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.875rem'
+                }}
+              />
             </div>
-            <input 
-              type="text" 
-              placeholder="Fixture server search (Name, Country, Status) - Live provider search gated..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+            <button 
+              type="submit" 
+              disabled={isSearching || !searchQuery.trim()}
               style={{
-                width: '100%',
-                padding: '0.75rem 1rem 0.75rem 2.5rem',
-                backgroundColor: 'var(--bg-panel)',
-                border: '1px solid var(--border-color)',
+                padding: '0 1.5rem',
+                backgroundColor: 'var(--accent-rust)',
+                color: '#fff',
+                border: 'none',
                 borderRadius: '4px',
-                color: 'var(--text-primary)',
-                fontSize: '0.875rem'
+                cursor: (isSearching || !searchQuery.trim()) ? 'not-allowed' : 'pointer',
+                opacity: (isSearching || !searchQuery.trim()) ? 0.7 : 1,
+                fontWeight: 'bold'
               }}
-            />
-          </div>
+            >
+              Search
+            </button>
+          </form>
 
-          {filteredServers.length === 0 ? (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
-              No servers match your fixture search query.
+          {isSearching ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+              <Loader2 size={32} className="spin" />
+              <span>Fetching live server data...</span>
             </div>
-          ) : (
+          ) : searchError ? (
+             <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--status-error)', border: '1px solid var(--status-error)', borderRadius: '4px', backgroundColor: 'rgba(255,50,50,0.1)' }}>
+              <AlertTriangle size={32} style={{ margin: '0 auto 0.5rem' }} />
+              <strong>Search Failed</strong>
+              <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>{searchError}</p>
+              <p style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>Make sure the Edge Function is deployed and running.</p>
+            </div>
+          ) : hasSearched && servers.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
+              No servers found. Try a different search term.
+            </div>
+          ) : servers.length > 0 ? (
             <div className="server-list">
-              {filteredServers.map(server => (
+              {servers.map(server => (
                 <ServerCard 
                   key={server.id} 
                   server={server} 
                   onSelect={() => setSelectedServerId(server.id)}
                 />
               ))}
+            </div>
+          ) : (
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
+              Enter a search term to query the live BattleMetrics API.
             </div>
           )}
         </div>
@@ -146,7 +216,7 @@ export function Dashboard() {
 
         {/* Watchlist & Map Intel */}
         <div className="card col-span-6">
-          <div className="card-title">Watchlist Preview</div>
+          <div className="card-title">{isLive ? 'Local Watchlist Preview' : 'Watchlist Preview (Fixture)'}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {isWatchlistLoading ? (
               <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
@@ -195,12 +265,12 @@ export function Dashboard() {
 
       </div>
 
-      {selectedServer && (
+      {selectedServerId && (
         <ServerDetailPanel 
-          server={selectedServer}
-          isWatched={watchedServerIds.includes(selectedServer.id)}
+          serverId={selectedServerId}
+          isWatched={watchedServers.some(s => s.id === selectedServerId)}
           onClose={() => setSelectedServerId(null)}
-          onToggleWatch={() => toggleWatch(selectedServer.id)}
+          onToggleWatch={() => toggleWatch(selectedServerId)}
         />
       )}
     </div>

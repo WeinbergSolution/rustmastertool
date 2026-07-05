@@ -14,25 +14,24 @@
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
 - [x] Phase 1.1-B: Remote/Staging Migration Execution
   - .gitignore für Supabase-Metadaten gehärtet.
-  - Remote RLS Smoke SQL Test generiert.
-  - Execution Checklist generiert.
-  - Implementation Report erstellt.
   - Remote db push erfolgreich durch Owner ausgeführt.
 - [x] Phase 1.1-B-FIX: Restrict alert_events Client Grants
-  - Remote Smoke Test offenbarte, dass `authenticated` Schreibrechte auf `alert_events` hatte.
-  - Fix-Migration erstellt (Least Privilege: SELECT-only).
-  - Remote Smoke SQL Assertions verbessert.
+  - Fix-Migration erstellt und remote erfolgreich angewendet.
+- [x] Phase 1.1-B-FIX-2: Restrict Provider Table Client Write Grants
+  - Remote Smoke Test offenbarte, dass `anon` und `authenticated` Schreibrechte auf Provider-Tabellen hatten.
+  - Fix-2-Migration erstellt (Least Privilege: SELECT-only).
+  - Remote Smoke SQL Assertions erweitert.
 
 ## Was nicht gemacht wurde
-- Phase 1.1-B ist nach Remote Push **noch nicht GREEN** (wartet auf Fix-Bestätigung).
-- Fix-Migration wurde noch nicht angewendet (Stop-and-Confirm anstehend).
+- Phase 1.1-B ist nach Remote Push **noch nicht GREEN** (wartet auf Fix-2-Bestätigung).
+- Fix-2-Migration wurde noch nicht angewendet (Stop-and-Confirm anstehend).
 - Keine Auth implementiert.
 - Keine Live-Provider-Daten geladen oder gespeichert.
 - Kein UI-Polishing.
 - Keine Secrets/Keys gespeichert.
 
-## Aktueller Fokus (Phase 1.1-B-FIX)
-Warten auf Owner-Bestätigung für den Fix der `alert_events` Grants.
+## Aktueller Fokus (Phase 1.1-B-FIX-2)
+Warten auf Owner-Bestätigung für den Fix der Provider-Tabellen Grants.
 
 ## Nächster sicherer Schritt
-Owner muss exakt bestätigen: `CONFIRM ALERT EVENTS GRANT FIX TO fcmjevwfuwzqtpozwigf STAGING`
+Owner muss exakt bestätigen: `CONFIRM PROVIDER GRANT FIX TO fcmjevwfuwzqtpozwigf STAGING`

@@ -85,6 +85,12 @@ BEGIN
     IF has_table_privilege('authenticated', 'public.provider_servers', 'INSERT') OR has_table_privilege('authenticated', 'public.provider_servers', 'UPDATE') OR has_table_privilege('authenticated', 'public.provider_servers', 'DELETE') THEN
         RAISE EXCEPTION 'Grant violation: authenticated has write access on public.provider_servers';
     END IF;
+    IF has_table_privilege('anon', 'public.provider_source_status', 'INSERT') OR has_table_privilege('anon', 'public.provider_source_status', 'UPDATE') OR has_table_privilege('anon', 'public.provider_source_status', 'DELETE') THEN
+        RAISE EXCEPTION 'Grant violation: anon has write access on public.provider_source_status';
+    END IF;
+    IF has_table_privilege('authenticated', 'public.provider_source_status', 'INSERT') OR has_table_privilege('authenticated', 'public.provider_source_status', 'UPDATE') OR has_table_privilege('authenticated', 'public.provider_source_status', 'DELETE') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated has write access on public.provider_source_status';
+    END IF;
 
     -- User-owned Tabellen
     IF NOT has_table_privilege('authenticated', 'public.profiles', 'SELECT') THEN

@@ -66,25 +66,57 @@ BEGIN
     
     -- D) Grant Checks
     -- Provider Tabellen
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'anon' AND table_name = 'provider_servers' AND privilege_type = 'SELECT'));
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'provider_servers' AND privilege_type = 'SELECT'));
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'anon' AND table_name = 'provider_source_status' AND privilege_type = 'SELECT'));
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'provider_source_status' AND privilege_type = 'SELECT'));
-    
-    ASSERT NOT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee IN ('anon', 'authenticated') AND table_name = 'provider_servers' AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE')));
-    ASSERT NOT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee IN ('anon', 'authenticated') AND table_name = 'provider_source_status' AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE')));
+    IF NOT has_table_privilege('anon', 'public.provider_servers', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon missing SELECT on public.provider_servers';
+    END IF;
+    IF NOT has_table_privilege('authenticated', 'public.provider_servers', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.provider_servers';
+    END IF;
+    IF NOT has_table_privilege('anon', 'public.provider_source_status', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon missing SELECT on public.provider_source_status';
+    END IF;
+    IF NOT has_table_privilege('authenticated', 'public.provider_source_status', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.provider_source_status';
+    END IF;
+
+    IF has_table_privilege('anon', 'public.provider_servers', 'INSERT') OR has_table_privilege('anon', 'public.provider_servers', 'UPDATE') OR has_table_privilege('anon', 'public.provider_servers', 'DELETE') THEN
+        RAISE EXCEPTION 'Grant violation: anon has write access on public.provider_servers';
+    END IF;
+    IF has_table_privilege('authenticated', 'public.provider_servers', 'INSERT') OR has_table_privilege('authenticated', 'public.provider_servers', 'UPDATE') OR has_table_privilege('authenticated', 'public.provider_servers', 'DELETE') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated has write access on public.provider_servers';
+    END IF;
 
     -- User-owned Tabellen
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'profiles' AND privilege_type = 'SELECT'));
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'user_watchlists' AND privilege_type = 'SELECT'));
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'watchlist_items' AND privilege_type = 'SELECT'));
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'alert_rules' AND privilege_type = 'SELECT'));
+    IF NOT has_table_privilege('authenticated', 'public.profiles', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.profiles';
+    END IF;
+    IF NOT has_table_privilege('authenticated', 'public.user_watchlists', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.user_watchlists';
+    END IF;
+    IF NOT has_table_privilege('authenticated', 'public.watchlist_items', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.watchlist_items';
+    END IF;
+    IF NOT has_table_privilege('authenticated', 'public.alert_rules', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.alert_rules';
+    END IF;
 
-    ASSERT NOT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'anon' AND table_name IN ('profiles', 'user_watchlists', 'watchlist_items', 'alert_rules', 'alert_events')));
+    IF has_table_privilege('anon', 'public.profiles', 'SELECT') OR has_table_privilege('anon', 'public.user_watchlists', 'SELECT') OR has_table_privilege('anon', 'public.watchlist_items', 'SELECT') OR has_table_privilege('anon', 'public.alert_rules', 'SELECT') OR has_table_privilege('anon', 'public.alert_events', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: anon has SELECT access on user-owned tables';
+    END IF;
 
     -- alert_events
-    ASSERT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'alert_events' AND privilege_type = 'SELECT'));
-    ASSERT NOT (SELECT EXISTS (SELECT FROM information_schema.role_table_grants WHERE grantee = 'authenticated' AND table_name = 'alert_events' AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE')));
+    IF NOT has_table_privilege('authenticated', 'public.alert_events', 'SELECT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated missing SELECT on public.alert_events';
+    END IF;
+    IF has_table_privilege('authenticated', 'public.alert_events', 'INSERT') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated has INSERT on public.alert_events';
+    END IF;
+    IF has_table_privilege('authenticated', 'public.alert_events', 'UPDATE') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated has UPDATE on public.alert_events';
+    END IF;
+    IF has_table_privilege('authenticated', 'public.alert_events', 'DELETE') THEN
+        RAISE EXCEPTION 'Grant violation: authenticated has DELETE on public.alert_events';
+    END IF;
 
 END $$;
 

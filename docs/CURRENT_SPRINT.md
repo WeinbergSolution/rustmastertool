@@ -12,22 +12,27 @@
 - [x] Phase 0.9: Auth Boundary + Async Repository Preparation
 - [x] Phase 1.0: Supabase Local RLS Smoke (GREEN-B)
 - [x] Phase 1.1-A: Remote/Staging Migration Runbook
-- [x] Phase 1.1-B (In Progress): Remote/Staging Migration Execution
+- [x] Phase 1.1-B: Remote/Staging Migration Execution
   - .gitignore für Supabase-Metadaten gehärtet.
   - Remote RLS Smoke SQL Test generiert.
   - Execution Checklist generiert.
   - Implementation Report erstellt.
-  - Discovery-Schritte müssen vom Owner ausgeführt werden (Stop-And-Confirm).
+  - Remote db push erfolgreich durch Owner ausgeführt.
+- [x] Phase 1.1-B-FIX: Restrict alert_events Client Grants
+  - Remote Smoke Test offenbarte, dass `authenticated` Schreibrechte auf `alert_events` hatte.
+  - Fix-Migration erstellt (Least Privilege: SELECT-only).
+  - Remote Smoke SQL Assertions verbessert.
 
 ## Was nicht gemacht wurde
-- Keine Remote-Migration ausgeführt (Warten auf Freigabe).
+- Phase 1.1-B ist nach Remote Push **noch nicht GREEN** (wartet auf Fix-Bestätigung).
+- Fix-Migration wurde noch nicht angewendet (Stop-and-Confirm anstehend).
 - Keine Auth implementiert.
 - Keine Live-Provider-Daten geladen oder gespeichert.
 - Kein UI-Polishing.
 - Keine Secrets/Keys gespeichert.
 
-## Aktueller Fokus (Phase 1.1-B)
-Warten auf Owner-Bestätigung nach lokaler Remote-Discovery, um die Remote-Migration sicher auszuführen.
+## Aktueller Fokus (Phase 1.1-B-FIX)
+Warten auf Owner-Bestätigung für den Fix der `alert_events` Grants.
 
 ## Nächster sicherer Schritt
-Owner muss exakt bestätigen: `CONFIRM PUSH TO fcmjevwfuwzqtpozwigf STAGING`
+Owner muss exakt bestätigen: `CONFIRM ALERT EVENTS GRANT FIX TO fcmjevwfuwzqtpozwigf STAGING`

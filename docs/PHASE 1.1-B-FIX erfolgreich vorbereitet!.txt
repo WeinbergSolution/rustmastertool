@@ -1,0 +1,30 @@
+PHASE 1.1-B-FIX erfolgreich vorbereitet!
+
+Hier ist der Abschlussbericht:
+
+Aktueller Branch: feature/phase-1-1-b-remote-migration-exec
+Commit-Hash: dcc1363
+Push-Status: Erfolgreich auf origin feature/phase-1-1-b-remote-migration-exec gepusht.
+Neue Migration: supabase/migrations/20260705173000_restrict_alert_events_client_grants.sql
+Geänderte Dateien:
+supabase/migrations/20260705173000_restrict_alert_events_client_grants.sql
+docs/sql/rls-smoke/phase-1-1-b-remote-rls-smoke.sql
+docs/reviews/phase-1-1-b-implementation-report.md
+docs/CURRENT_SPRINT.md
+docs/MODEL_HANDOFF.md
+Ursache des Remote-Smoke-Fails: authenticated hatte INSERT/UPDATE/DELETE auf public.alert_events, da in der initialen Foundation-Migration noch alte Write-Policies vorhanden waren und Rechte nicht explizit für Clients entzogen wurden.
+Was die Fix-Migration korrigiert: Sie macht einen expliziten REVOKE ALL auf alert_events für anon, authenticated und PUBLIC. Anschließend gewährt sie ein strenges GRANT SELECT für authenticated. Zusätzlich werden die alten Update/Delete-Policies gedroppt und eine exklusive Select-Policy angelegt (Least Privilege sichergestellt).
+Ist apps/web unverändert: Ja.
+Ist migrations_gated unverändert: Ja.
+Ist seed/config unverändert: Ja.
+Typecheck Ergebnis: Pass.
+Build Ergebnis: Pass (~667ms).
+db:verify:local Ergebnis: YELLOW (übersprungen, da Docker lokal im AI Environment nicht läuft, was erwartet ist).
+Secret Check Ergebnis: Pass.
+Remote migration list / dry-run Zusammenfassung: (Da die KI keine Auth hat, muss dies vom Owner lokal ausgeführt werden).
+Wurde db push ausgeführt: NEIN (Wartet auf Stop-and-Confirm).
+Wurde Stop-and-Confirm erreicht: JA. (Aktueller Zustand: 🛑 STOP)
+Aktueller Report-Status: YELLOW 🟡 (Wartet auf Remote-Fix-Bestätigung).
+Nächster empfohlener Schritt: Der Owner sollte nun idealerweise lokal einen Dry-Run der neuen Fix-Migration prüfen. Wenn du bereit bist, die Korrektur auf Remote (Staging) anzuwenden, bestätige mir bitte exakt mit dem folgenden Satz:
+
+CONFIRM ALERT EVENTS GRANT FIX TO fcmjevwfuwzqtpozwigf STAGING

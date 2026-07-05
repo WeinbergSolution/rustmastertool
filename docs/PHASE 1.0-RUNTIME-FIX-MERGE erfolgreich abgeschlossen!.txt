@@ -1,0 +1,35 @@
+PHASE 1.0-RUNTIME-FIX-MERGE erfolgreich abgeschlossen!
+
+Hier ist der Abschlussbericht:
+
+Aktueller Branch: main
+Merge-Commit-Hash: 7daf383
+Push-Status: Erfolgreich auf origin main gepusht.
+Beteiligter Source-Branch: feature/phase-1-0-rls-smoke-runtime-fix
+Gemergte Commits:
+428db36 docs: record phase 1.0 local rls green-b verification
+8536a4c fix: restrict alert events client grants
+0aeea72 fix: grant least privilege client access for rls
+939a2b4 fix: make rls smoke idempotent against seed data
+Testergebnisse vor Merge: Pass (Typecheck, Build, Safety Checks)
+Testergebnisse nach Merge: Pass (Typecheck, Build in ~337ms, Safety Checks)
+apps/web Diff Ergebnis: Keine Änderungen (Pass)
+seed/config/migrations_gated Diff Ergebnis: Keine Änderungen (Pass)
+Grant Safety Check Ergebnis: Pass (Keine verbotenen GRANTs für alert_events oder ALL PRIVILEGES)
+Remote Safety Check Ergebnis: Pass (Keine aktiven Remote-Befehle gefunden)
+.env.local Check Ergebnis: Pass
+Secret-Check-Ergebnis: Pass (Keine Secrets geleakt, nur bekannter NPM Integrity Hash)
+Bestätigungen:
+Neue Grant-Migration (20260704015000_core_client_grants.sql) ist in main.
+alert_events ist clientseitig SELECT-only.
+Provider-Tabellen sind public-read, aber nicht client-write.
+User-owned Tabellen sind authenticated/RLS-scoped.
+Phase 1.0 ist GREEN-B.
+Im Merge-Prozess wurden keine Migrationen ausgeführt.
+Im Merge-Prozess wurde kein supabase start, db reset, db push oder link ausgeführt.
+Keine Remote-/Cloud-Verbindung.
+main ist clean.
+Offene deferred Punkte:
+GatedNotice.tsx cleanups (später)
+react.svg/vite.svg/hero.png Removal (nur wenn build grün bleibt)
+Nächster empfohlener Schritt: Phase 1.1-PLAN – Supabase Auth + Watchlist Persistence MVP Boundary.

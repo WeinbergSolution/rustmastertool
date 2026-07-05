@@ -1,0 +1,33 @@
+PHASE 0.8 erfolgreich abgeschlossen!
+
+Hier ist der Abschlussbericht:
+
+Branch: feature/phase-0-8-repository-watchlist-explorer
+Commit-Hash: 9a0d091
+Push-Status: Erfolgreich auf origin feature/phase-0-8-repository-watchlist-explorer gepusht.
+Geänderte Dateien:
+apps/web/src/features/dashboard/Dashboard.tsx
+apps/web/src/lib/data/watchlistRepository.ts
+docs/CURRENT_SPRINT.md
+docs/MODEL_HANDOFF.md
+docs/reviews/phase-0-8-implementation-report.md (neu)
+Repository Integration Ergebnis: Die lokale State-Funktionalität (loadFixtureWatchlist und der Persistence useEffect) wurde erfolgreich aus dem Dashboard isoliert und robuster Teil des FixtureWatchlistRepository (via Interface WatchlistRepository).
+Dashboard localStorage-Nutzung entfernt: Ja, Dashboard.tsx ruft localStorage nicht mehr direkt auf, sondern nutzt ausschließlich watchlistRepository.
+localStorage Robustheit Ergebnis: Parsing-Sicherheit (Typen-Checks, null-Checks, try/catch und typeof window Guards) sind im Data Layer intakt.
+Server Explorer/Search Ergebnis: Erfolgreich in Dashboard.tsx integriert. Filtert Namen, Land und Status (case-insensitive) über die MOCK_SERVERS Collection rein lokal. Leere Listen werden abgefangen und textlich als offline verdeutlicht.
+Watchlist Reload Test Ergebnis: Erfolgreich. Die Zustände werden wiederhergestellt.
+Korruptes localStorage Test Ergebnis: Robustheit erhalten, fällt sicher auf [] zurück.
+Bestätigung - keine Supabase Query: Ja. SupabaseWatchlistRepository liefert nur leere Stubs, Dev-Umgebung erzwingt fixture Mode.
+Bestätigung - keine Auth implementiert: Ja.
+Bestätigung - keine Migration ausgeführt: Ja.
+Bestätigung - keine DB-Verbindung getestet: Ja.
+Typecheck Ergebnis: Pass (npm run typecheck:web ist grün).
+Build Ergebnis: Pass (npm run build:web ist grün).
+Dev Launch Ergebnis: Pass (Vite lief ohne Parse Fehler auf Port 5175).
+External Host Check Ergebnis: Pass (Keine unsicheren Hotlinks).
+Secret Check Ergebnis: Pass (Keine Secrets aufgetaucht, nur .lock Integritäts-Hashes).
+Offene Risiken:
+Deferred Type-Cleanups (ServerCard uses any).
+Fehlendes visuelles Map/Provider Asset Rehosting.
+Das Repository ist noch voll synchron (FixtureWatchlistRepository). Für Phase 1.0 (Supabase) muss der State Manager (z.B. Context/Query) dies ggf. auf async/await adaptieren, aber als lokaler Mock perfekt.
+Nächster empfohlener Schritt: Claude/Opus 4.8 Frontend Data-Layer Integration Review Gate.

@@ -1,0 +1,55 @@
+PHASE 1.1-B-MERGE erfolgreich abgeschlossen!
+
+Hier ist der detaillierte Abschlussbericht:
+
+Aktueller Branch: main
+Merge-Commit-Hash: 3b111f7
+Push-Status: Erfolgreich auf origin main gepusht.
+Beteiligter Source-Branch: feature/phase-1-1-b-remote-migration-exec
+Gemergte Commits:
+b4dc748 docs: mark phase 1.1 remote migration green
+32649b1 docs: acknowledge owner push confirmation for user-owned grant fix
+c9edcc7 fix: restrict anon access on user-owned tables
+a3a18b9 docs: acknowledge owner push confirmation for provider grant fix
+9bc9ba9 fix: restrict provider table client grants
+dcc1363 fix: restrict alert events client grants
+665139e docs: acknowledge owner push confirmation
+c956f34 docs: prepare phase 1.1 remote migration execution
+Remote/Staging Project Ref: fcmjevwfuwzqtpozwigf
+Angewendete Remote-Migrationen laut Report:
+20260704014000_core_foundation.sql
+20260704015000_core_client_grants.sql
+20260705173000_restrict_alert_events_client_grants.sql
+20260705180000_restrict_provider_table_client_grants.sql
+20260705183000_restrict_anon_user_owned_table_grants.sql
+Finales Remote Smoke Ergebnis laut Report: Success. No rows returned.
+Testergebnisse:
+
+Vor Merge (auf Feature Branch):
+Typecheck: Pass
+Build: Pass (~406ms)
+Nach Merge (auf main):
+Typecheck: Pass
+Build: Pass (~392ms)
+db:verify:local: YELLOW (Nicht ausgeführt in AI-Umgebung. Nicht blockierend, da Remote Smoke lokal durch Owner passierte und grün war.)
+Diff Checks (HEAD~1..HEAD):
+
+apps/web Diff Ergebnis: keine Ausgabe (Pass).
+migrations_gated Diff Ergebnis: keine Ausgabe (Pass).
+seed/config Diff Ergebnis: keine Ausgabe (Pass).
+scripts/package Diff Ergebnis: keine Ausgabe (Pass).
+Safety & Secret Checks:
+
+Remote Command Safety Check Ergebnis: Alle Befehle (supabase db reset, supabase link, db push) treten nur in Dokumentations-Kontext auf (Pass).
+.env.local Check Ergebnis: Keine Reads, taucht nur in Dokumentations-Kontext auf (Pass).
+Secret Check Ergebnis: Nur False Positives (package-lock.json Hash) (Pass).
+Bestätigungen:
+
+✅ Keine Migration ausgeführt.
+✅ Kein supabase db push, link oder reset ausgeführt.
+✅ Keine Remote-Kommandos ausgeführt.
+✅ Keine Secrets gelesen oder geleakt.
+✅ Phase 1.1-B ist jetzt vollständig und sauber in main.
+✅ main ist clean.
+Offene deferred Punkte: Keine.
+Nächster empfohlener Schritt: Phase 1.2-PLAN – Supabase Auth + Watchlist Persistence MVP.

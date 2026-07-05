@@ -1,0 +1,35 @@
+PHASE 0.8.1 erfolgreich abgeschlossen!
+
+Hier ist der Abschlussbericht:
+
+Branch: feature/phase-0-8-1-data-layer-hardening
+Commit-Hash: 0160b35 (bereinigt)
+Push-Status: Erfolgreich auf origin feature/phase-0-8-1-data-layer-hardening gepusht.
+Geänderte Dateien:
+apps/web/index.html
+apps/web/src/features/dashboard/Dashboard.tsx
+apps/web/src/features/dashboard/ServerCard.tsx
+docs/CURRENT_SPRINT.md
+docs/MODEL_HANDOFF.md
+docs/reviews/phase-0-8-1-implementation-report.md (neu)
+4 alte .txt Dateien gelöscht.
+Watchlist Repository Hardening Ergebnis: Erfolgreich. Dashboard.tsx greift beim Umschalten nun strikt auf die Rückgabe von watchlistRepository.toggleServer(id) zu und übergibt die Persistenzlogik an das Repository.
+Direkte localStorage-Nutzung weiterhin entfernt: Ja, keinerlei Zugriffe auf localStorage mehr im Dashboard (über static Check verifiziert).
+Wird Repository.toggleServer genutzt: Ja, vollständig integriert.
+ServerCard Typing Ergebnis: Das Literal any wurde entfernt. Die Props fordern jetzt ServerCardData, welches die Fixture-Properties sicher abbildet, fehlende Pflichtfelder abfängt (und optionale Felder mit null | undefined deklariert).
+Review-.txt Hygiene Ergebnis: 4 obsolete, bereits in .md überführte Review-Dumps aus Phase 0.5-0.7 wurden sauber aus der Source-Control entfernt. Die neuen untrackten Text-Logs (wie im Prompt erbeten) blieben völlig unberührt und nicht-versioniert im Workspace.
+Index/Title/Asset Hygiene Ergebnis: index.html Title wurde risikolos von "web" auf "RustMasterTool" geändert. Asset-Aufräumarbeiten (Vite/React Logos) wurden als deferred belassen, da nicht absolut notwendig für das Produkt.
+Bestätigung - keine Supabase Query: Ja, komplett Offline-Fixture Modus.
+Bestätigung - keine Auth implementiert: Ja.
+Bestätigung - keine Migration ausgeführt: Ja.
+Bestätigung - keine DB-Verbindung getestet: Ja.
+Typecheck Ergebnis: Pass (npm run typecheck:web läuft nun komplett grün nach der Typen-Korrektur).
+Build Ergebnis: Pass (npm run build:web erfolgreich).
+Dev Launch Ergebnis: Pass (Vite lief ohne Parse Fehler).
+External Host Check Ergebnis: Pass (Keine unsicheren Hotlinks entdeckt).
+Secret Check Ergebnis: Pass (Keine Secrets aufgetaucht, nur .lock Integritäts-Hashes).
+Offene deferred Punkte:
+GatedNotice.tsx Refactoring (falls noch genutzt).
+Generisches Aufräumen von ungenutzten Vite/React Starter-Assets.
+Generelles Fixture Data Normalisieren (z.B. einheitliche Länder-IDs statt Strings, falsches null/undefined Mapping).
+Nächster empfohlener Schritt: Claude/Opus 4.8 Mini Review Gate für Phase 0.8.1.

@@ -153,12 +153,20 @@ DECLARE
     watchlist_b_id uuid := 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 BEGIN
     
-    -- insert users (may fail remote if we can't write to auth.users, but usually postgres admin can)
+    -- insert users (this should trigger handle_new_user to create profiles)
     INSERT INTO auth.users (id, email) VALUES (user_a_id, 'userA_test@example.com'), (user_b_id, 'userB_test@example.com') ON CONFLICT DO NOTHING;
 
-    -- insert profiles
-    INSERT INTO public.profiles (id, username, avatar_url) VALUES (user_a_id, 'UserA_Test', 'urlA') ON CONFLICT DO NOTHING;
-    INSERT INTO public.profiles (id, username, avatar_url) VALUES (user_b_id, 'UserB_Test', 'urlB') ON CONFLICT DO NOTHING;
+    -- Verify trigger worked
+    IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE id = user_a_id) THEN
+        RAISE EXCEPTION 'Trigger Failed: public.profiles row not created for user_a_id';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE id = user_b_id) THEN
+        RAISE EXCEPTION 'Trigger Failed: public.profiles row not created for user_b_id';
+    END IF;
+
+    -- Optionally update the profiles with test data since trigger only sets ID
+    UPDATE public.profiles SET username = 'UserA_Test', avatar_url = 'urlA' WHERE id = user_a_id;
+    UPDATE public.profiles SET username = 'UserB_Test', avatar_url = 'urlB' WHERE id = user_b_id;
 
     -- insert provider servers
     INSERT INTO public.provider_servers (id, provider_type, provider_id, name, country, status) 

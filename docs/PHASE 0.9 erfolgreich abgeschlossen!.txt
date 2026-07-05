@@ -1,0 +1,39 @@
+PHASE 0.9 erfolgreich abgeschlossen!
+
+Hier ist der Abschlussbericht:
+
+Branch: feature/phase-0-9-auth-boundary-async-repository
+Commit-Hash: 56dc52b
+Push-Status: Erfolgreich auf origin feature/phase-0-9-auth-boundary-async-repository gepusht.
+Geänderte Dateien:
+apps/web/src/components/Topbar.tsx
+apps/web/src/features/dashboard/Dashboard.tsx
+apps/web/src/lib/data/watchlistRepository.ts
+apps/web/src/lib/auth/useAuth.ts (neu)
+docs/CURRENT_SPRINT.md
+docs/MODEL_HANDOFF.md
+docs/reviews/phase-0-9-implementation-report.md (neu)
+Repository async Ergebnis: Erfolgreich. Alle Methoden des WatchlistRepository Interfaces (z.B. getWatchedServerIds, setWatchedServerIds, addServer) liefern jetzt Promises zurück.
+Dashboard async Ergebnis: Erfolgreich. Das Dashboard lädt initial asynchron über useEffect die Watchlist IDs und hält einen Lade-Zustand. Die Toggle-Funktion toggleWatch ist asynchron.
+Direkte localStorage-Nutzung entfernt: Ja, grep auf das Dashboard zeigt keine direkte Nutzung. Das Repository kapselt diesen Zugriff vollständig.
+Idempotenter Doppel-Write entfernt: Ja, der veraltete Sync-Effekt (watchlistRepository.setWatchedServerIds) wurde aus dem Dashboard entfernt. Das Repository ist die Single Source of Truth.
+Auth-Seam Ergebnis: Erfolgreich. Ein passiver Hook useAuth() wurde unter lib/auth/useAuth.ts angelegt. Er liefert stets { status: 'unauthenticated', user: null, isAuthenticated: false }.
+Topbar Auth Boundary Ergebnis: Erfolgreich. Die Topbar bindet useAuth() ein und visualisiert ehrlich den Local Mode ("Local Mode — not signed in").
+Bestätigung - keine Supabase Query: Ja. Keine Änderung an den inaktiven Stub-Rückgaben. grep auf .from( bestätigt die Abwesenheit aktiver Queries.
+Bestätigung - keine Auth implementiert: Ja.
+Bestätigung - kein Mock-User: Ja (immer user: null).
+Bestätigung - keine Migration ausgeführt: Ja.
+Bestätigung - keine DB-Verbindung getestet: Ja.
+Bestätigung - supabase/ unverändert:** Ja.
+Local→Cloud Mapping als offener Punkt dokumentiert: Ja (im phase-0-9-implementation-report.md).
+Typecheck Ergebnis: Pass (tsc -b).
+Build Ergebnis: Pass (Vite baute erfolgreich in ~347ms).
+Dev Launch Ergebnis: Pass (Local Mode & Loading States greifen, keine Errors beim Start).
+Dashboard Storage Check Ergebnis: Pass (Kein localStorage).
+Supabase Query Check Ergebnis: Pass (Das einzige .from Match war Array.from() innerhalb des Repos).
+Secret Check Ergebnis: Pass (Nur unbedenkliche lockfile-hashes).
+External Host Check Ergebnis: Pass (Keine Runtime-Hotlinks).
+Offene Risiken:
+Steam OpenID Entscheidung steht noch aus (ADR-014).
+Mapping-Logik für Fixture-IDs (id123) auf künftige Cloud-UUIDs fehlt noch.
+Nächster empfohlener Schritt: Claude/Opus 4.8 Auth Boundary + Async Repository Review

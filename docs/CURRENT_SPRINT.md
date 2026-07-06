@@ -1,6 +1,6 @@
-# Current Sprint (Phase 1.8-A)
+# Current Sprint (Phase 1.9-A)
 
-**Phase:** Phase 1.8-A Base Blueprints YouTube Foundation (IMPLEMENTATION)
+**Phase:** Phase 1.9-A Automation and Blueprint Polish (IMPLEMENTATION)
 
 ## Was geändert wurde
 - [x] Phase 1.4-A: Steam Login + Active Server Core Loop
@@ -8,28 +8,24 @@
 - [x] Phase 1.6-A: Server Explorer Data Expansion + BattleMetrics Filters + Base Blueprints Shell
 - [x] Phase 1.7-A: Server Pulse / Population Retention Foundation
 - [x] Phase 1.7-B: Server Pulse Activation + Retention Intelligence UI
-  - **Remote Deployments**: Supabase DB Migration und `server-pulse-ingest` Edge Function auf Staging gepusht/deployed.
-  - **UI Cleanup**: Runbook und technische curl-Commands wurden aus der ServerPulseView entfernt. Die View ruft nun echte Count-Stats (`provider_servers`, `server_population_snapshots`) ab.
-  - **Retention Logik**: Utility-Funktion `calculatePulseSummary` implementiert, die anhand echter Snapshots Retention-Prozentwerte für die Intervalle 6h, 12h, 18h, 24h, 30h berechnet.
-  - **Server Detail Panel**: Bindet die Retention-Buckets und den Pulse Health Label ein. Zeigt ehrlichen "Collecting" Status an, falls die Datenbasis nicht ausreicht.
-  - **Server Cards**: Dezentes "Pulse collecting" Badge integriert.
-  - **Topbar**: Phase Label auf "Server Intelligence Alpha" aktualisiert.
-- [ ] Phase 1.8-A: Base Blueprints YouTube Foundation
-  - **Datenbank**: Migration `20260706040901_base_blueprints_youtube.sql` erstellt. Beinhaltet Tabellen `base_blueprints` und `user_saved_blueprints`. (Dry-Run erfolgreich)
-  - **Edge Function**: `base-blueprints` geschrieben, fragt sicher serverseitig die YouTube Data API v3 ab.
-  - **Frontend API Client**: `apps/web/src/lib/api/baseBlueprints.ts` hinzugefügt, um sicher mit der Edge Function zu kommunizieren.
-  - **Base Blueprints UI**: `BaseBlueprintsView.tsx` erstellt, ersetzt die Roadmap-Ansicht. Beinhaltet Netflix-ähnliches Grid, Categories/Presets, YouTube Modal Embed und Search Bar.
+- [x] Phase 1.8-A: Base Blueprints YouTube Foundation
+- [x] Phase 1.9-A: Automation and Blueprint Polish
+  - **Server Pulse Scheduler**: Migration `20260706074028_server_pulse_scheduler.sql` erstellt für Zustand und Historie (`server_pulse_scheduler_state`, `server_pulse_ingest_runs`).
+  - **Edge Function (server-pulse-ingest)**: Erweitert, um jeden Durchlauf (inklusive Errors, Processed Counts) in die Datenbank zu schreiben.
+  - **Server Pulse UI**: Überarbeitet und um Metriken, Scheduler-Zustand und die Liste der letzten Durchläufe (Recent Runs) ergänzt.
+  - **Base Blueprints Search**: Edge Function (`base-blueprints`) sucht nun cache-first auch in den `tags` (Array-Intersection), Titel und Kategorie.
+  - **Base Blueprints Saved UX**: API-Client (`baseBlueprints.ts`) um Speichern/Löschen-Funktionen ergänzt. `BaseBlueprintsView.tsx` rendert eine "My Saved Blueprints" Zeile am Anfang, sofern der Nutzer eingeloggt ist und Favoriten hat. Das Speichern wurde in die VideoCards integriert.
+  - **Player Modal ESC-Handler**: Hinzugefügt (Escape-Taste schließt das YouTube Modal).
+  - **Runbooks**: `server-pulse-scheduler.md` und `base-blueprints-library-maintenance.md` wurden erstellt, um Architektur und Wartung sicher und verständlich zu dokumentieren.
 
 ## Was NICHT implementiert wurde (Guardrails eingehalten)
-- Keine Scraping-Logik, nur die offizielle YouTube Data API.
-- Keine `YOUTUBE_API_KEY` oder andere Secrets im Frontend geleakt.
-- Es fanden keine YouTube API Aufrufe direkt aus dem Client statt.
-- **REMOTE GATES SIND NOCH OFFEN**: Die Datenbankmigration und die Edge Function wurden noch nicht auf Supabase Staging (`fcmjevwfuwzqtpozwigf`) angewandt, da dies explizite Owner-Freigabe erfordert.
+- **Keine Secrets in Migrationen**: Der Cron Job (Scheduler) wurde explizit **nicht** als SQL-Statement mit Hardcoded-Secrets angelegt. Dies obliegt dem Remote Gate (Owner) über die UI/Vault, um maximale Sicherheit zu gewährleisten.
+- Keine falschen (fake) Saves: Das "Saved"-System schreibt echte Daten in `user_saved_blueprints` (bzw. verlangt einen Login).
 
 ## Aktueller Fokus
-Owner Gate: Freigabe von DB Push und Edge Function Deploy für Base Blueprints.
+Owner Gate: Freigabe von DB Push (Scheduler) und Function Deploy (Pulse & Blueprints).
 
 ## Nächster sicherer Schritt
-1. Owner bestätigt die Remote Gates für Base Blueprints.
-2. Der AI Engineer führt `supabase db push` und `supabase functions deploy base-blueprints` aus.
-3. Danach manueller Browser-Test der neuen YouTube UI.
+1. AI Engineer führt Typechecks & Builds aus.
+2. AI Engineer wartet auf Bestätigung für `db push` und Edge Function Deploys.
+3. Owner prüft die Architektur (Secret-Ansatz) und gibt Remote Gates frei.

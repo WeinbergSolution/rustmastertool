@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
-import { discoverBaseBlueprints, searchBaseBlueprints, refreshBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
-
+import { Play, Search, MonitorPlay, ShieldAlert, Bookmark, BookmarkCheck } from 'lucide-react';
+import { discoverBaseBlueprints, searchBaseBlueprints, refreshBaseBlueprints, saveBlueprint, unsaveBlueprint, getSavedBlueprintIds, getSavedBlueprintsFull, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
+import { supabase } from '../../lib/supabaseClient';
 const DISCOVER_ROWS = [
   // Base Builds
   { key: 'solo', title: 'Solo Base Builds', group: 'Base Builds' },
@@ -54,6 +54,13 @@ export function BaseBlueprintsView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   
+  // Auth State
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Saved State
+  const [savedVideoIds, setSavedVideoIds] = useState<Set<string>>(new Set());
+  const [savedBlueprints, setSavedBlueprints] = useState<YouTubeVideoSnippet[]>([]);
+
   // Discover State
   const [discoverData, setDiscoverData] = useState<DiscoverRowResponse[]>([]);
   const [isDiscoverLoading, setIsDiscoverLoading] = useState(true);
@@ -68,6 +75,39 @@ export function BaseBlueprintsView() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const isDev = import.meta.env.DEV;
+
+  useEffect(() => {
+    if (!supabase) return;
+    
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id || null);
+    });
+    
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id || null);
+    });
+    return () => authListener.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      getSavedBlueprintIds().then(ids => setSavedVideoIds(new Set(ids)));
+      getSavedBlueprintsFull().then(bps => setSavedBlueprints(bps));
+    } else {
+      setSavedVideoIds(new Set());
+      setSavedBlueprints([]);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && activeVideoId) {
+        setActiveVideoId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeVideoId]);
 
   const handleRefreshLibrary = async () => {
     setIsRefreshing(true);
@@ -147,7 +187,29 @@ export function BaseBlueprintsView() {
 
   const VideoCard = ({ video }: { video: YouTubeVideoSnippet }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const isSaved = savedVideoIds.has(video.id);
     
+    const handleSaveToggle = async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!userId) {
+        alert('Please log in via Steam to save blueprints.');
+        return;
+      }
+      
+      const newSavedIds = new Set(savedVideoIds);
+      if (isSaved) {
+        newSavedIds.delete(video.id);
+        setSavedVideoIds(newSavedIds);
+        setSavedBlueprints(prev => prev.filter(v => v.id !== video.id));
+        await unsaveBlueprint(video.id);
+      } else {
+        newSavedIds.add(video.id);
+        setSavedVideoIds(newSavedIds);
+        setSavedBlueprints(prev => [video, ...prev]);
+        await saveBlueprint(video.id);
+      }
+    };
+
     return (
       <div 
         onClick={() => setActiveVideoId(video.id)}
@@ -179,6 +241,20 @@ export function BaseBlueprintsView() {
               </div>
             </div>
           )}
+          <div 
+            onClick={handleSaveToggle}
+            style={{ 
+              position: 'absolute', top: '0.5rem', right: '0.5rem', 
+              padding: '0.5rem', borderRadius: '50%', 
+              backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+              display: isHovered || isSaved ? 'flex' : 'none',
+              transition: 'background-color 0.2s',
+              zIndex: 20
+            }}
+            title={isSaved ? "Remove from saved" : "Save blueprint"}
+          >
+            {isSaved ? <BookmarkCheck size={18} color="#E50914" /> : <Bookmark size={18} color="#fff" />}
+          </div>
         </div>
         <div style={{ padding: '0.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
           <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 'bold', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.3, color: '#fff' }}>
@@ -346,6 +422,21 @@ export function BaseBlueprintsView() {
            </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+            
+            {savedBlueprints.length > 0 && (
+              <div key="saved_blueprints_rail">
+                <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '0.5rem', marginRight: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <BookmarkCheck size={24} color="#E50914" /> My Saved Blueprints
+                </h2>
+                <div 
+                  className="netflix-scrollbar"
+                  style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', paddingRight: '1rem' }}
+                >
+                  {savedBlueprints.map(video => <VideoCard key={`saved-${video.id}`} video={video} />)}
+                </div>
+              </div>
+            )}
+
             {GROUPS.map(group => {
               const groupRows = discoverData.filter((r: any) => r.group === group);
               if (groupRows.length === 0) return null;

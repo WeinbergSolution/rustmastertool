@@ -33,7 +33,7 @@ serve(async (req) => {
       const { data: searchResults, error: searchError } = await supabase
         .from('base_blueprints')
         .select('*')
-        .or(`title.ilike.%${query}%,category.ilike.%${query}%`)
+        .or(`title.ilike.%${query}%,category.ilike.%${query}%,tags.cs.{"${query}"}`)
         .limit(maxResults);
         
       if (searchError) {

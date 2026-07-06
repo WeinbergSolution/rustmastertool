@@ -44,8 +44,7 @@ Deno.serve(async (req) => {
       headers['Authorization'] = `Bearer ${bmToken}`;
     }
 
-    const maxP = Math.min(maxPages, 5); // Hard limit to 5 pages per run
-    const pSize = Math.min(pageSize, 100);
+    let maxP = Math.min(maxPages, 5); // Default from payload, might be overridden by state
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -56,11 +55,50 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const mode = 'manual'; // Default to manual unless triggered by cron (could pass in body)
+    const mode = body.mode || 'manual';
     let runId: string | undefined;
 
     const startTime = new Date();
-    
+    const catLower = category ? category.toLowerCase() : '';
+
+    // -- STATE RETRIEVAL FOR ROTATION --
+    let pSize = Math.min(pageSize, 100);
+    let currentUrl: string | null = `https://api.battlemetrics.com/servers?filter[game]=rust&page[size]=${pSize}`;
+    let startPage = 1;
+    let startPageUrl = currentUrl;
+    let maxPageWindow = 20;
+
+    if (['official', 'community', 'modded'].includes(catLower)) {
+      const { data: stateData } = await supabase
+        .from('server_pulse_scheduler_state')
+        .select('*')
+        .eq('id', catLower)
+        .single();
+        
+      if (stateData) {
+         maxPageWindow = stateData.max_page_window || 20;
+         startPage = stateData.current_page || 1;
+         
+         if (mode === 'scheduled') {
+           maxP = stateData.max_pages_per_run || 1;
+         }
+         
+         if (stateData.page_size) {
+           pSize = Math.min(stateData.page_size, 100);
+         }
+         
+         if (stateData.next_page_url) {
+           currentUrl = stateData.next_page_url;
+         } else {
+           currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${encodeURIComponent(catLower)}&page[size]=${pSize}`;
+         }
+         startPageUrl = currentUrl;
+      }
+    } else if (query) {
+      currentUrl += `&filter[search]=${encodeURIComponent(query.slice(0, 100))}`;
+      startPageUrl = currentUrl;
+    }
+
     // Log start of run
     const { data: runData, error: runError } = await supabase
       .from('server_pulse_ingest_runs')
@@ -69,6 +107,8 @@ Deno.serve(async (req) => {
         mode,
         dry_run: dryRun,
         max_pages: maxP,
+        start_page: startPage,
+        start_page_url: startPageUrl,
         started_at: startTime.toISOString(),
         status: 'running'
       })
@@ -79,13 +119,9 @@ Deno.serve(async (req) => {
       runId = runData.id;
     }
 
-    let currentUrl: string | null = `https://api.battlemetrics.com/servers?filter[game]=rust&page[size]=${pSize}`;
-    
-    if (query) {
-      currentUrl += `&filter[search]=${encodeURIComponent(query.slice(0, 100))}`;
-    } else if (category && ['official', 'community', 'modded'].includes(category.toLowerCase())) {
-      currentUrl += `&filter[search]=${encodeURIComponent(category.toLowerCase())}`;
-    }
+    let endNextPageUrl: string | null = null;
+
+
 
     let pagesProcessed = 0;
     let serversFound = 0;
@@ -181,13 +217,16 @@ Deno.serve(async (req) => {
         }
       }
 
-      currentUrl = json.links?.next || null;
+      endNextPageUrl = json.links?.next || null;
+      currentUrl = endNextPageUrl;
     }
 
     const finishedAt = new Date();
     const finalStatus = errors.length > 0 ? (serverUpsertAttempts > 0 ? 'partial_success' : 'failed') : 'success';
     const noteStr = dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.";
     
+    const endPage = startPage + Math.max(0, pagesProcessed - 1);
+
     if (runId) {
       // Update run log
       await supabase
@@ -195,6 +234,9 @@ Deno.serve(async (req) => {
         .update({
           finished_at: finishedAt.toISOString(),
           pages_processed: pagesProcessed,
+          start_page: startPage,
+          end_page: endPage,
+          end_next_page_url: endNextPageUrl,
           servers_found: serversFound,
           server_upsert_attempts: dryRun ? serversFound : serverUpsertAttempts,
           snapshot_insert_attempts: dryRun ? serversFound : snapshotInsertAttempts,
@@ -206,20 +248,35 @@ Deno.serve(async (req) => {
         .eq('id', runId);
 
       // Also update scheduler state if category is one of the defaults
-      const catLower = category ? category.toLowerCase() : '';
       if (['official', 'community', 'modded'].includes(catLower) && !dryRun) {
+         let nextCurrentPage = startPage + pagesProcessed;
+         let nextUrlToStore = endNextPageUrl;
+         let resetAt: string | null = null;
+         
+         if (!endNextPageUrl || nextCurrentPage > maxPageWindow) {
+           nextCurrentPage = 1;
+           nextUrlToStore = null;
+           resetAt = finishedAt.toISOString();
+         }
+
          const updateObj: any = {
            last_run_at: finishedAt.toISOString(),
            updated_at: finishedAt.toISOString(),
+           last_page_processed: endPage,
+           current_page: nextCurrentPage,
+           next_page_url: nextUrlToStore
          };
+         
+         if (resetAt) {
+           updateObj.last_reset_at = resetAt;
+         }
+
          if (finalStatus === 'success' || finalStatus === 'partial_success') {
            updateObj.last_success_at = finishedAt.toISOString();
            updateObj.consecutive_errors = 0;
          } else {
            updateObj.last_error_at = finishedAt.toISOString();
            updateObj.last_error_message = errors[0] || 'Unknown error';
-           // In raw postgres we would do consecutive_errors + 1, here we would need to read it first.
-           // To keep it simple, we just set it to 1 or let a trigger handle it. We'll skip consecutive increment for now.
          }
          
          await supabase
@@ -234,6 +291,8 @@ Deno.serve(async (req) => {
         dryRun,
         category,
         pages_processed: pagesProcessed,
+        start_page: startPage,
+        end_page: endPage,
         servers_found: serversFound,
         server_upsert_attempts: dryRun ? serversFound : serverUpsertAttempts,
         snapshot_insert_attempts: dryRun ? serversFound : snapshotInsertAttempts,

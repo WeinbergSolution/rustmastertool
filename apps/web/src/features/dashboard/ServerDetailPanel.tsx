@@ -270,52 +270,75 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                  }
                  const pulse = calculatePulseSummary(snapshots, server.details?.rust_last_wipe);
                  
-                 if (pulse.status === 'ready' || pulse.status === 'insufficient_data') {
-                   return (
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                         <span style={{ color: 'var(--text-muted)' }}>Snapshots collected:</span>
-                         <span style={{ fontWeight: 'bold' }}>{pulse.snapshotCount}</span>
-                       </div>
-                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                         <span style={{ color: 'var(--text-muted)' }}>Last observed:</span>
-                         <span style={{ fontWeight: 'bold' }}>{pulse.lastObservedAt ? new Date(pulse.lastObservedAt).toLocaleString() : 'Unknown'}</span>
-                       </div>
-                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                         <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
-                         <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
-                           {pulse.healthLabel}
-                         </span>
-                       </div>
-
-                       <div style={{ marginTop: '0.5rem' }}>
-                         <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Population Retention (Wipe Age)</span>
-                         <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                           {['h6', 'h12', 'h18', 'h24', 'h30'].map(bucket => {
-                             const val = pulse.buckets[bucket as keyof typeof pulse.buckets];
-                             return (
-                               <div key={bucket} style={{ flexShrink: 0, padding: '0.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '60px', textAlign: 'center' }}>
-                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{bucket.replace('h', '')}h</div>
-                                 <div style={{ fontSize: '1rem', fontWeight: 'bold', color: val !== null ? 'var(--text-primary)' : 'var(--text-disabled)' }}>
-                                   {val !== null ? `${val}%` : '-'}
-                                 </div>
-                               </div>
-                             );
-                           })}
-                         </div>
-                       </div>
-                       <div style={{ height: '60px', backgroundColor: 'rgba(205, 65, 43, 0.1)', border: '1px dashed var(--accent-rust)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-rust)', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                         [Mini Population Graph Placeholder]
-                       </div>
-                     </div>
-                   );
-                 } else {
-                   return (
-                     <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5 }}>
-                       Server Pulse is collecting historical snapshots for this server. Retention estimates appear after enough observations around a wipe.
-                     </div>
-                   );
+                 let predictionColor = 'var(--text-muted)';
+                 let predictionText = '';
+                 
+                 switch (pulse.earlyPredictionState) {
+                   case 'first_seen':
+                     predictionText = 'First observation collected.';
+                     break;
+                   case 'collecting':
+                     predictionText = 'Trend collecting.';
+                     break;
+                   case 'early_trend':
+                     predictionText = `Early signal: ${pulse.earlyTrendDirection === 'population_up' ? '📈 Rising' : pulse.earlyTrendDirection === 'population_down' ? '📉 Falling' : '➖ Stable'}. Improves with more snapshots.`;
+                     if (pulse.earlyTrendDirection === 'population_up') predictionColor = 'var(--status-success)';
+                     if (pulse.earlyTrendDirection === 'population_down') predictionColor = 'var(--status-error)';
+                     if (pulse.earlyTrendDirection === 'population_stable') predictionColor = 'var(--status-warning)';
+                     break;
+                   case 'retention_ready':
+                     predictionText = 'Retention ready.';
+                     break;
                  }
+
+                 return (
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>First seen:</span>
+                       <span style={{ fontWeight: 'bold' }}>{pulse.firstObservedAt ? new Date(pulse.firstObservedAt).toLocaleString() : 'Unknown'}</span>
+                     </div>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>Last observed:</span>
+                       <span style={{ fontWeight: 'bold' }}>{pulse.lastObservedAt ? new Date(pulse.lastObservedAt).toLocaleString() : 'Unknown'}</span>
+                     </div>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>Snapshots collected:</span>
+                       <span style={{ fontWeight: 'bold' }}>{pulse.snapshotCount}</span>
+                     </div>
+                     
+                     <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-hover)', borderRadius: '4px', borderLeft: `3px solid ${predictionColor}`, marginTop: '0.5rem' }}>
+                        <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 'bold' }}>{predictionText}</span>
+                     </div>
+
+                     {(pulse.status === 'ready' || pulse.status === 'insufficient_data') && pulse.earlyPredictionState === 'retention_ready' && (
+                       <>
+                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                           <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
+                           <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
+                             {pulse.healthLabel}
+                           </span>
+                         </div>
+  
+                         <div style={{ marginTop: '0.5rem' }}>
+                           <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Population Retention (Wipe Age)</span>
+                           <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                             {['h6', 'h12', 'h18', 'h24', 'h30'].map(bucket => {
+                               const val = pulse.buckets[bucket as keyof typeof pulse.buckets];
+                               return (
+                                 <div key={bucket} style={{ flexShrink: 0, padding: '0.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '60px', textAlign: 'center' }}>
+                                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{bucket.replace('h', '')}h</div>
+                                   <div style={{ fontSize: '1rem', fontWeight: 'bold', color: val !== null ? 'var(--text-primary)' : 'var(--text-disabled)' }}>
+                                     {val !== null ? `${val}%` : '-'}
+                                   </div>
+                                 </div>
+                               );
+                             })}
+                           </div>
+                         </div>
+                       </>
+                     )}
+                   </div>
+                 );
                })()}
              </div>
           </div>

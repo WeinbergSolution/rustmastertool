@@ -10,6 +10,8 @@ interface SchedulerState {
   last_run_at: string | null;
   last_success_at: string | null;
   last_error_at: string | null;
+  current_page?: number;
+  max_page_window?: number;
 }
 
 interface IngestRun {
@@ -19,6 +21,8 @@ interface IngestRun {
   started_at: string;
   finished_at: string | null;
   pages_processed: number;
+  start_page?: number;
+  end_page?: number;
   server_upsert_attempts: number;
   snapshot_insert_attempts: number;
   errors_count: number;
@@ -105,6 +109,11 @@ export function ServerPulseView() {
                     {state.enabled ? <span style={{ color: 'var(--status-success)', fontSize: '0.75rem', fontWeight: 'bold' }}>ON</span> : <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>OFF</span>}
                   </div>
                   <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Interval: Every {state.interval_minutes}m</div>
+                  {state.max_page_window && (
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                      Coverage: Page {state.current_page || 1} / {state.max_page_window}
+                    </div>
+                  )}
                   <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
                     Last Run: {state.last_run_at ? new Date(state.last_run_at).toLocaleString() : 'Never'}
                   </div>
@@ -133,6 +142,7 @@ export function ServerPulseView() {
                     <th style={{ padding: '0.75rem 0.5rem' }}>Status</th>
                     <th style={{ padding: '0.75rem 0.5rem' }}>Type</th>
                     <th style={{ padding: '0.75rem 0.5rem' }}>Pages</th>
+                    <th style={{ padding: '0.75rem 0.5rem' }}>Range</th>
                     <th style={{ padding: '0.75rem 0.5rem' }}>Server Upserts</th>
                     <th style={{ padding: '0.75rem 0.5rem' }}>Snapshot Inserts</th>
                     <th style={{ padding: '0.75rem 0.5rem' }}>Errors</th>
@@ -153,6 +163,9 @@ export function ServerPulseView() {
                         {run.dry_run ? <span style={{ color: '#ff9900', fontSize: '0.75rem', padding: '2px 6px', backgroundColor: 'rgba(255, 153, 0, 0.1)', borderRadius: '12px' }}>DRY RUN</span> : 'Live'}
                       </td>
                       <td style={{ padding: '0.75rem 0.5rem' }}>{run.pages_processed}</td>
+                      <td style={{ padding: '0.75rem 0.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+                        {run.start_page !== undefined && run.end_page !== undefined ? `p.${run.start_page} - p.${run.end_page}` : '-'}
+                      </td>
                       <td style={{ padding: '0.75rem 0.5rem' }}>{run.server_upsert_attempts}</td>
                       <td style={{ padding: '0.75rem 0.5rem' }}>{run.snapshot_insert_attempts}</td>
                       <td style={{ padding: '0.75rem 0.5rem', color: run.errors_count > 0 ? 'var(--status-danger)' : 'inherit' }}>{run.errors_count}</td>

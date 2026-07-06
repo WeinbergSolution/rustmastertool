@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle, Lock } from 'lucide-react';
+import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle } from 'lucide-react';
 import { getServerDetails, type BattleMetricsServerDetail } from '../../lib/api/battlemetrics';
 import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api/serverPulse';
 import { calculatePulseSummary } from '../../lib/api/retention';
@@ -170,27 +170,64 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
             </div>
           )}
 
-          {/* Map Intelligence (Gated) */}
+          {/* Map Preview MVP */}
           <div style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-            <div style={{ height: '200px', backgroundColor: '#111', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundImage: 'radial-gradient(circle at center, #222 0%, #111 100%)' }}>
-               <MapIcon size={48} style={{ color: 'var(--text-muted)', opacity: 0.2, marginBottom: '1rem' }} />
-               
-               <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(20,20,22,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
-                  <Lock size={24} style={{ color: 'var(--accent-rust)', marginBottom: '1rem' }} />
-                  <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff' }}>Map Intelligence Locked</h4>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
-                    Requires RustMaps/Map parser integration. Will unlock map preview, monuments, heatmap overlays, and build-location recommendations.
-                  </p>
-               </div>
-            </div>
-            <div style={{ backgroundColor: 'var(--bg-panel)', padding: '0.75rem', fontSize: '0.875rem', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)' }}>
-               <span style={{ color: 'var(--text-muted)' }}>Map Seed:</span>
-               <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{server.details?.rust_world_seed || 'Unknown'}</span>
-            </div>
-            <div style={{ backgroundColor: 'var(--bg-panel)', padding: '0.75rem', fontSize: '0.875rem', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)' }}>
-               <span style={{ color: 'var(--text-muted)' }}>Map Size:</span>
-               <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{server.details?.rust_world_size || 'Unknown'}</span>
-            </div>
+             {(() => {
+                const details = server.details || {};
+                const mapType = details.map === 'Procedural Map' ? 'procedural' : details.map === 'Barren' ? 'barren' : 'custom';
+                const hasRustMaps = !!details.rust_maps;
+                
+                if (mapType === 'custom') {
+                   return (
+                     <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
+                       <AlertTriangle size={32} style={{ color: 'var(--status-warning)' }} />
+                       <h4 style={{ margin: 0, color: '#fff' }}>Custom Map</h4>
+                       <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                         Custom map detected. Seed/size may not identify this map.
+                       </p>
+                       {hasRustMaps && details.rust_maps?.thumbnailUrl && (
+                         <img src={details.rust_maps.thumbnailUrl} alt="Map Thumbnail" style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '4px', marginTop: '0.5rem' }} />
+                       )}
+                     </div>
+                   );
+                }
+
+                if (hasRustMaps && details.rust_maps?.thumbnailUrl) {
+                   return (
+                     <div style={{ display: 'flex', flexDirection: 'column' }}>
+                       <div style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111' }}>
+                         <img src={details.rust_maps.thumbnailUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                         <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', backgroundColor: 'rgba(0,0,0,0.7)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
+                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} · {details.rust_world_size} · Seed {details.rust_world_seed}
+                         </div>
+                       </div>
+                       {details.rust_maps.monuments && details.rust_maps.monuments.length > 0 && (
+                         <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                           {details.rust_maps.monuments.slice(0, 5).map((m: string) => (
+                             <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
+                               {m}
+                             </span>
+                           ))}
+                           {details.rust_maps.monuments.length > 5 && (
+                             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                               +{details.rust_maps.monuments.length - 5} more
+                             </span>
+                           )}
+                         </div>
+                       )}
+                     </div>
+                   );
+                }
+
+                return (
+                   <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
+                     <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />
+                     <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                       Map data unavailable yet.
+                     </p>
+                   </div>
+                );
+             })()}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

@@ -213,6 +213,58 @@ Deno.serve(async (req) => {
             }
           }
 
+          // Phase 2.0-A Map Identity Extractor MVP
+          const identityRows = upsertedServers.map(us => {
+            const s = servers.find((bmS: any) => bmS.id === us.provider_id);
+            if (!s) return null;
+            const details = s.attributes?.details || {};
+            
+            let mapType = 'unknown';
+            if (details.map === 'Procedural Map') mapType = 'procedural';
+            else if (details.map === 'Barren') mapType = 'barren';
+            else if (details.map) mapType = 'custom';
+            
+            const hasRustMaps = !!details.rust_maps;
+            let conf = 0.2;
+            if (hasRustMaps) conf = 1.0;
+            else if (mapType === 'procedural' && details.rust_world_seed && details.rust_world_size) conf = 0.7;
+            else if (mapType === 'custom' && details.rust_world_levelurl) conf = 0.4;
+            
+            // To satisfy unique constraint, wipe_detected_at should have a default if missing
+            const wipeAt = details.rust_last_wipe ? new Date(details.rust_last_wipe).toISOString() : new Date(0).toISOString();
+
+            return {
+              provider_server_id: us.id,
+              battlemetrics_server_id: s.id,
+              server_ip: s.attributes?.ip,
+              server_port: s.attributes?.port,
+              map_type: mapType,
+              level_name: details.map,
+              seed: details.rust_world_seed,
+              world_size: details.rust_world_size,
+              wipe_detected_at: wipeAt,
+              source: hasRustMaps ? 'battlemetrics_rust_maps' : 'battlemetrics_details',
+              confidence: conf,
+              is_custom_map: mapType === 'custom',
+              custom_map_url: details.rust_world_levelurl,
+              raw_source: hasRustMaps ? details.rust_maps : { 
+                map: details.map, 
+                rust_world_seed: details.rust_world_seed, 
+                rust_world_size: details.rust_world_size, 
+                rust_world_levelurl: details.rust_world_levelurl 
+              }
+            };
+          }).filter(Boolean);
+
+          if (identityRows.length > 0) {
+            const { error: idError } = await supabase
+              .from('server_map_identity')
+              .upsert(identityRows, { onConflict: 'provider_server_id,wipe_detected_at', ignoreDuplicates: true });
+            if (idError) {
+              errors.push(`Identity Error: ${idError.message}`);
+            }
+          }
+
           // TODO: Wipe Events logic (future enhancement)
         }
       }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert, Bookmark, BookmarkCheck } from 'lucide-react';
 import { discoverBaseBlueprints, searchBaseBlueprints, saveBlueprint, unsaveBlueprint, getSavedBlueprintIds, getSavedBlueprintsFull, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 import { supabase } from '../../lib/supabaseClient';
@@ -216,6 +216,7 @@ export function BaseBlueprintsView() {
           <img 
             src={video.thumbnailUrl} 
             alt={video.title} 
+            draggable={false}
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
           />
           {isHovered && (
@@ -269,9 +270,76 @@ export function BaseBlueprintsView() {
     </div>
   );
 
+  const DraggableRail = ({ children }: { children: React.ReactNode }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+    const dragDistance = useRef(0);
+
+    const onMouseDown = (e: React.MouseEvent) => {
+      if (!scrollRef.current) return;
+      setIsDragging(true);
+      dragDistance.current = 0;
+      setStartX(e.pageX - scrollRef.current.offsetLeft);
+      setScrollLeft(scrollRef.current.scrollLeft);
+    };
+
+    const onMouseLeave = () => {
+      setIsDragging(false);
+    };
+
+    const onMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const onMouseMove = (e: React.MouseEvent) => {
+      if (!isDragging || !scrollRef.current) return;
+      e.preventDefault();
+      const x = e.pageX - scrollRef.current.offsetLeft;
+      const walk = (x - startX) * 2;
+      dragDistance.current = Math.abs(walk);
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    return (
+      <div 
+        ref={scrollRef}
+        className="netflix-scrollbar"
+        style={{ 
+          display: 'flex', 
+          gap: '0.75rem', 
+          overflowX: 'auto', 
+          paddingBottom: '1rem',
+          paddingRight: '1rem',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          userSelect: 'none'
+        }}
+        onMouseDown={onMouseDown}
+        onMouseLeave={onMouseLeave}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        onClickCapture={(e) => {
+          if (dragDistance.current > 10) {
+            e.stopPropagation();
+          }
+        }}
+      >
+        {children}
+      </div>
+    );
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#0a0a0a' }}>
+    <div className="no-global-scrollbar" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#0a0a0a' }}>
       <style>{`
+        .no-global-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-global-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
         @keyframes pulse {
           0% { opacity: 1; }
           50% { opacity: 0.5; }
@@ -348,12 +416,9 @@ export function BaseBlueprintsView() {
           ) : searchResults.length === 0 ? (
             <div style={{ color: '#888' }}>No blueprints found for this search.</div>
           ) : (
-            <div 
-              className="netflix-scrollbar"
-              style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}
-            >
+            <DraggableRail>
               {searchResults.map(video => <VideoCard key={`search-${video.id}`} video={video} />)}
-            </div>
+            </DraggableRail>
           )}
           <hr style={{ border: 'none', borderTop: '1px solid #333', margin: '2rem 0' }} />
         </div>
@@ -387,12 +452,9 @@ export function BaseBlueprintsView() {
                 <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.5px' }}>
                   <BookmarkCheck size={20} color="#E50914" /> MY SAVED BLUEPRINTS
                 </h2>
-                <div 
-                  className="netflix-scrollbar"
-                  style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', paddingRight: '1rem' }}
-                >
+                <DraggableRail>
                   {savedBlueprints.map(video => <VideoCard key={`saved-${video.id}`} video={video} />)}
-                </div>
+                </DraggableRail>
               </div>
             )}
 
@@ -416,18 +478,9 @@ export function BaseBlueprintsView() {
                             {getRowBadge(row.key)}
                           </h3>
                           
-                          <div 
-                            className="netflix-scrollbar"
-                            style={{ 
-                              display: 'flex', 
-                              gap: '0.5rem', 
-                              overflowX: 'auto', 
-                              paddingBottom: '1rem',
-                              paddingRight: '1rem'
-                            }}
-                          >
+                          <DraggableRail>
                             {row.items.map((video: YouTubeVideoSnippet) => <VideoCard key={`${row.key}-${video.id}`} video={video} />)}
-                          </div>
+                          </DraggableRail>
                         </div>
                       );
                     })}

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle, Lock } from 'lucide-react';
 import { getServerDetails, type BattleMetricsServerDetail } from '../../lib/api/battlemetrics';
+import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api/serverPulse';
+import { calculatePulseSummary } from '../../lib/api/retention';
+import { LineChart as LineChartIcon } from 'lucide-react';
 
 interface ServerDetailPanelProps {
   serverId: string;
@@ -17,6 +20,8 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAuthCta, setShowAuthCta] = useState<'watchlist' | 'active_server' | null>(null);
+  const [snapshots, setSnapshots] = useState<ServerPopulationSnapshot[]>([]);
+  const [isSnapshotsLoading, setIsSnapshotsLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -37,10 +42,28 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
         if (mounted) setIsLoading(false);
       });
 
+    // Also fetch snapshots if we have the internal_uuid, but at this point we only have serverId (battlemetrics id)
+    // We can fetch snapshots after we get the internal_uuid, or we can fetch by provider_id.
+    // Our API expects provider_server_id (internal). So we need to wait until we get server.internal_uuid.
+    
     return () => {
       mounted = false;
     };
   }, [serverId]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!server?.internal_uuid) return;
+    
+    setIsSnapshotsLoading(true);
+    getServerSnapshots(server.internal_uuid).then(data => {
+      if (mounted) setSnapshots(data);
+    }).finally(() => {
+      if (mounted) setIsSnapshotsLoading(false);
+    });
+    
+    return () => { mounted = false; };
+  }, [server?.internal_uuid]);
 
   return (
     <div style={{
@@ -233,6 +256,68 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 </div>
               </div>
             </div>
+          </div>
+
+          <div style={{ marginTop: '2rem' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--accent-rust)' }}>
+               <LineChartIcon size={16} />
+               <span style={{ fontWeight: 'bold' }}>Server Pulse</span>
+             </div>
+             <div style={{ backgroundColor: 'var(--bg-panel)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+               {(() => {
+                 if (isSnapshotsLoading) {
+                   return <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Loading historical data...</div>;
+                 }
+                 const pulse = calculatePulseSummary(snapshots, server.details?.rust_last_wipe);
+                 
+                 if (pulse.status === 'ready' || pulse.status === 'insufficient_data') {
+                   return (
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                         <span style={{ color: 'var(--text-muted)' }}>Snapshots collected:</span>
+                         <span style={{ fontWeight: 'bold' }}>{pulse.snapshotCount}</span>
+                       </div>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                         <span style={{ color: 'var(--text-muted)' }}>Last observed:</span>
+                         <span style={{ fontWeight: 'bold' }}>{pulse.lastObservedAt ? new Date(pulse.lastObservedAt).toLocaleString() : 'Unknown'}</span>
+                       </div>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                         <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
+                         <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
+                           {pulse.healthLabel}
+                         </span>
+                       </div>
+
+                       <div style={{ marginTop: '0.5rem' }}>
+                         <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Population Retention (Wipe Age)</span>
+                         <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                           {['h6', 'h12', 'h18', 'h24', 'h30'].map(bucket => {
+                             const val = pulse.buckets[bucket as keyof typeof pulse.buckets];
+                             return (
+                               <div key={bucket} style={{ flexShrink: 0, padding: '0.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '60px', textAlign: 'center' }}>
+                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{bucket.replace('h', '')}h</div>
+                                 <div style={{ fontSize: '1rem', fontWeight: 'bold', color: val !== null ? 'var(--text-primary)' : 'var(--text-disabled)' }}>
+                                   {val !== null ? `${val}%` : '-'}
+                                 </div>
+                               </div>
+                             );
+                           })}
+                         </div>
+                       </div>
+                       <div style={{ height: '60px', backgroundColor: 'rgba(205, 65, 43, 0.1)', border: '1px dashed var(--accent-rust)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-rust)', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                         [Mini Population Graph Placeholder]
+                       </div>
+                     </div>
+                   );
+                 } else {
+                   return (
+                     <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5 }}>
+                       Server Pulse is collecting historical snapshots for this server. Retention estimates appear after enough observations around a wipe.
+                     </div>
+                   );
+                 }
+               })()}
+             </div>
           </div>
 
           <div style={{ marginTop: '2rem' }}>

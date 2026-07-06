@@ -7,11 +7,13 @@ import { RoadmapView } from './RoadmapView';
 import { BaseBlueprintsView } from '../features/dashboard/BaseBlueprintsView';
 import { MyRust } from '../features/account/MyRust';
 import { Watchlist } from '../features/dashboard/Watchlist';
+import { ServerPulseView } from '../features/dashboard/ServerPulseView';
 
 export type ViewState = 
   | 'dashboard' 
   | 'servers' 
   | 'watchlist' 
+  | 'server_pulse'
   | 'base_blueprints'
   | 'map_intel' 
   | 'filter_profiles' 
@@ -46,6 +48,9 @@ export function AppShell() {
            </div>
            <div style={{ display: currentView === 'watchlist' ? 'block' : 'none', height: '100%' }}>
              <Watchlist />
+           </div>
+           <div style={{ display: currentView === 'server_pulse' ? 'block' : 'none', height: '100%' }}>
+             <ServerPulseView />
            </div>
            <div style={{ display: currentView === 'base_blueprints' ? 'block' : 'none', height: '100%' }}>
              <BaseBlueprintsView />

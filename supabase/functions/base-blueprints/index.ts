@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.47.14";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3";
@@ -21,8 +22,8 @@ serve(async (req) => {
     const apiKey = Deno.env.get('YOUTUBE_API_KEY');
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'YouTube API is not configured' }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'YOUTUBE_API_KEY_MISSING', message: 'YouTube integration is not configured.' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

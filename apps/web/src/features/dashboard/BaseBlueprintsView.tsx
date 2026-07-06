@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
 import { searchBaseBlueprints, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 
@@ -23,26 +23,38 @@ export function BaseBlueprintsView() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const lastFetchedQuery = useRef<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
     const q = searchQuery.trim() || activePreset.query;
     
+    // Prevent double fetch in strict mode or quick re-renders if the query hasn't changed
+    if (lastFetchedQuery.current === q) return;
+    lastFetchedQuery.current = q;
+
+    let mounted = true;
     setIsLoading(true);
     setError(null);
+    
     searchBaseBlueprints(q).then(results => {
       if (mounted) {
         setVideos(results);
       }
     }).catch(err => {
       if (mounted) {
-        setError(err.message || 'Error fetching videos');
+        if (err.message === 'NOT_DEPLOYED') {
+          setError('Base Blueprints backend is not deployed yet.');
+        } else if (err.message === 'YOUTUBE_API_KEY_MISSING') {
+          setError('YouTube integration is not configured yet.');
+        } else {
+          setError(err.message || 'Error fetching videos');
+        }
       }
     }).finally(() => {
       if (mounted) setIsLoading(false);
     });
 
-    return () => { mounted = false; };
+    return () => { mounted = false; lastFetchedQuery.current = null; };
   }, [activePreset, searchQuery]);
 
   return (

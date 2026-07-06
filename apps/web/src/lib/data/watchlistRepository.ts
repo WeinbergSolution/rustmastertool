@@ -8,9 +8,9 @@ export interface WatchlistRepository {
 
   getWatchedServerIds(): Promise<string[]>;
   setWatchedServerIds(ids: string[]): Promise<void>;
-  addServer(serverId: string): Promise<string[]>;
-  removeServer(serverId: string): Promise<string[]>;
-  toggleServer(serverId: string): Promise<string[]>;
+  addServer(serverId: string, internalUuid?: string): Promise<string[]>;
+  removeServer(serverId: string, internalUuid?: string): Promise<string[]>;
+  toggleServer(serverId: string, internalUuid?: string): Promise<string[]>;
   isWatched(serverId: string): Promise<boolean>;
 }
 
@@ -71,7 +71,7 @@ class FixtureWatchlistRepository implements WatchlistRepository {
     }
   }
 
-  async addServer(serverId: string): Promise<string[]> {
+  async addServer(serverId: string, _internalUuid?: string): Promise<string[]> {
     const current = await this.getWatchedServerIds();
     if (!current.includes(serverId)) {
       const updated = [...current, serverId];
@@ -81,19 +81,19 @@ class FixtureWatchlistRepository implements WatchlistRepository {
     return current;
   }
 
-  async removeServer(serverId: string): Promise<string[]> {
+  async removeServer(serverId: string, _internalUuid?: string): Promise<string[]> {
     const current = await this.getWatchedServerIds();
     const updated = current.filter(id => id !== serverId);
     await this.setWatchedServerIds(updated);
     return updated;
   }
 
-  async toggleServer(serverId: string): Promise<string[]> {
+  async toggleServer(serverId: string, internalUuid?: string): Promise<string[]> {
     const current = await this.getWatchedServerIds();
     if (current.includes(serverId)) {
-      return this.removeServer(serverId);
+      return this.removeServer(serverId, internalUuid);
     }
-    return this.addServer(serverId);
+    return this.addServer(serverId, internalUuid);
   }
 
   async isWatched(serverId: string): Promise<boolean> {
@@ -103,46 +103,108 @@ class FixtureWatchlistRepository implements WatchlistRepository {
 }
 
 class SupabaseWatchlistRepository implements WatchlistRepository {
-  async getUserWatchlists(_userId: string): Promise<Watchlist[]> {
-    if (!isSupabaseConfigured() || !supabase) {
-      console.warn('Supabase client not configured. Returning empty watchlists.');
+  async getUserWatchlists(userId: string): Promise<Watchlist[]> {
+    if (!isSupabaseConfigured() || !supabase) return [];
+    
+    // Ensure default watchlist exists (done via migration or manual insert)
+    const { data, error } = await supabase.from('user_watchlists').select('*').eq('user_id', userId).order('created_at', { ascending: true });
+    if (error) {
+      console.error('Failed to get watchlists', error);
       return [];
     }
-    console.warn('Supabase mode active but live queries are currently gated. Returning empty.');
-    return [];
+    
+    if (data && data.length === 0) {
+       // Create default
+       const { data: newData, error: createError } = await supabase.from('user_watchlists').insert({
+         user_id: userId,
+         name: 'My Watchlist',
+         is_default: true
+       }).select().single();
+       if (!createError && newData) {
+         return [newData];
+       }
+    }
+    return data || [];
   }
 
-  async getWatchlistItems(_watchlistId: string): Promise<WatchlistItem[]> {
-    if (!isSupabaseConfigured() || !supabase) {
-      console.warn('Supabase client not configured. Returning empty watchlist items.');
-      return [];
+  async getWatchlistItems(watchlistId: string): Promise<WatchlistItem[]> {
+    if (!isSupabaseConfigured() || !supabase) return [];
+    
+    const { data, error } = await supabase.from('watchlist_items').select('*, provider_servers(*)').eq('watchlist_id', watchlistId);
+    if (error) {
+       console.error('Failed to fetch watchlist items', error);
+       return [];
     }
-    console.warn('Supabase mode active but live queries are currently gated. Returning empty.');
-    return [];
+    return data || [];
   }
 
   async getWatchedServerIds(): Promise<string[]> {
-    return [];
+    if (!isSupabaseConfigured() || !supabase) return [];
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return [];
+    
+    const watchlists = await this.getUserWatchlists(session.user.id);
+    if (watchlists.length === 0) return [];
+    
+    const items = await this.getWatchlistItems(watchlists[0].id);
+    // Returning BattleMetrics IDs for UI state compatibility
+    return items.map(item => (item as any).provider_servers?.provider_id).filter(Boolean);
   }
 
   async setWatchedServerIds(_ids: string[]): Promise<void> {
-    // No-op for now
+    // Cannot do this easily because we need internal UUIDs. Handled via add/remove individually.
   }
 
-  async addServer(_serverId: string): Promise<string[]> {
-    return [];
+  async addServer(_serverId: string, internalUuid?: string): Promise<string[]> {
+    if (!isSupabaseConfigured() || !supabase || !internalUuid) return [];
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return [];
+
+    const watchlists = await this.getUserWatchlists(session.user.id);
+    if (watchlists.length === 0) return [];
+
+    const { error } = await supabase.from('watchlist_items').insert({
+      watchlist_id: watchlists[0].id,
+      provider_server_id: internalUuid
+    });
+    if (error) console.error('Failed to add to watchlist', error);
+
+    return this.getWatchedServerIds();
   }
 
-  async removeServer(_serverId: string): Promise<string[]> {
-    return [];
+  async removeServer(_serverId: string, internalUuid?: string): Promise<string[]> {
+    if (!isSupabaseConfigured() || !supabase || !internalUuid) return [];
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return [];
+
+    const watchlists = await this.getUserWatchlists(session.user.id);
+    if (watchlists.length === 0) return [];
+
+    const { error } = await supabase.from('watchlist_items').delete()
+      .eq('watchlist_id', watchlists[0].id)
+      .eq('provider_server_id', internalUuid);
+    
+    if (error) console.error('Failed to remove from watchlist', error);
+
+    return this.getWatchedServerIds();
   }
 
-  async toggleServer(_serverId: string): Promise<string[]> {
-    return [];
+  async toggleServer(serverId: string, internalUuid?: string): Promise<string[]> {
+    if (!internalUuid) {
+      console.warn('Cannot sync watchlist to cloud without internal UUID.');
+      return [];
+    }
+    
+    const current = await this.getWatchedServerIds();
+    if (current.includes(serverId)) {
+      return this.removeServer(serverId, internalUuid);
+    }
+    return this.addServer(serverId, internalUuid);
   }
 
-  async isWatched(_serverId: string): Promise<boolean> {
-    return false;
+  async isWatched(serverId: string): Promise<boolean> {
+    const current = await this.getWatchedServerIds();
+    return current.includes(serverId);
   }
 }
 

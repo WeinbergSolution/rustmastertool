@@ -13,6 +13,7 @@ export interface AuthState {
   status: AuthStatus;
   user: AuthUser | null;
   isAuthenticated: boolean;
+  profile: any | null;
 }
 
 export function useAuth(): AuthState {
@@ -20,15 +21,16 @@ export function useAuth(): AuthState {
     status: 'auth_pending',
     user: null,
     isAuthenticated: false,
+    profile: null,
   });
 
   useEffect(() => {
-    // If Supabase is not configured, we're unauthenticated (local mode)
     if (!isSupabaseConfigured() || !supabase) {
       setState({
         status: 'unauthenticated',
         user: null,
         isAuthenticated: false,
+        profile: null,
       });
       return;
     }
@@ -40,67 +42,47 @@ export function useAuth(): AuthState {
         const { data: { session }, error } = await supabase!.auth.getSession();
         
         if (error) {
-          console.error('Error fetching session:', error.message);
-          if (mounted) {
-            setState({
-              status: 'unauthenticated',
-              user: null,
-              isAuthenticated: false,
-            });
-          }
+          if (mounted) setState({ status: 'unauthenticated', user: null, isAuthenticated: false, profile: null });
           return;
         }
 
         if (session?.user) {
+          const profile = await fetchProfile(session.user.id);
           if (mounted) {
             setState({
               status: 'authenticated',
               user: session.user,
               isAuthenticated: true,
+              profile,
             });
           }
-          await ensureProfile(session.user.id);
         } else {
-          if (mounted) {
-            setState({
-              status: 'unauthenticated',
-              user: null,
-              isAuthenticated: false,
-            });
-          }
+          if (mounted) setState({ status: 'unauthenticated', user: null, isAuthenticated: false, profile: null });
         }
       } catch (e) {
-        console.error('Unexpected error checking session:', e);
-        if (mounted) {
-          setState({
-            status: 'unauthenticated',
-            user: null,
-            isAuthenticated: false,
-          });
-        }
+        if (mounted) setState({ status: 'unauthenticated', user: null, isAuthenticated: false, profile: null });
       }
     };
 
     checkSession();
 
-    const { data: authListener } = supabase!.auth.onAuthStateChange(async (event, session) => {
+    const { data: authListener } = supabase!.auth.onAuthStateChange(async (_event, session) => {
       if (!mounted) return;
 
       if (session?.user) {
+        const profile = await fetchProfile(session.user.id);
         setState({
           status: 'authenticated',
           user: session.user,
           isAuthenticated: true,
+          profile,
         });
-        
-        if (event === 'SIGNED_IN') {
-           await ensureProfile(session.user.id);
-        }
       } else {
         setState({
           status: 'unauthenticated',
           user: null,
           isAuthenticated: false,
+          profile: null,
         });
       }
     });
@@ -114,19 +96,23 @@ export function useAuth(): AuthState {
   return state;
 }
 
-// Defensive fallback: ensure public.profiles row exists after login
-// This complements the auth.users trigger
-async function ensureProfile(userId: string) {
-  if (!supabase) return;
+// Fetch profile data without upserting (read-only from client)
+async function fetchProfile(userId: string) {
+  if (!supabase) return null;
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
-      .upsert({ id: userId }, { onConflict: 'id' });
+      .select('*')
+      .eq('id', userId)
+      .single();
     
     if (error) {
-      console.warn('Could not ensure profile for user:', error.message);
+      console.warn('Could not fetch profile:', error.message);
+      return null;
     }
+    return data;
   } catch (e) {
-    console.warn('Error executing ensureProfile:', e);
+    console.warn('Error fetching profile:', e);
+    return null;
   }
 }

@@ -14,6 +14,15 @@
   .dashboard-grid {
     grid-template-columns: repeat(1, 1fr) !important;
   }
+  .dashboard-hero-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+  .dashboard-hero-right {
+    padding-left: 0 !important;
+    border-left: none !important;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
   .col-span-12, .col-span-8, .col-span-6, .col-span-4 {
     grid-column: span 1 !important;
   }
@@ -26,6 +35,15 @@
   
   .hide-on-mobile {
     display: none !important;
+  }
+  .show-on-mobile {
+    display: inline-block !important;
+  }
+  .brand-full {
+    display: none !important;
+  }
+  .brand-short {
+    display: inline-block !important;
   }
 
   .sidebar {
@@ -163,10 +181,13 @@
   /* Touch Targets */
   button {
     min-height: 44px;
+    white-space: nowrap;
   }
 
   .btn-steam {
     padding: 0.5rem;
     font-size: 0.875rem;
+    display: flex;
+    justify-content: center;
   }
 }

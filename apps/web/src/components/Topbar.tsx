@@ -7,13 +7,14 @@ export function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
 
   return (
     <header className="topbar">
-      <div className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <button className="mobile-menu-btn" onClick={onMenuClick}>
           <Menu size={24} />
         </button>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-          <span className="hide-on-mobile">RustMasterTool </span>
-          <span style={{ color: 'var(--text-disabled)', fontSize: '0.875rem' }}>Server Intelligence Alpha</span>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center' }}>
+          <span className="brand-full">RustMasterTool</span>
+          <span className="brand-short" style={{ display: 'none' }}>RMT</span>
+          <span className="hide-on-mobile" style={{ color: 'var(--text-disabled)', fontSize: '0.875rem', marginLeft: '0.5rem' }}>Alpha</span>
         </h1>
       </div>
       

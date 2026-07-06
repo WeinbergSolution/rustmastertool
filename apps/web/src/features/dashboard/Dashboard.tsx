@@ -66,7 +66,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         </h2>
         
         {status === 'authenticated' ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div className="dashboard-hero-grid" style={{ display: 'grid', gap: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                {avatar ? (
                  <img src={avatar} alt="Avatar" style={{ width: '64px', height: '64px', borderRadius: '8px', border: '2px solid var(--border-color)' }} />
@@ -90,7 +90,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
                </div>
             </div>
             
-            <div style={{ paddingLeft: '2rem', borderLeft: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="dashboard-hero-right" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Active Server Context</div>
                {activeServerId ? (
                  <>

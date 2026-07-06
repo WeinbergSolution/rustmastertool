@@ -73,20 +73,24 @@ export function AuthUI() {
 
   const handleSteamLogin = () => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    if (!supabaseUrl) return;
+    if (!supabaseUrl) {
+      alert("System Error: VITE_SUPABASE_URL is missing. Please check your Vercel Environment Variables for the Preview Environment.");
+      return;
+    }
     const origin = encodeURIComponent(window.location.origin);
     const edgeFunctionUrl = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
     window.location.href = edgeFunctionUrl;
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }} title="RustMasterTool accounts will use Steam identity. Email sign-in is not part of the production auth flow.">
+    <div className="auth-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="hide-on-mobile auth-info-text" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }} title="RustMasterTool accounts will use Steam identity. Email sign-in is not part of the production auth flow.">
         Authenticating with Steam
       </div>
       <button className="btn-steam" onClick={handleSteamLogin} title="Sign in securely via Steam">
         <User size={16} />
-        Sign in with Steam
+        <span className="hide-on-mobile">Sign in with Steam</span>
+        <span className="show-on-mobile" style={{ display: 'none' }}>Sign in</span>
       </button>
 
       {enableDevMagicLink && (

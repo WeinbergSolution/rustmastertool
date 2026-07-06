@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Dashboard } from '../features/dashboard/Dashboard';
 import { ServersExplorer } from '../features/dashboard/ServersExplorer';
 import { RoadmapView } from './RoadmapView';
+import { BaseBlueprintsView } from '../features/dashboard/BaseBlueprintsView';
 import { MyRust } from '../features/account/MyRust';
 import { Watchlist } from '../features/dashboard/Watchlist';
 import { ServerPulseView } from '../features/dashboard/ServerPulseView';
@@ -51,12 +52,9 @@ export function AppShell() {
            <div style={{ display: currentView === 'server_pulse' ? 'block' : 'none', height: '100%' }}>
              <ServerPulseView />
            </div>
-           {currentView === 'base_blueprints' && (
-             <RoadmapView 
-               title="Base Blueprints" 
-               message="Base Blueprints will collect Rust base builds, embedded guides, upkeep, build cost and raid-resistance analysis. Coming later."
-             />
-           )}
+           <div style={{ display: currentView === 'base_blueprints' ? 'block' : 'none', height: '100%' }}>
+             <BaseBlueprintsView />
+           </div>
            {currentView === 'map_intel' && (
              <RoadmapView 
                title="Map Intelligence" 

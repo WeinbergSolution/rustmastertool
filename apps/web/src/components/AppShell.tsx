@@ -7,16 +7,14 @@ import { ServersExplorer } from '../features/dashboard/ServersExplorer';
 export type ViewState = 'dashboard' | 'servers';
 
 export function AppShell() {
-  const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+  const [currentView, setCurrentView] = useState<ViewState>(() => {
+    const savedView = window.sessionStorage.getItem('serverExplorer.view');
+    return (savedView as ViewState) || 'dashboard';
+  });
 
   useEffect(() => {
-    // If there is a restored search context, switch to servers view automatically
-    const restoredQuery = window.sessionStorage.getItem('rm_search_query');
-    const selectedServer = window.sessionStorage.getItem('rm_search_selected_server');
-    if (restoredQuery || selectedServer) {
-      setCurrentView('servers');
-    }
-  }, []);
+    window.sessionStorage.setItem('serverExplorer.view', currentView);
+  }, [currentView]);
 
   return (
     <div className="app-layout">
@@ -24,7 +22,12 @@ export function AppShell() {
       <main className="main-content">
         <Topbar />
         <div className="content-area">
-           {currentView === 'dashboard' ? <Dashboard onViewChange={setCurrentView} /> : <ServersExplorer />}
+           <div style={{ display: currentView === 'dashboard' ? 'block' : 'none', height: '100%' }}>
+             <Dashboard onViewChange={setCurrentView} />
+           </div>
+           <div style={{ display: currentView === 'servers' ? 'block' : 'none', height: '100%' }}>
+             <ServersExplorer />
+           </div>
         </div>
       </main>
     </div>

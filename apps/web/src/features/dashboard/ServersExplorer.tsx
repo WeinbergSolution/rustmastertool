@@ -10,33 +10,38 @@ import { supabase } from '../../lib/supabaseClient';
 export function ServersExplorer() {
   const { status, user } = useAuth();
   const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
   
   // Live Explorer State
-  const [searchQuery, setSearchQuery] = useState('');
-  const [servers, setServers] = useState<BattleMetricsServerSummary[]>([]);
+  const [searchQuery, setSearchQuery] = useState(() => window.sessionStorage.getItem('serverExplorer.query') || '');
+  const [servers, setServers] = useState<BattleMetricsServerSummary[]>(() => {
+    const saved = window.sessionStorage.getItem('serverExplorer.results');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [hasSearched, setHasSearched] = useState(() => window.sessionStorage.getItem('serverExplorer.hasSearched') === 'true');
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(() => window.sessionStorage.getItem('serverExplorer.selectedServerId') || null);
+  
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
-  
   const [activeServerId, setActiveServerId] = useState<string | null>(null);
   const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
 
-  // Restore session storage search context
+  // Sync state to sessionStorage
   useEffect(() => {
-    const restoredQuery = window.sessionStorage.getItem('rm_search_query');
-    const selectedServer = window.sessionStorage.getItem('rm_search_selected_server');
+    window.sessionStorage.setItem('serverExplorer.query', searchQuery);
+  }, [searchQuery]);
 
-    if (restoredQuery) {
-      setSearchQuery(restoredQuery);
-      handleSearch(undefined, restoredQuery).then(() => {
-        if (selectedServer) {
-          setSelectedServerId(selectedServer);
-        }
-      });
-      window.sessionStorage.removeItem('rm_search_query');
+  useEffect(() => {
+    window.sessionStorage.setItem('serverExplorer.results', JSON.stringify(servers));
+    window.sessionStorage.setItem('serverExplorer.hasSearched', String(hasSearched));
+  }, [servers, hasSearched]);
+
+  useEffect(() => {
+    if (selectedServerId) {
+      window.sessionStorage.setItem('serverExplorer.selectedServerId', selectedServerId);
+    } else {
+      window.sessionStorage.removeItem('serverExplorer.selectedServerId');
     }
-  }, []);
+  }, [selectedServerId]);
 
   useEffect(() => {
     let mounted = true;
@@ -112,7 +117,7 @@ export function ServersExplorer() {
     } catch (e) {}
   };
 
-  const pendingActionMsg = window.sessionStorage.getItem('rm_search_pending_action');
+  const pendingActionMsg = window.sessionStorage.getItem('serverExplorer.pendingAction');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
@@ -175,7 +180,7 @@ export function ServersExplorer() {
                 server={server} 
                 onSelect={() => {
                   setSelectedServerId(server.id);
-                  window.sessionStorage.removeItem('rm_search_pending_action');
+                  window.sessionStorage.removeItem('serverExplorer.pendingAction');
                 }}
               />
             ))}

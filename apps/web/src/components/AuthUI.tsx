@@ -34,10 +34,9 @@ export function AuthUI() {
   const handleLogout = async () => {
     if (!supabase) return;
     
-    // Clear search context on explicit sign out
-    window.sessionStorage.removeItem('rm_search_query');
-    window.sessionStorage.removeItem('rm_search_selected_server');
-    window.sessionStorage.removeItem('rm_search_pending_action');
+    // Clear auth-specific context and pending actions on explicit sign out
+    // We intentionally LEAVE neutral search context (query, results, view) intact.
+    window.sessionStorage.removeItem('serverExplorer.pendingAction');
 
     await supabase.auth.signOut();
   };

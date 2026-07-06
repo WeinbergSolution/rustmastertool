@@ -129,10 +129,11 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                   className="btn-steam" 
                   onClick={() => {
                      // Save context to session storage before redirecting
-                     window.sessionStorage.setItem('rm_search_pending_action', showAuthCta);
-                     window.sessionStorage.setItem('rm_search_selected_server', server.id);
+                     window.sessionStorage.setItem('serverExplorer.pendingAction', showAuthCta);
+                     window.sessionStorage.setItem('serverExplorer.selectedServerId', server.id);
+                     window.sessionStorage.setItem('serverExplorer.view', 'servers'); // Ensure we return to servers tab
                      const query = (document.querySelector('input[placeholder="Search live Rust servers by name..."]') as HTMLInputElement)?.value || '';
-                     window.sessionStorage.setItem('rm_search_query', query);
+                     window.sessionStorage.setItem('serverExplorer.query', query);
                      
                      // Trigger Steam Login
                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;

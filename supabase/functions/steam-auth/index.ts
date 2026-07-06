@@ -102,8 +102,8 @@ serve(async (req) => {
       const steamId = steamId64Match[1];
 
       // Optional: Get Player Summaries for Persona Name and Avatar
-      let personaName = 'Unknown Steam User';
-      let avatarUrl = '';
+      let personaName: string | null = null;
+      let avatarUrl: string | null = null;
       const steamApiKey = Deno.env.get('STEAM_API_KEY');
       if (steamApiKey) {
         try {
@@ -159,7 +159,7 @@ serve(async (req) => {
       if (user) {
          await supabaseAdmin.from('profiles').upsert({
            id: user.id,
-           username: personaName,
+           username: personaName || steamId,
            avatar_url: avatarUrl,
            steam_id: steamId,
            steam_persona_name: personaName,

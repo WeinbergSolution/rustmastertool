@@ -8,7 +8,7 @@ import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import { supabase } from '../../lib/supabaseClient';
 
 export function Dashboard() {
-  const { status, user } = useAuth();
+  const { status, user, profile } = useAuth();
   const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
   const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
   const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
@@ -52,9 +52,11 @@ export function Dashboard() {
         }
 
         if (status === 'authenticated' && supabase && user) {
-           const { data: profile } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
-           if (profile?.active_server_id && mounted) {
-              setActiveServerId(profile.active_server_id);
+           // We already have active_server_id in profile now, but let's just use the profile state directly
+           // Wait, active_server_id could be stale if we don't re-fetch, but for now we can still fetch or just rely on profile.
+           const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
+           if (p?.active_server_id && mounted) {
+              setActiveServerId(p.active_server_id);
            }
         }
       } catch (e) {
@@ -140,6 +142,17 @@ export function Dashboard() {
     }
   };
 
+  let displayName = 'Unknown Survivor';
+  if (profile) {
+    if (profile.steam_persona_name) displayName = profile.steam_persona_name;
+    else if (profile.username) displayName = profile.username;
+    else if (profile.steam_id) displayName = `SteamID ${profile.steam_id}`;
+  } else if (user?.user_metadata?.persona && user.user_metadata.persona !== 'Unknown Steam User') {
+    displayName = user.user_metadata.persona;
+  }
+
+  const avatar = profile?.avatar_url || user?.user_metadata?.avatar;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
       
@@ -150,15 +163,15 @@ export function Dashboard() {
         {status === 'authenticated' ? (
           <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-               {user?.user_metadata?.avatar ? (
-                 <img src={user.user_metadata.avatar} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '4px' }} />
+               {avatar ? (
+                 <img src={avatar} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '4px' }} />
                ) : (
                  <div style={{ width: '48px', height: '48px', borderRadius: '4px', backgroundColor: 'var(--bg-panel)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <User size={24} />
                  </div>
                )}
                <div>
-                 <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{user?.user_metadata?.persona || 'Unknown Survivor'}</div>
+                 <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{displayName}</div>
                  <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Steam Identity Verified</div>
                </div>
             </div>

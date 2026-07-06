@@ -4,7 +4,7 @@ import { useAuth } from '../lib/auth/useAuth';
 import { User } from 'lucide-react';
 
 export function AuthUI() {
-  const { status, user } = useAuth();
+  const { status, user, profile } = useAuth();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
@@ -41,10 +41,25 @@ export function AuthUI() {
   }
 
   if (status === 'authenticated') {
+    let displayName = 'Authenticated User';
+    if (profile) {
+      if (profile.steam_persona_name) {
+        displayName = profile.steam_persona_name;
+      } else if (profile.username) {
+        displayName = profile.username;
+      } else if (profile.steam_id) {
+        displayName = `SteamID ${profile.steam_id}`;
+      } else {
+        displayName = 'Steam linked';
+      }
+    } else if (user?.email && !user.email.includes('@steam.rustmastertool.local')) {
+      displayName = user.email;
+    }
+
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-          {user?.email || 'Authenticated User'}
+        <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }} title={profile ? "Profile loaded" : "Profile provisioning pending"}>
+          {displayName}
         </div>
         <button className="btn-secondary" onClick={handleLogout}>Sign out</button>
       </div>

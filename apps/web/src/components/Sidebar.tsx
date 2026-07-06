@@ -7,6 +7,8 @@ import type { ViewState } from './AppShell';
 interface SidebarProps {
   currentView?: ViewState;
   onViewChange?: (view: ViewState) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 function NavGroup({ title, children }: { title: string; children: React.ReactNode }) {
@@ -48,7 +50,11 @@ function NavItem({
         gap: '0.75rem',
         position: 'relative'
       }}
-      onClick={() => view && onViewChange?.(view)}
+      onClick={() => {
+        if (view && onViewChange) {
+          onViewChange(view);
+        }
+      }}
     >
       <Icon size={18} style={{ color: isActive ? 'var(--accent-rust)' : 'inherit' }} />
       <span style={{ fontSize: '0.9rem', flex: 1 }}>{label}</span>
@@ -68,48 +74,57 @@ function NavItem({
   );
 }
 
-export function Sidebar({ currentView = 'dashboard', onViewChange }: SidebarProps) {
+export function Sidebar({ currentView = 'dashboard', onViewChange, isOpen, onClose }: SidebarProps) {
+  const handleViewChange = (view: ViewState) => {
+    onViewChange?.(view);
+    onClose?.();
+  };
+
   return (
-    <aside className="sidebar">
-      <div className="sidebar-header" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', marginBottom: '1rem' }}>
-        <div style={{ width: '28px', height: '28px', backgroundColor: 'var(--accent-rust)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-           <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '14px' }}>RM</span>
+    <>
+      <div className={`sidebar-backdrop ${isOpen ? 'open' : ''}`} onClick={onClose} />
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className="sidebar-header" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid var(--border-color)', marginBottom: '1rem' }}>
+          <div style={{ width: '28px', height: '28px', backgroundColor: 'var(--accent-rust)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '14px' }}>RM</span>
+          </div>
+          <span style={{ fontWeight: 'bold', letterSpacing: '0.02em', flex: 1 }}>RustMasterTool</span>
+          <button className="sidebar-close-btn" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: 'var(--text-muted)' }}>&times;</button>
         </div>
-        <span style={{ fontWeight: 'bold', letterSpacing: '0.02em' }}>RustMasterTool</span>
-      </div>
-      
-      <nav className="sidebar-nav" style={{ flex: 1, overflowY: 'auto' }}>
         
-        <NavGroup title="Command Center">
-          <NavItem icon={LayoutDashboard} label="Dashboard" view="dashboard" currentView={currentView} onViewChange={onViewChange} />
-        </NavGroup>
+        <nav className="sidebar-nav" style={{ flex: 1, overflowY: 'auto' }}>
+          
+          <NavGroup title="Command Center">
+            <NavItem icon={LayoutDashboard} label="Dashboard" view="dashboard" currentView={currentView} onViewChange={handleViewChange} />
+          </NavGroup>
 
-        <NavGroup title="Pre-Game">
-          <NavItem icon={Server} label="Servers" view="servers" currentView={currentView} onViewChange={onViewChange} />
-          <NavItem icon={Eye} label="Watchlist" view="watchlist" currentView={currentView} onViewChange={onViewChange} />
-          <NavItem icon={LineChart} label="Server Pulse" view="server_pulse" currentView={currentView} onViewChange={onViewChange} badge="partial" />
-          <NavItem icon={Building} label="Base Blueprints" view="base_blueprints" currentView={currentView} onViewChange={onViewChange} badge="alpha" />
-          <NavItem icon={MapIcon} label="Map Intel" view="map_intel" currentView={currentView} onViewChange={onViewChange} badge="gated" />
-          <NavItem icon={Filter} label="Filter Profiles" view="filter_profiles" currentView={currentView} onViewChange={onViewChange} badge="soon" />
-        </NavGroup>
+          <NavGroup title="Pre-Game">
+            <NavItem icon={Server} label="Servers" view="servers" currentView={currentView} onViewChange={handleViewChange} />
+            <NavItem icon={Eye} label="Watchlist" view="watchlist" currentView={currentView} onViewChange={handleViewChange} />
+            <NavItem icon={LineChart} label="Server Pulse" view="server_pulse" currentView={currentView} onViewChange={handleViewChange} badge="partial" />
+            <NavItem icon={Building} label="Base Blueprints" view="base_blueprints" currentView={currentView} onViewChange={handleViewChange} badge="alpha" />
+            <NavItem icon={MapIcon} label="Map Intel" view="map_intel" currentView={currentView} onViewChange={handleViewChange} badge="gated" />
+            <NavItem icon={Filter} label="Filter Profiles" view="filter_profiles" currentView={currentView} onViewChange={handleViewChange} badge="soon" />
+          </NavGroup>
 
-        <NavGroup title="In-Game • Live Companion">
-          <NavItem icon={Activity} label="Current Connection" view="current_connection" currentView={currentView} onViewChange={onViewChange} badge="partial" />
-          <NavItem icon={MapPin} label="Live Map" view="live_map" currentView={currentView} onViewChange={onViewChange} badge="gated" />
-          <NavItem icon={Calculator} label="Raid Calculator" view="raid_calculator" currentView={currentView} onViewChange={onViewChange} badge="roadmap" />
-        </NavGroup>
+          <NavGroup title="In-Game • Live Companion">
+            <NavItem icon={Activity} label="Current Connection" view="current_connection" currentView={currentView} onViewChange={handleViewChange} badge="partial" />
+            <NavItem icon={MapPin} label="Live Map" view="live_map" currentView={currentView} onViewChange={handleViewChange} badge="gated" />
+            <NavItem icon={Calculator} label="Raid Calculator" view="raid_calculator" currentView={currentView} onViewChange={handleViewChange} badge="roadmap" />
+          </NavGroup>
 
-        <NavGroup title="After-Game">
-          <NavItem icon={BookOpen} label="Session Battle Log" view="session_battle_log" currentView={currentView} onViewChange={onViewChange} badge="gated" />
-        </NavGroup>
+          <NavGroup title="After-Game">
+            <NavItem icon={BookOpen} label="Session Battle Log" view="session_battle_log" currentView={currentView} onViewChange={handleViewChange} badge="gated" />
+          </NavGroup>
 
-        <NavGroup title="Account">
-          <NavItem icon={User} label="MyRust" view="my_rust" currentView={currentView} onViewChange={onViewChange} />
-          <NavItem icon={Settings} label="Settings" view="settings" currentView={currentView} onViewChange={onViewChange} badge="roadmap" />
-        </NavGroup>
+          <NavGroup title="Account">
+            <NavItem icon={User} label="MyRust" view="my_rust" currentView={currentView} onViewChange={handleViewChange} />
+            <NavItem icon={Settings} label="Settings" view="settings" currentView={currentView} onViewChange={handleViewChange} badge="roadmap" />
+          </NavGroup>
 
-      </nav>
-    </aside>
+        </nav>
+      </aside>
+    </>
   );
 }
 

@@ -1,24 +1,61 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+function getDynamicAllowedOrigins(): string[] {
+  const envOrigin = Deno.env.get('ALLOWED_ORIGIN') || '';
+  const envOriginsList = Deno.env.get('ALLOWED_ORIGINS') || '';
+  
+  const defaults = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000'
+  ];
+  
+  const fromEnv = [
+    envOrigin,
+    ...envOriginsList.split(',')
+  ].map(o => o.trim()).filter(Boolean);
+  
+  return [...defaults, ...fromEnv];
+}
 
-const ALLOWED_ORIGINS = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  // Add production origins here later via process.env or just hardcode for now
-  Deno.env.get('ALLOWED_ORIGIN') || ''
-].filter(Boolean);
+function normalizeOrigin(urlStr: string): string | null {
+  try {
+    const url = new URL(urlStr);
+    return url.origin; // returns protocol://host:port without trailing slashes or paths
+  } catch (e) {
+    // If it's just 'http://localhost:5173' it parses fine
+    return null;
+  }
+}
 
-function isValidOrigin(origin: string | null) {
-  if (!origin) return false;
-  return ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed));
+function isValidOrigin(originStr: string | null): boolean {
+  if (!originStr) return false;
+  const normalizedInput = normalizeOrigin(originStr);
+  if (!normalizedInput) return false;
+
+  const allowed = getDynamicAllowedOrigins();
+  return allowed.some(allowedStr => {
+    const normAllowed = normalizeOrigin(allowedStr);
+    return normAllowed === normalizedInput;
+  });
+}
+
+function getCorsHeaders(req: Request) {
+  const requestOrigin = req.headers.get('origin');
+  const allowedOrigin = requestOrigin && isValidOrigin(requestOrigin) ? requestOrigin : '';
+  
+  // If not allowed, we don't set a wildcard anymore to prevent open redirect/CORS issues.
+  // Actually, for preflight we can return the exact origin if valid, otherwise empty.
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin || 'null',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }

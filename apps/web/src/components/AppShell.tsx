@@ -25,6 +25,7 @@ export type ViewState =
   | 'settings';
 
 export function AppShell() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState<ViewState>(() => {
     const savedView = window.sessionStorage.getItem('serverExplorer.view');
     return (savedView as ViewState) || 'dashboard';
@@ -36,9 +37,14 @@ export function AppShell() {
 
   return (
     <div className="app-layout">
-      <Sidebar currentView={currentView} onViewChange={setCurrentView} />
+      <Sidebar 
+        currentView={currentView} 
+        onViewChange={setCurrentView} 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
       <main className="main-content">
-        <Topbar />
+        <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
         <div className="content-area">
            <div style={{ display: currentView === 'dashboard' ? 'block' : 'none', height: '100%' }}>
              <Dashboard onViewChange={setCurrentView} />

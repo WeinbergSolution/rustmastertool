@@ -1,17 +1,23 @@
-import { ShieldAlert, Database, AlertCircle } from 'lucide-react';
+import { ShieldAlert, Database, AlertCircle, Menu } from 'lucide-react';
 import { AuthUI } from './AuthUI';
 
-export function Topbar() {
+export function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const dataMode = import.meta.env.VITE_DATA_MODE || 'fixture';
   const isLive = dataMode === 'supabase';
 
   return (
     <header className="topbar">
-      <div className="brand">
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>RustMasterTool <span style={{ color: 'var(--text-disabled)', fontSize: '0.875rem' }}>Server Intelligence Alpha</span></h1>
+      <div className="brand" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <button className="mobile-menu-btn" onClick={onMenuClick}>
+          <Menu size={24} />
+        </button>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
+          <span className="hide-on-mobile">RustMasterTool </span>
+          <span style={{ color: 'var(--text-disabled)', fontSize: '0.875rem' }}>Server Intelligence Alpha</span>
+        </h1>
       </div>
       
-      <div className="badges">
+      <div className="badges hide-on-mobile">
         {isLive ? (
           <>
             <div className="badge success" title="Using live BattleMetrics API">

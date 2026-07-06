@@ -26,7 +26,7 @@ export function Dashboard() {
   // Cloud Watchlist Repo
   const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
 
-  // Initial load
+  // Initial load and auth state changes
   useEffect(() => {
     let mounted = true;
     
@@ -36,6 +36,7 @@ export function Dashboard() {
         if (status === 'authenticated' && cloudRepo && user) {
            try {
              const cloudLists = await cloudRepo.getUserWatchlists(user.id);
+             // For now, if we have a cloud list, we could load it.
              // We just fetch them to test the connection for now.
              if (cloudLists.length > 0) {
                console.log('Found cloud watchlists');
@@ -43,20 +44,26 @@ export function Dashboard() {
            } catch(e) {
              console.warn('Cloud watchlist load failed', e);
            }
-        }
-        
-        // Load local watchlist as fallback/primary for full objects
-        const saved = window.localStorage.getItem('rm_local_watched_servers');
-        if (saved && mounted) {
-          setWatchedServers(JSON.parse(saved));
-        }
+           
+           // Load user-specific watchlist if we had one in local storage (temporary until full cloud sync)
+           const saved = window.localStorage.getItem(`rm_watchlist_${user.id}`);
+           if (saved && mounted) {
+             setWatchedServers(JSON.parse(saved));
+           } else if (mounted) {
+             setWatchedServers([]); // Ensure it starts empty if no saved data for this user
+           }
 
-        if (status === 'authenticated' && supabase && user) {
-           // We already have active_server_id in profile now, but let's just use the profile state directly
-           // Wait, active_server_id could be stale if we don't re-fetch, but for now we can still fetch or just rely on profile.
-           const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
-           if (p?.active_server_id && mounted) {
-              setActiveServerId(p.active_server_id);
+           if (supabase) {
+             const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
+             if (p?.active_server_id && mounted) {
+                setActiveServerId(p.active_server_id);
+             }
+           }
+        } else if (status === 'unauthenticated') {
+           // Clear state on logout
+           if (mounted) {
+             setWatchedServers([]);
+             setActiveServerId(null);
            }
         }
       } catch (e) {
@@ -94,16 +101,20 @@ export function Dashboard() {
     }
   };
 
-  const toggleWatch = async (id: string) => {
+  const toggleWatch = async (id: string, internalUuid?: string) => {
+    if (status !== 'authenticated' || !user) return; // Prevent anonymous watch
+    
     const existingIndex = watchedServers.findIndex(s => s.id === id);
     let newServers: BattleMetricsServerSummary[];
+    let resolvedUuid = internalUuid;
     
     if (existingIndex >= 0) {
+      resolvedUuid = internalUuid || (watchedServers[existingIndex] as any).internal_uuid;
       newServers = watchedServers.filter(s => s.id !== id);
     } else {
       const serverToAdd = servers.find(s => s.id === id);
       if (serverToAdd) {
-        newServers = [...watchedServers, serverToAdd];
+        newServers = [...watchedServers, { ...serverToAdd, internal_uuid: internalUuid }];
       } else {
         return; 
       }
@@ -111,21 +122,23 @@ export function Dashboard() {
     
     setWatchedServers(newServers);
     try {
-      window.localStorage.setItem('rm_local_watched_servers', JSON.stringify(newServers));
+      window.localStorage.setItem(`rm_watchlist_${user.id}`, JSON.stringify(newServers));
     } catch (e) {
-      console.warn('Failed to save local watchlist', e);
+      console.warn('Failed to save user watchlist', e);
     }
 
-    // Attempt Cloud Sync if authenticated
-    if (status === 'authenticated' && cloudRepo) {
-       console.log('Would sync to cloud here, but need UUID mapping first.');
+    if (cloudRepo && resolvedUuid) {
+       try {
+         await cloudRepo.toggleServer(id, resolvedUuid);
+       } catch (e) {
+         console.error('Failed to sync watchlist to cloud', e);
+       }
     }
   };
 
   const handleSetActiveServer = async (_serverId: string, internalUuid?: string) => {
     if (status !== 'authenticated' || !supabase || !user) return;
     
-    // We need the internal_uuid (provider_servers.id) to set profiles.active_server_id
     if (internalUuid) {
        try {
          const { error } = await supabase.from('profiles').update({ active_server_id: internalUuid }).eq('id', user.id);
@@ -311,9 +324,14 @@ export function Dashboard() {
 
         {/* Watchlist & Map Intel */}
         <div className="card col-span-6">
-          <div className="card-title">{status === 'authenticated' ? 'Watchlist' : 'Local Watchlist Preview'}</div>
+          <div className="card-title">Watchlist</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {isWatchlistLoading ? (
+            {status !== 'authenticated' ? (
+              <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
+                <ShieldAlert size={24} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
+                <p>Sign in with Steam to manage your Watchlist.</p>
+              </div>
+            ) : isWatchlistLoading ? (
               <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
                 Loading watchlist...
               </div>
@@ -332,11 +350,6 @@ export function Dashboard() {
                   </div>
                 ))}
               </div>
-            )}
-            {status !== 'authenticated' && (
-              <button disabled style={{ padding: '0.5rem 1rem', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', color: 'var(--text-disabled)', borderRadius: '4px', cursor: 'not-allowed' }}>
-                + Sync Watchlist to Cloud (Auth Required)
-              </button>
             )}
           </div>
         </div>

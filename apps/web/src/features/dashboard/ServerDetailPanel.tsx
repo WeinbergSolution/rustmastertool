@@ -6,7 +6,7 @@ interface ServerDetailPanelProps {
   serverId: string;
   isWatched: boolean;
   onClose: () => void;
-  onToggleWatch: () => void;
+  onToggleWatch: (serverId: string, internalUuid?: string) => void;
   onSetActiveServer?: (serverId: string, internalUuid?: string) => void;
   isActiveServer?: boolean;
   isAuthenticated?: boolean;
@@ -81,7 +81,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
         <>
           <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <button 
-              onClick={onToggleWatch}
+              onClick={() => onToggleWatch(server.id, server.internal_uuid)}
               style={{ 
                 width: '100%', padding: '0.75rem', borderRadius: '4px', cursor: 'pointer',
                 backgroundColor: isWatched ? 'var(--bg-hover)' : 'var(--accent-rust)',

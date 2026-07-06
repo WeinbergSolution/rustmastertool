@@ -88,7 +88,7 @@ export function Sidebar({ currentView = 'dashboard', onViewChange }: SidebarProp
           <NavItem icon={Server} label="Servers" view="servers" currentView={currentView} onViewChange={onViewChange} />
           <NavItem icon={Eye} label="Watchlist" view="watchlist" currentView={currentView} onViewChange={onViewChange} />
           <NavItem icon={LineChart} label="Server Pulse" view="server_pulse" currentView={currentView} onViewChange={onViewChange} badge="partial" />
-          <NavItem icon={Building} label="Base Blueprints" view="base_blueprints" currentView={currentView} onViewChange={onViewChange} badge="roadmap" />
+          <NavItem icon={Building} label="Base Blueprints" view="base_blueprints" currentView={currentView} onViewChange={onViewChange} badge="alpha" />
           <NavItem icon={MapIcon} label="Map Intel" view="map_intel" currentView={currentView} onViewChange={onViewChange} badge="gated" />
           <NavItem icon={Filter} label="Filter Profiles" view="filter_profiles" currentView={currentView} onViewChange={onViewChange} badge="soon" />
         </NavGroup>

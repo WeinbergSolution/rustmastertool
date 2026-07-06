@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
-import { discoverBaseBlueprints, searchBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
+import { discoverBaseBlueprints, searchBaseBlueprints, refreshBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 
 const DISCOVER_ROWS = [
   { key: 'solo', title: 'Solo Base Builds', query: 'rust solo base build', maxResults: 12 },
@@ -35,6 +35,25 @@ export function BaseBlueprintsView() {
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefreshLibrary = async () => {
+    setIsRefreshing(true);
+    try {
+      // Refresh the first 3 rows as requested for controlled refresh
+      const rowsToRefresh = DISCOVER_ROWS.slice(0, 3);
+      await refreshBaseBlueprints(rowsToRefresh);
+      
+      // Reload discover from cache after refresh
+      setIsDiscoverLoading(true);
+      const rows = await discoverBaseBlueprints(DISCOVER_ROWS);
+      setDiscoverData(rows);
+    } catch (err) {
+      console.error('Failed to refresh library', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
 
@@ -204,27 +223,55 @@ export function BaseBlueprintsView() {
 
       {/* Search & Quick Chips */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem', padding: '0 1rem' }}>
-        <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '100%', maxWidth: '600px' }}>
-          <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
-          <input 
-            type="text" 
-            placeholder="Search for Rust Base Builds..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+        <div style={{ marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '1.75rem', margin: '0', color: '#fff', fontWeight: 'bold' }}>Base Blueprints</h2>
+          <p style={{ margin: '0.5rem 0 0 0', color: '#ccc', fontSize: '0.95rem' }}>
+            Discover top tier base designs from the community.
+          </p>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button
+            onClick={handleRefreshLibrary}
+            disabled={isRefreshing}
             style={{
-              width: '100%',
-              padding: '0.8rem 1rem 0.8rem 3rem',
+              padding: '0.5rem 1rem',
               backgroundColor: '#1a1a1a',
+              color: isRefreshing ? '#666' : '#fff',
               border: '1px solid #333',
               borderRadius: '4px',
-              color: '#fff',
-              fontSize: '1rem',
-              outline: 'none'
+              cursor: isRefreshing ? 'not-allowed' : 'pointer',
+              fontSize: '0.875rem'
             }}
-            onFocus={(e) => e.target.style.borderColor = '#E50914'}
-            onBlur={(e) => e.target.style.borderColor = '#333'}
-          />
-        </form>
+          >
+            {isRefreshing ? 'Refreshing...' : 'Refresh Base Blueprint Library'}
+          </button>
+          
+          <form onSubmit={handleSearchSubmit} style={{ position: 'relative', minWidth: '300px' }}>
+            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>
+              <Search size={18} />
+            </div>
+            <input
+              type="text"
+              placeholder="Search builds (e.g. 'solo bunker')"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem 0.75rem 2.5rem',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                border: '1px solid #333',
+                borderRadius: '24px',
+                color: '#fff',
+                fontSize: '0.95rem',
+                outline: 'none',
+                transition: 'border-color 0.2s'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#E50914'}
+              onBlur={(e) => e.target.style.borderColor = '#333'}
+            />
+          </form>
+        </div>
       </div>
 
       {/* Search Results Section */}
@@ -269,16 +316,53 @@ export function BaseBlueprintsView() {
                Base Blueprints features are currently locked until the backend is fully deployed.
              </p>
            </div>
-        ) : discoverData.length === 0 ? (
-           <div style={{ color: '#888', padding: '1rem' }}>No base blueprint videos returned yet.</div>
+        ) : discoverData.every(r => r.items.length === 0) ? (
+           <div style={{ color: '#ccc', padding: '2rem 1rem', textAlign: 'center' }}>
+             <h3 style={{ margin: '0 0 1rem 0' }}>No cached base blueprint videos yet.</h3>
+             {discoverData.some(r => r.error?.code === 'YOUTUBE_RATE_LIMITED') && (
+               <p style={{ color: '#ff4444', marginBottom: '1rem' }}>
+                 YouTube rate limit reached before the library could be filled. Try again later or refresh with a new API quota.
+               </p>
+             )}
+             <p style={{ marginBottom: '1.5rem', color: '#888' }}>
+               Refresh the library to fetch YouTube videos into the database cache.
+             </p>
+             <button
+               onClick={handleRefreshLibrary}
+               disabled={isRefreshing}
+               style={{
+                 padding: '0.75rem 1.5rem',
+                 backgroundColor: '#E50914',
+                 color: '#fff',
+                 border: 'none',
+                 borderRadius: '4px',
+                 cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                 fontSize: '1rem',
+                 fontWeight: 'bold'
+               }}
+             >
+               {isRefreshing ? 'Refreshing...' : 'Refresh Library (Seed)'}
+             </button>
+           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            {discoverData.map((row) => (
+            {discoverData.map((row) => {
+              if (row.error) {
+                console.warn("[BaseBlueprints] row failed", { key: row.key, status: row.error.status, code: row.error.code, message: row.error.message });
+              }
+              const isRateLimited = row.error?.code === 'YOUTUBE_RATE_LIMITED';
+              const showRateLimitWarning = isRateLimited && row.items.length === 0;
+
+              return (
               <div key={row.key} style={{ display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold' }}>{row.title}</h3>
+                <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold' }}>
+                  {row.title} {row.items.length > 0 && <span style={{ fontSize: '0.85rem', color: '#888', fontWeight: 'normal', marginLeft: '0.5rem' }}>({row.items.length} cached)</span>}
+                </h3>
                 
-                {row.error ? (
-                  <div style={{ color: '#ff4444', fontSize: '0.875rem' }}>Could not load {row.title.toLowerCase()}.</div>
+                {showRateLimitWarning ? (
+                  <div style={{ color: '#ff4444', fontSize: '0.875rem' }}>YouTube quota/rate limit reached. Showing cached videos when available.</div>
+                ) : row.error && row.items.length === 0 ? (
+                  <div style={{ color: '#ff4444', fontSize: '0.875rem' }}>Could not load {row.title.toLowerCase()} ({row.error.code}).</div>
                 ) : row.items.length === 0 ? (
                   <div style={{ color: '#888', fontSize: '0.875rem' }}>No videos found for this category.</div>
                 ) : (
@@ -296,7 +380,8 @@ export function BaseBlueprintsView() {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

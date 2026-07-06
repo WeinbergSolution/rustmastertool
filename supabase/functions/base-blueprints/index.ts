@@ -56,8 +56,23 @@ serve(async (req) => {
     }
 
     if (action === 'discover') {
-      const rows = body.rows || [];
-      if (!Array.isArray(rows)) throw new Error('Invalid rows parameter');
+      let rows = body.rows;
+      if (!rows || !Array.isArray(rows) || rows.length === 0) {
+        rows = [
+          { key: 'solo', title: 'Solo Base Builds', query: 'rust solo base build', maxResults: 8 },
+          { key: 'duo', title: 'Duo Base Builds', query: 'rust duo base build', maxResults: 8 },
+          { key: 'trio', title: 'Trio Base Builds', query: 'rust trio base build', maxResults: 8 },
+          { key: 'starter', title: 'Starter / Wipe Day Bases', query: 'rust starter base wipe day build', maxResults: 8 },
+          { key: 'bunker', title: 'Bunker Bases', query: 'rust bunker base build', maxResults: 8 },
+          { key: 'unraidable', title: 'Unraidable / High Defense Bases', query: 'rust unraidable base rust build', maxResults: 8 },
+          { key: 'cheap', title: 'Cheap / Low Cost Bases', query: 'rust cheap base build low cost', maxResults: 8 },
+          { key: 'clan', title: 'Big Clan Bases', query: 'rust clan base build large group', maxResults: 8 },
+          { key: 'funny', title: 'Funny / Troll Bases', query: 'rust funny base build troll base', maxResults: 8 },
+          { key: 'cave', title: 'Cave Bases', query: 'rust cave base build', maxResults: 8 },
+          { key: 'ocean', title: 'Ocean / Water Bases', query: 'rust ocean base water base build', maxResults: 8 },
+          { key: 'widegap', title: 'Widegap Bases', query: 'rust widegap base build', maxResults: 8 }
+        ];
+      }
 
       const promises = rows.map(async (row: any) => {
         try {

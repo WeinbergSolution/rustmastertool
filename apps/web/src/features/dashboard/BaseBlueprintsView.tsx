@@ -297,7 +297,7 @@ export function BaseBlueprintsView() {
       if (!isDragging || !scrollRef.current) return;
       e.preventDefault();
       const x = e.pageX - scrollRef.current.offsetLeft;
-      const walk = (x - startX) * 2;
+      const walk = (x - startX) * 1;
       dragDistance.current = Math.abs(walk);
       scrollRef.current.scrollLeft = scrollLeft - walk;
     };
@@ -330,8 +330,10 @@ export function BaseBlueprintsView() {
     );
   };
 
+  const featuredVideo = discoverData.find(r => r.items?.length > 0)?.items[0];
+
   return (
-    <div className="no-global-scrollbar" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#0a0a0a' }}>
+    <div className="no-global-scrollbar" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#141414' }}>
       <style>{`
         .no-global-scrollbar::-webkit-scrollbar {
           display: none;
@@ -354,57 +356,100 @@ export function BaseBlueprintsView() {
         }
       `}</style>
       
-      {/* Hero & Search Section */}
-      <div style={{ marginBottom: '2.5rem', padding: '2rem 1rem 0 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        <div>
-          <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#fff' }}>
-            <MonitorPlay size={40} style={{ color: '#E50914' }} />
-            Base Blueprints
-          </h2>
-          <p style={{ color: '#aaa', fontSize: '1.1rem', margin: 0, maxWidth: '800px' }}>
-            Watch Rust base builds, bunker designs, starter layouts and raid-resistant concepts without leaving RustMasterTool.
-          </p>
-        </div>
+      {/* Sticky Header with Search */}
+      <div style={{ 
+        position: 'sticky', top: 0, zIndex: 100, 
+        padding: '1.5rem 4%', 
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        background: 'linear-gradient(to bottom, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0.6) 80%, rgba(20,20,20,0) 100%)',
+        backdropFilter: 'blur(8px)'
+      }}>
+        <h2 style={{ fontSize: '2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#E50914', fontWeight: '900', letterSpacing: '1px' }}>
+          <MonitorPlay size={36} />
+          Blueprints
+        </h2>
         
-        <form onSubmit={handleSearchSubmit} style={{ position: 'relative', maxWidth: '400px' }}>
-          <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>
+        <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '300px' }}>
+          <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#fff' }}>
             <Search size={18} />
           </div>
           <input
             type="text"
-            placeholder="Search builds (e.g. 'solo bunker')"
+            placeholder="Search titles, builds, guides"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              padding: '0.75rem 1rem 0.75rem 2.5rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid transparent',
-              borderRadius: '24px',
+              padding: '0.6rem 1rem 0.6rem 2.5rem',
+              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '4px',
               color: '#fff',
               fontSize: '0.95rem',
               outline: 'none',
               transition: 'all 0.2s ease',
-              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)'
             }}
             onFocus={(e) => {
               e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-              e.target.style.borderColor = '#E50914';
+              e.target.style.borderColor = '#fff';
             }}
             onBlur={(e) => {
               if(!searchQuery) {
-                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                e.target.style.borderColor = 'transparent';
+                e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                e.target.style.borderColor = 'rgba(255,255,255,0.2)';
               }
             }}
           />
         </form>
       </div>
 
+      {/* Hero Section */}
+      {featuredVideo && !activeSearch && (
+        <div style={{ 
+          position: 'relative', 
+          width: '100%', 
+          height: '70vh', 
+          minHeight: '500px',
+          marginTop: '-90px', // Pull under header
+          marginBottom: '2rem',
+          flexShrink: 0
+        }}>
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundImage: `url(${featuredVideo.thumbnailUrl.replace('hqdefault', 'maxresdefault')})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }} />
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'linear-gradient(to right, #141414 0%, rgba(20,20,20,0) 60%), linear-gradient(to top, #141414 0%, rgba(20,20,20,0) 80%)'
+          }} />
+          
+          <div style={{ position: 'absolute', bottom: '15%', left: '4%', width: '50%', zIndex: 10 }}>
+            <h1 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff', textShadow: '2px 2px 8px rgba(0,0,0,0.8)', marginBottom: '1rem', lineHeight: 1.1 }}>
+              {featuredVideo.title.replace(/&#39;/g, "'").replace(/&amp;/g, '&')}
+            </h1>
+            <p style={{ color: '#fff', fontSize: '1.25rem', fontWeight: 'bold', textShadow: '1px 1px 4px rgba(0,0,0,0.8)', marginBottom: '2rem' }}>
+              {featuredVideo.channelTitle} • Featured Build
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                onClick={() => setActiveVideoId(featuredVideo.id)} 
+                style={{ padding: '0.6rem 2rem', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '4px', border: 'none', backgroundColor: '#fff', color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'opacity 0.2s' }} 
+                onMouseEnter={(e)=>e.currentTarget.style.opacity='0.8'} 
+                onMouseLeave={(e)=>e.currentTarget.style.opacity='1'}
+              >
+                <Play size={24} fill="#000" /> Play
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Search Results Section */}
       {activeSearch && (
-        <div style={{ marginBottom: '3rem', padding: '0 1rem' }}>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#aaa', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>SEARCH RESULTS: {activeSearch}</h2>
+        <div style={{ marginBottom: '3rem', padding: '0 4%', marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.4rem', marginBottom: '1.5rem', color: '#e5e5e5', fontWeight: 'bold' }}>Search Results: {activeSearch}</h2>
           
           {isSearchLoading ? (
             <SkeletonRail />
@@ -425,7 +470,7 @@ export function BaseBlueprintsView() {
       )}
 
       {/* Discover Rails (Netflix Style) */}
-      <div style={{ paddingBottom: '3rem', paddingLeft: '1rem' }}>
+      <div style={{ paddingBottom: '3rem', paddingLeft: '4%' }}>
         {isDiscoverLoading ? (
            <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
              <SkeletonRail />
@@ -449,8 +494,8 @@ export function BaseBlueprintsView() {
             
             {savedBlueprints.length > 0 && !activeSearch && (
               <div key="saved_blueprints_rail">
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.5px' }}>
-                  <BookmarkCheck size={20} color="#E50914" /> MY SAVED BLUEPRINTS
+                <h2 style={{ fontSize: '1.4rem', marginBottom: '1rem', color: '#e5e5e5', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <BookmarkCheck size={24} color="#E50914" /> My Saved Blueprints
                 </h2>
                 <DraggableRail>
                   {savedBlueprints.map(video => <VideoCard key={`saved-${video.id}`} video={video} />)}
@@ -464,16 +509,16 @@ export function BaseBlueprintsView() {
               
               return (
                 <div key={group}>
-                  <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#aaa', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  <h2 style={{ fontSize: '1.4rem', marginBottom: '1.5rem', color: '#e5e5e5', fontWeight: 'bold', letterSpacing: '0.5px' }}>
                     {group}
                   </h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
                     {groupRows.map((row: any) => {
                       if (row.items?.length === 0) return null; // Hide empty rows
                       
                       return (
                         <div key={row.key} style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                          <h3 style={{ fontSize: '1.15rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold', letterSpacing: '0.5px', display: 'flex', alignItems: 'center' }}>
+                          <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.75rem 0', color: '#e5e5e5', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
                             {row.title}
                             {getRowBadge(row.key)}
                           </h3>

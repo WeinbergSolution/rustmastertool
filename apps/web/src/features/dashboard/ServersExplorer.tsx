@@ -58,8 +58,18 @@ export function ServersExplorer() {
         }
       } catch (e) {}
     }
+    
     if (status !== 'auth_pending') loadData();
-    return () => { mounted = false; };
+    
+    const handleWatchlistUpdated = () => {
+      if (status !== 'auth_pending') loadData();
+    };
+    window.addEventListener('watchlistUpdated', handleWatchlistUpdated);
+    
+    return () => { 
+      mounted = false; 
+      window.removeEventListener('watchlistUpdated', handleWatchlistUpdated);
+    };
   }, [status, user]);
 
   const handleSearch = async (e?: React.FormEvent, overrideQuery?: string) => {
@@ -85,6 +95,7 @@ export function ServersExplorer() {
   const toggleWatch = async (id: string, internalUuid?: string) => {
     if (status !== 'authenticated' || !user) return;
     const existingIndex = watchedServers.findIndex(s => s.id === id);
+    const oldServers = [...watchedServers];
     let newServers: BattleMetricsServerSummary[];
     let resolvedUuid = internalUuid;
     
@@ -98,8 +109,17 @@ export function ServersExplorer() {
     }
     setWatchedServers(newServers);
     try { window.localStorage.setItem(`rm_watchlist_${user.id}`, JSON.stringify(newServers)); } catch (e) {}
+    window.dispatchEvent(new Event('watchlistUpdated'));
     if (cloudRepo && resolvedUuid) {
-       try { await cloudRepo.toggleServer(id, resolvedUuid); } catch (e) {}
+       try { 
+         await cloudRepo.toggleServer(id, resolvedUuid); 
+       } catch (e) {
+         console.error(e);
+         setWatchedServers(oldServers);
+         try { window.localStorage.setItem(`rm_watchlist_${user.id}`, JSON.stringify(oldServers)); } catch (err) {}
+         window.dispatchEvent(new Event('watchlistUpdated'));
+         alert('Failed to update watchlist on server. Changes reverted.');
+       }
     }
   };
 

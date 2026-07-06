@@ -33,7 +33,16 @@ export function Dashboard({ onViewChange }: DashboardProps) {
       }
     }
     loadData();
-    return () => { mounted = false; };
+    
+    const handleWatchlistUpdated = () => {
+      loadData();
+    };
+    window.addEventListener('watchlistUpdated', handleWatchlistUpdated);
+    
+    return () => { 
+      mounted = false; 
+      window.removeEventListener('watchlistUpdated', handleWatchlistUpdated);
+    };
   }, [status, user]);
 
   let displayName = 'Unknown Survivor';

@@ -1,31 +1,26 @@
-# Current Sprint (Phase 1.9-A)
+# Current Sprint (Phase 2.1-A)
 
-**Phase:** Phase 1.9-A Automation and Blueprint Polish (IMPLEMENTATION)
+**Phase:** Phase 2.1-A Vercel Production Data Fix & API Connectivity Audit (AUDIT)
 
 ## Was geändert wurde
-- [x] Phase 1.4-A: Steam Login + Active Server Core Loop
-- [x] Phase 1.5-A: Three-Layer Navigation + Command-Center Dashboard + MyRust Shell
-- [x] Phase 1.6-A: Server Explorer Data Expansion + BattleMetrics Filters + Base Blueprints Shell
-- [x] Phase 1.7-A: Server Pulse / Population Retention Foundation
-- [x] Phase 1.7-B: Server Pulse Activation + Retention Intelligence UI
 - [x] Phase 1.8-A: Base Blueprints YouTube Foundation
 - [x] Phase 1.9-A: Automation and Blueprint Polish
-  - **Server Pulse Scheduler**: Migration `20260706074028_server_pulse_scheduler.sql` erstellt für Zustand und Historie (`server_pulse_scheduler_state`, `server_pulse_ingest_runs`).
-  - **Edge Function (server-pulse-ingest)**: Erweitert, um jeden Durchlauf (inklusive Errors, Processed Counts) in die Datenbank zu schreiben.
-  - **Server Pulse UI**: Überarbeitet und um Metriken, Scheduler-Zustand und die Liste der letzten Durchläufe (Recent Runs) ergänzt.
-  - **Base Blueprints Search**: Edge Function (`base-blueprints`) sucht nun cache-first auch in den `tags` (Array-Intersection), Titel und Kategorie.
-  - **Base Blueprints Saved UX**: API-Client (`baseBlueprints.ts`) um Speichern/Löschen-Funktionen ergänzt. `BaseBlueprintsView.tsx` rendert eine "My Saved Blueprints" Zeile am Anfang, sofern der Nutzer eingeloggt ist und Favoriten hat. Das Speichern wurde in die VideoCards integriert.
-  - **Player Modal ESC-Handler**: Hinzugefügt (Escape-Taste schließt das YouTube Modal).
-  - **Runbooks**: `server-pulse-scheduler.md` und `base-blueprints-library-maintenance.md` wurden erstellt, um Architektur und Wartung sicher und verständlich zu dokumentieren.
+- [x] Phase 1.9-B: Server Pulse Cron Activation & Scaling
+- [x] Phase 2.0-A: Map Intelligence Foundation (Server Map Previews)
+- [x] Phase 2.1-A: Vercel Production Audit
+  - **Vercel Audit**: Überprüfung der Frontend-Codebasis auf Hardcoded URLs und Env-Probleme. Ursache für fehlende Produktionsdaten identifiziert (fehlende `VITE_DATA_MODE`, `VITE_SUPABASE_URL` etc. in Vercel).
+  - **Runbook**: `vercel-production-deployment.md` angelegt, um klar zu dokumentieren, welche Variablen in Vercel und Supabase (`ALLOWED_ORIGIN` für `steam-auth`) konfiguriert werden müssen.
+  - **RLS/Edge Functions**: Keine Code-Fixes an den RLS-Policies oder den Supabase Edge Functions notwendig, da diese korrekt implementiert wurden, aber auf korrekte Produktions-Envs angewiesen sind.
 
 ## Was NICHT implementiert wurde (Guardrails eingehalten)
-- **Keine Secrets in Migrationen**: Der Cron Job (Scheduler) wurde explizit **nicht** als SQL-Statement mit Hardcoded-Secrets angelegt. Dies obliegt dem Remote Gate (Owner) über die UI/Vault, um maximale Sicherheit zu gewährleisten.
-- Keine falschen (fake) Saves: Das "Saved"-System schreibt echte Daten in `user_saved_blueprints` (bzw. verlangt einen Login).
+- **Keine Secrets exponiert**: Keine Supabase Service Role Keys oder API Keys wurden in die Source Code Files committed.
+- **Keine Hardcoded Fixes**: Kein "Quick-Fix" der Production URLs im Code, da dynamische Env-Variablen (`ALLOWED_ORIGIN`, `VITE_SUPABASE_URL`) der korrekte Architekturschritt sind.
+- **Kein RustMaps API Call**: Map Preview bleibt auf `rust_maps` Details aus BattleMetrics gestützt.
 
 ## Aktueller Fokus
-Owner Gate: Freigabe von DB Push (Scheduler) und Function Deploy (Pulse & Blueprints).
+Owner Gate: Konfiguration der Env-Variablen in Vercel und Supabase Vault gemäß dem Vercel Runbook.
 
 ## Nächster sicherer Schritt
-1. AI Engineer führt Typechecks & Builds aus.
-2. AI Engineer wartet auf Bestätigung für `db push` und Edge Function Deploys.
-3. Owner prüft die Architektur (Secret-Ansatz) und gibt Remote Gates frei.
+1. Owner setzt die Variablen in Vercel.
+2. Owner fügt `ALLOWED_ORIGIN=https://rustmastertool-web.vercel.app` den Supabase Edge Function Secrets hinzu.
+3. Owner prüft die Production-URL.

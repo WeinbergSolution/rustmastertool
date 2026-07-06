@@ -1,32 +1,25 @@
 # Model Handoff
 
 ## 1. Project Context
-RustMasterTool is a server intelligence dashboard for Rust server owners. We are currently implementing Phase 1.7-B Server Pulse Activation + Retention Intelligence UI. The primary goal is to securely build historical server population data over time and visually display honest retention metrics (how well a server holds population after wipe).
+RustMasterTool is a server intelligence dashboard for Rust server owners. We are currently implementing Phase 2.1-A Vercel Production Audit. The primary goal is to ensure the Vercel production deployment can successfully connect to the remote Supabase instance and authenticate users.
 
 ## 2. Recent Progress
-- **Remote DB Push**: `20260706001000_server_population_snapshots.sql` was pushed to Staging.
-- **Edge Function Deploy**: `server-pulse-ingest` was deployed to Staging.
-- **UI Enhancements**: 
-  - Cleaned up `ServerPulseView` to look like a gamer-focused product module, dropping the raw `curl` commands.
-  - Implemented real-time stats (Server count and Snapshot count) polling for the `ServerPulseView`.
-  - Added a "Pulse collecting" badge on `ServerCard`.
-  - Upgraded `ServerDetailPanel` to show honest Retention Buckets (6h, 12h, 18h, 24h, 30h) derived from snapshots using the new `calculatePulseSummary` utility in `apps/web/src/lib/api/retention.ts`.
-- **Top Bar**: Changed Phase label to "Server Intelligence Alpha".
+- **Map Intelligence Integration**: Phase 2.0-A Map Identity was successfully merged into main, actively filling the `server_map_identity` database table automatically during cron runs.
+- **Vercel Audit**: Discovered that the Vercel Production deployment was missing the core environment variables required for the Vite React frontend to talk to Supabase. Thus, `VITE_DATA_MODE` was defaulting to `fixture` mode and the `supabaseClient` was `null`.
+- **CORS / Steam Auth Audit**: Verified that the `steam-auth` Edge Function validates `ALLOWED_ORIGIN`. Since Vercel is a different domain than localhost, the Vercel domain needs to be allowed.
+- **Runbook Creation**: Created `docs/runbooks/vercel-production-deployment.md` which includes all necessary manual configuration steps for the Vercel and Supabase environments.
 
 ## 3. Current State
-- `feature/phase-1-7-a-server-pulse-foundation` contains all Phase 1.7-A and 1.7-B commits.
-- Remote Gate passed for pushing DB schema and Edge Function.
-- Ingestion Secret Check showed that `SERVER_PULSE_INGEST_SECRET` is NOT yet set on Supabase.
-- Code builds cleanly and typecheck passes.
-- No secrets are leaked in the frontend.
+- `feature/phase-2-1-a-vercel-production-data-fix` branch contains the updated documentation.
+- The codebase itself (TypeScript/React) required zero bug fixes, as the lack of hardcoded secrets and robust fallback logic prevented crashes. The frontend properly defaulted to a safe state when variables were missing.
+- Typecheck and Build are completely GREEN.
 
 ## 4. Guardrails in Effect
 - **NO SECRETS EXPOSED** in frontend or git.
-- **NO FAKE/MOCK DATA** for retention curves. We honestly tell the user if there are not enough snapshots yet.
+- **NO HARDCODED LOCALHOST FIXES**; proper environment variables must be utilized.
 - Steam Login, Servers Explorer, Watchlist, Active Server and Logout Boundary remain completely intact.
 
 ## 5. Next Recommended Step
-- **Owner Task**: Set the `SERVER_PULSE_INGEST_SECRET` in Supabase via `npx supabase secrets set SERVER_PULSE_INGEST_SECRET="..."`.
-- **Owner Gate**: Manually trigger the edge function ingest via `curl` to populate the DB with initial data.
-- **Owner Smoke Test**: Validate that `ServerPulseView` and `ServerDetailPanel` display the fetched data accurately.
-- **Merge**: Merge the feature branch into main once verified.
+- **Owner Task**: Set up the Vercel Environment Variables (`VITE_DATA_MODE`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) in the Vercel Dashboard.
+- **Owner Task**: Add `ALLOWED_ORIGIN=https://rustmastertool-web.vercel.app` to Supabase Edge Function Secrets.
+- **Owner Task**: Verify Vercel deployment loads production data successfully.

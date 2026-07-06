@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Activity, ShieldAlert, Zap, Bell, X, Eye, Server, User } from 'lucide-react';
+import { Server, User, BookOpen, Activity, ArrowRight, Eye, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../lib/auth/useAuth';
-import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import { supabase } from '../../lib/supabaseClient';
-import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 import type { ViewState } from '../../components/AppShell';
 
 interface DashboardProps {
@@ -12,63 +10,31 @@ interface DashboardProps {
 
 export function Dashboard({ onViewChange }: DashboardProps) {
   const { status, user, profile } = useAuth();
-  const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
-  const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
   const [activeServerId, setActiveServerId] = useState<string | null>(null);
-
-  const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
+  const [watchlistCount, setWatchlistCount] = useState(0);
 
   useEffect(() => {
     let mounted = true;
     async function loadData() {
-      setIsWatchlistLoading(true);
-      try {
-        if (status === 'authenticated' && user) {
-           const saved = window.localStorage.getItem(`rm_watchlist_${user.id}`);
-           if (saved && mounted) {
-             setWatchedServers(JSON.parse(saved));
-           } else if (mounted) {
-             setWatchedServers([]);
-           }
-
-           if (supabase) {
-             const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
-             if (p?.active_server_id && mounted) setActiveServerId(p.active_server_id);
-           }
-        } else if (status === 'unauthenticated' && mounted) {
-           setWatchedServers([]);
-           setActiveServerId(null);
-        }
-      } catch (e) {
-        console.warn('Failed to load data', e);
-      } finally {
-        if (mounted) setIsWatchlistLoading(false);
+      if (status === 'authenticated' && user) {
+        try {
+          const saved = window.localStorage.getItem(`rm_watchlist_${user.id}`);
+          if (saved && mounted) {
+            setWatchlistCount(JSON.parse(saved).length);
+          }
+          if (supabase) {
+            const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
+            if (p?.active_server_id && mounted) setActiveServerId(p.active_server_id);
+          }
+        } catch (e) {}
+      } else if (mounted) {
+        setWatchlistCount(0);
+        setActiveServerId(null);
       }
     }
-    if (status !== 'auth_pending') loadData();
+    loadData();
     return () => { mounted = false; };
   }, [status, user]);
-
-  const toggleWatch = async (id: string, internalUuid?: string) => {
-    if (status !== 'authenticated' || !user) return;
-    const existingIndex = watchedServers.findIndex(s => s.id === id);
-    let newServers: BattleMetricsServerSummary[];
-    let resolvedUuid = internalUuid;
-    
-    if (existingIndex >= 0) {
-      resolvedUuid = internalUuid || (watchedServers[existingIndex] as any).internal_uuid;
-      newServers = watchedServers.filter(s => s.id !== id);
-    } else {
-      return; // Dashboard only supports removal of already watched servers
-    }
-    
-    setWatchedServers(newServers);
-    try { window.localStorage.setItem(`rm_watchlist_${user.id}`, JSON.stringify(newServers)); } catch (e) {}
-
-    if (cloudRepo && resolvedUuid) {
-       try { await cloudRepo.toggleServer(id, resolvedUuid); } catch (e) { console.error(e); }
-    }
-  };
 
   let displayName = 'Unknown Survivor';
   if (profile) {
@@ -81,138 +47,184 @@ export function Dashboard({ onViewChange }: DashboardProps) {
   const avatar = profile?.avatar_url || user?.user_metadata?.avatar;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative', paddingBottom: '2rem' }}>
       
       {/* Hero Panel / My Rust Context */}
-      <div className="card" style={{ backgroundColor: 'var(--bg-hover)', borderLeft: '4px solid var(--accent-rust)' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>My Rust Context</h2>
+      <div className="card" style={{ backgroundColor: 'var(--bg-panel)', borderLeft: '4px solid var(--accent-rust)', padding: '2rem' }}>
+        <h2 style={{ fontSize: '1.5rem', margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Activity size={24} style={{ color: 'var(--accent-rust)' }} />
+          Command Center
+        </h2>
         
         {status === 'authenticated' ? (
-          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                {avatar ? (
-                 <img src={avatar} alt="Avatar" style={{ width: '48px', height: '48px', borderRadius: '4px' }} />
+                 <img src={avatar} alt="Avatar" style={{ width: '64px', height: '64px', borderRadius: '8px', border: '2px solid var(--border-color)' }} />
                ) : (
-                 <div style={{ width: '48px', height: '48px', borderRadius: '4px', backgroundColor: 'var(--bg-panel)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <User size={24} />
+                 <div style={{ width: '64px', height: '64px', borderRadius: '8px', backgroundColor: 'var(--bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <User size={32} />
                  </div>
                )}
                <div>
-                 <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{displayName}</div>
-                 <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Steam Identity Verified</div>
+                 <div style={{ fontWeight: 'bold', fontSize: '1.5rem', marginBottom: '0.25rem' }}>{displayName}</div>
+                 <div style={{ fontSize: '0.875rem', color: 'var(--status-success)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--status-success)' }}></div>
+                   Steam Identity Verified
+                 </div>
+                 <button 
+                   onClick={() => onViewChange?.('my_rust')}
+                   style={{ marginTop: '0.5rem', background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.875rem', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                 >
+                   View MyRust Profile
+                 </button>
                </div>
             </div>
             
             <div style={{ paddingLeft: '2rem', borderLeft: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-               <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Active Server</div>
+               <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Active Server Context</div>
                {activeServerId ? (
-                 <div style={{ fontWeight: 'bold', color: 'var(--accent-rust)' }}>Set via Internal ID: {activeServerId.substring(0,8)}...</div>
+                 <>
+                   <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#fff', marginBottom: '0.5rem' }}>Connection Set</div>
+                   <button 
+                     onClick={() => onViewChange?.('current_connection')}
+                     style={{ alignSelf: 'flex-start', padding: '0.5rem 1rem', background: 'rgba(205, 65, 43, 0.1)', border: '1px solid var(--accent-rust)', color: 'var(--accent-rust)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 'bold' }}
+                   >
+                     View Current Connection
+                   </button>
+                 </>
                ) : (
-                 <div style={{ color: 'var(--text-disabled)' }}>No active server set</div>
+                 <>
+                   <div style={{ color: 'var(--text-disabled)', marginBottom: '0.5rem' }}>No active server set.</div>
+                   <button 
+                     onClick={() => onViewChange?.('servers')}
+                     style={{ alignSelf: 'flex-start', padding: '0.5rem 1rem', background: 'var(--accent-rust)', border: 'none', color: '#fff', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem', fontWeight: 'bold' }}
+                   >
+                     Choose Your Server
+                   </button>
+                 </>
                )}
             </div>
           </div>
         ) : (
-          <>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-              Real Provider Mode active. The Server Explorer now fetches live data from BattleMetrics.
-            </p>
-            <div className="status-list">
-              <div className="status-chip success"><Zap size={16}/> BM Edge Function Proxy</div>
-              <div className="status-chip success"><Eye size={16}/> Live Provider Integration</div>
-              <div className="status-chip pending"><Activity size={16}/> Steam Login Required for Context</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ color: 'var(--text-muted)', margin: '0 0 1rem 0', fontSize: '1.1rem' }}>
+                Welcome to RustMasterTool. Sign in with Steam to unlock your personalized survival companion.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button 
+                  onClick={() => {
+                    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                    if (supabaseUrl) {
+                      const origin = encodeURIComponent(window.location.origin);
+                      window.location.href = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
+                    }
+                  }}
+                  className="btn-steam"
+                >
+                  Sign in with Steam
+                </button>
+                <button 
+                  onClick={() => onViewChange?.('servers')}
+                  style={{ padding: '0.5rem 1.5rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Browse Servers Anonymously
+                </button>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
-      <div className="dashboard-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
         
-        {/* Quick Actions */}
-        <div className="card col-span-8">
-           <div className="card-title">Server Discovery</div>
-           <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-             Find and analyze live Rust servers to add them to your watchlist or set them as your active server.
+        {/* Pre-Game */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 'bold' }}>Phase 1</div>
+           <div className="card-title" style={{ color: 'var(--accent-rust)' }}>Pre-Game</div>
+           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', flex: 1, marginBottom: '1.5rem' }}>
+             Find, filter, and analyze live Rust servers before you join. Build your watchlist and find the perfect wipe.
            </p>
            <button 
              onClick={() => onViewChange?.('servers')}
-             style={{
-               display: 'flex', alignItems: 'center', gap: '0.5rem',
-               padding: '1rem 2rem', backgroundColor: 'var(--accent-rust)', color: '#fff', 
-               border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
-             }}
+             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', width: '100%' }}
            >
-             <Server size={20} /> Open Server Explorer
+             <Server size={18} /> Browse & Analyze Servers
            </button>
         </div>
 
-        {/* Population Trend & Alerts */}
-        <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
-          <div className="card">
-            <div className="card-title">Population Trend</div>
-            <div className="gated-overlay" style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <div style={{ padding: '1rem', textAlign: 'center' }}>
-                 <Activity size={32} style={{ color: 'var(--text-disabled)', margin: '0 auto 0.5rem' }} />
-                 <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Historical snapshots gated until polling budget recalibrated.</p>
-               </div>
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="card-title">Alert Center <Bell size={18} style={{ color: 'var(--text-muted)' }}/></div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <ShieldAlert size={12}/> Roadmap Feature.
-              </div>
-              <button disabled style={{ marginTop: '0.5rem', padding: '0.5rem', width: '100%', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-disabled)', borderRadius: '4px', cursor: 'not-allowed' }}>
-                Manage Alerts (Coming Later)
-              </button>
-            </div>
-          </div>
-
+        {/* In-Game */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 'bold' }}>Phase 2</div>
+           <div className="card-title">In-Game Companion</div>
+           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', flex: 1, marginBottom: '1.5rem' }}>
+             Live Map, Raid Calculator, and Current Connection support while you play.
+           </p>
+           <button 
+             onClick={() => onViewChange?.('current_connection')}
+             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', width: '100%' }}
+           >
+             <Activity size={18} /> Open Live Companion
+           </button>
         </div>
 
-        {/* Watchlist & Map Intel */}
-        <div className="card col-span-6">
-          <div className="card-title">Watchlist Summary</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {status !== 'authenticated' ? (
-              <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
-                <ShieldAlert size={24} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
-                <p>Sign in with Steam to manage your Watchlist.</p>
-              </div>
-            ) : isWatchlistLoading ? (
-              <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
-                Loading watchlist...
-              </div>
-            ) : watchedServers.length === 0 ? (
-              <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
-                No servers currently in watchlist. Open the Server Explorer to add some.
-              </div>
-            ) : (
-              <div className="server-list" style={{ gridTemplateColumns: '1fr', gap: '0.5rem' }}>
-                {watchedServers.map(server => (
-                  <div key={server.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-panel)', padding: '0.5rem 1rem', borderRadius: '4px' }}>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 'bold' }}>{server.name}</span>
-                    <button onClick={() => toggleWatch(server.id)} style={{ background: 'transparent', border: 'none', color: 'var(--status-error)', cursor: 'pointer' }} title="Remove from Watchlist">
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="card col-span-6">
-          <div className="card-title">Map Intelligence Preview</div>
-          <div className="gated-overlay" style={{ height: '140px', backgroundColor: 'var(--bg-panel)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-color)' }}>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-disabled)' }}>Coming with RustMaps integration.</p>
-          </div>
+        {/* After-Game */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 'bold' }}>Phase 3</div>
+           <div className="card-title">After-Game</div>
+           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', flex: 1, marginBottom: '1.5rem' }}>
+             Review your Session Battle Log, track durations, and log learnings for your next wipe.
+           </p>
+           <button 
+             onClick={() => onViewChange?.('session_battle_log')}
+             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', width: '100%' }}
+           >
+             <BookOpen size={18} /> View Battle Logs
+           </button>
         </div>
 
       </div>
+
+      {/* Watchlist Summary */}
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div className="card-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Eye size={20} /> Watchlist Summary
+          </div>
+          {status === 'authenticated' && (
+            <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>{watchlistCount} Servers</span>
+          )}
+        </div>
+        
+        {status !== 'authenticated' ? (
+          <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
+            <ShieldAlert size={24} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
+            <p>Sign in with Steam to manage your Watchlist.</p>
+          </div>
+        ) : watchlistCount === 0 ? (
+          <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--border-color)', borderRadius: '4px', color: 'var(--text-muted)' }}>
+            <p style={{ margin: '0 0 1rem 0' }}>Your watchlist is empty.</p>
+            <button 
+              onClick={() => onViewChange?.('servers')}
+              style={{ padding: '0.5rem 1rem', background: 'var(--accent-rust)', border: 'none', color: '#fff', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem' }}
+            >
+              Find Servers
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', backgroundColor: 'var(--bg-panel)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+            <span style={{ color: 'var(--text-muted)' }}>You are tracking {watchlistCount} servers.</span>
+            <button 
+              onClick={() => onViewChange?.('watchlist')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 1rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem' }}
+            >
+              Manage Watchlist <ArrowRight size={16} />
+            </button>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

@@ -2,24 +2,22 @@ import { useState, useEffect, useRef } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
 import { discoverBaseBlueprints, searchBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 
-const QUICK_CHIPS = [
-  'Solo', 'Duo', 'Trio', 'Starter', 'Bunker', 'Unraidable', 
-  'Cheap', 'Big Clan', 'Funny', 'Cave', 'Ocean', 'Widegap'
-];
-
 const DISCOVER_ROWS = [
-  { key: 'solo', title: 'Solo Base Builds', query: 'rust solo base build', maxResults: 8 },
-  { key: 'duo', title: 'Duo Base Builds', query: 'rust duo base build', maxResults: 8 },
-  { key: 'trio', title: 'Trio Base Builds', query: 'rust trio base build', maxResults: 8 },
-  { key: 'starter', title: 'Starter / Wipe Day Bases', query: 'rust starter base wipe day build', maxResults: 8 },
-  { key: 'bunker', title: 'Bunker Bases', query: 'rust bunker base build', maxResults: 8 },
-  { key: 'unraidable', title: 'Unraidable / High Defense Bases', query: 'rust unraidable base rust build', maxResults: 8 },
-  { key: 'cheap', title: 'Cheap / Low Cost Bases', query: 'rust cheap base build low cost', maxResults: 8 },
-  { key: 'clan', title: 'Big Clan Bases', query: 'rust clan base build large group', maxResults: 8 },
-  { key: 'funny', title: 'Funny / Troll Bases', query: 'rust funny base build troll base', maxResults: 8 },
-  { key: 'cave', title: 'Cave Bases', query: 'rust cave base build', maxResults: 8 },
-  { key: 'ocean', title: 'Ocean / Water Bases', query: 'rust ocean base water base build', maxResults: 8 },
-  { key: 'widegap', title: 'Widegap Bases', query: 'rust widegap base build', maxResults: 8 }
+  { key: 'solo', title: 'Solo Base Builds', query: 'rust solo base build', maxResults: 12 },
+  { key: 'duo', title: 'Duo Base Builds', query: 'rust duo base build', maxResults: 12 },
+  { key: 'trio', title: 'Trio Base Builds', query: 'rust trio base build', maxResults: 12 },
+  { key: 'starter', title: 'Starter / Wipe Day Bases', query: 'rust starter base wipe day build', maxResults: 12 },
+  { key: 'bunker', title: 'Bunker Bases', query: 'rust bunker base build', maxResults: 12 },
+  { key: 'trap', title: 'Trap Bases', query: 'rust trap base build', maxResults: 12 },
+  { key: 'air', title: 'Air Bases', query: 'rust air base build', maxResults: 12 },
+  { key: 'monument', title: 'Monument / Near Monument Bases', query: 'rust monument base build near monument', maxResults: 12 },
+  { key: 'unraidable', title: 'Unraidable / High Defense Bases', query: 'rust unraidable base build high defense', maxResults: 12 },
+  { key: 'cheap', title: 'Cheap / Low Cost Bases', query: 'rust cheap base build low cost', maxResults: 12 },
+  { key: 'clan', title: 'Big Clan Bases', query: 'rust clan base build large group', maxResults: 12 },
+  { key: 'funny', title: 'Funny / Troll Bases', query: 'rust funny base build troll base', maxResults: 12 },
+  { key: 'cave', title: 'Cave Bases', query: 'rust cave base build', maxResults: 12 },
+  { key: 'ocean', title: 'Ocean / Water Bases', query: 'rust ocean base water base build', maxResults: 12 },
+  { key: 'widegap', title: 'Widegap Bases', query: 'rust widegap base build', maxResults: 12 }
 ];
 
 export function BaseBlueprintsView() {
@@ -104,11 +102,6 @@ export function BaseBlueprintsView() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setActiveSearch(searchQuery.trim());
-  };
-
-  const handleChipClick = (chip: string) => {
-    setSearchQuery(chip);
-    setActiveSearch(chip);
   };
 
   const VideoCard = ({ video }: { video: YouTubeVideoSnippet }) => {
@@ -236,30 +229,6 @@ export function BaseBlueprintsView() {
             onBlur={(e) => e.target.style.borderColor = '#333'}
           />
         </form>
-
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {QUICK_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              onClick={() => handleChipClick(chip)}
-              type="button"
-              style={{
-                padding: '0.4rem 1rem',
-                backgroundColor: activeSearch.toLowerCase().includes(chip.toLowerCase()) ? '#E50914' : '#1a1a1a',
-                color: activeSearch.toLowerCase().includes(chip.toLowerCase()) ? '#fff' : '#ccc',
-                border: '1px solid',
-                borderColor: activeSearch.toLowerCase().includes(chip.toLowerCase()) ? '#E50914' : '#333',
-                borderRadius: '20px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                fontWeight: 'bold',
-                fontSize: '0.85rem'
-              }}
-            >
-              {chip}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Search Results Section */}

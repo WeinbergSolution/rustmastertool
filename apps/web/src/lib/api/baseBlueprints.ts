@@ -118,3 +118,116 @@ export async function refreshBaseBlueprints(rows: DiscoverRowRequest[], maxRows?
     throw err;
   }
 }
+
+
+export async function saveBlueprint(youtubeVideoId: string, notes?: string): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) throw new Error('Not logged in');
+    
+    // Get DB UUID for the youtube video
+    const { data: bp, error: fetchErr } = await supabase
+      .from('base_blueprints')
+      .select('id')
+      .eq('youtube_video_id', youtubeVideoId)
+      .single();
+      
+    if (fetchErr || !bp) throw new Error('Blueprint not found in DB');
+    
+    const { error } = await supabase
+      .from('user_saved_blueprints')
+      .upsert({ 
+        user_id: session.user.id, 
+        blueprint_id: bp.id,
+        notes: notes || null
+      }, { onConflict: 'user_id,blueprint_id' });
+      
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    console.error('Error saving blueprint:', e);
+    return false;
+  }
+}
+
+export async function unsaveBlueprint(youtubeVideoId: string): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) throw new Error('Not logged in');
+    
+    const { data: bp, error: fetchErr } = await supabase
+      .from('base_blueprints')
+      .select('id')
+      .eq('youtube_video_id', youtubeVideoId)
+      .single();
+      
+    if (fetchErr || !bp) return true; // already gone
+    
+    const { error } = await supabase
+      .from('user_saved_blueprints')
+      .delete()
+      .eq('user_id', session.user.id)
+      .eq('blueprint_id', bp.id);
+      
+    if (error) throw error;
+    return true;
+  } catch (e) {
+    console.error('Error unsaving blueprint:', e);
+    return false;
+  }
+}
+
+export async function getSavedBlueprintIds(): Promise<string[]> {
+  if (!supabase) return [];
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return [];
+    
+    const { data, error } = await supabase
+      .from('user_saved_blueprints')
+      .select('base_blueprints(youtube_video_id)')
+      .eq('user_id', session.user.id);
+      
+    if (error) throw error;
+    return (data || []).map(d => (d.base_blueprints as any).youtube_video_id).filter(Boolean);
+  } catch (e) {
+    console.error('Error getting saved blueprint IDs:', e);
+    return [];
+  }
+}
+
+export async function getSavedBlueprintsFull(): Promise<YouTubeVideoSnippet[]> {
+  if (!supabase) return [];
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return [];
+    
+    const { data, error } = await supabase
+      .from('user_saved_blueprints')
+      .select('base_blueprints(*)')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
+      
+    if (error) throw error;
+    
+    return (data || []).map(d => {
+      const item = d.base_blueprints as any;
+      if (!item) return null;
+      return {
+        id: item.youtube_video_id,
+        title: item.title,
+        channelTitle: item.channel_title,
+        channelId: item.channel_id,
+        description: item.description,
+        thumbnailUrl: item.thumbnail_url,
+        publishedAt: item.published_at,
+      };
+    }).filter(Boolean) as YouTubeVideoSnippet[];
+  } catch (e) {
+    console.error('Error getting saved blueprints full:', e);
+    return [];
+  }
+}
+

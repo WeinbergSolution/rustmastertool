@@ -56,6 +56,29 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    const mode = 'manual'; // Default to manual unless triggered by cron (could pass in body)
+    let runId: string | undefined;
+
+    const startTime = new Date();
+    
+    // Log start of run
+    const { data: runData, error: runError } = await supabase
+      .from('server_pulse_ingest_runs')
+      .insert({
+        category: category || query || 'unknown',
+        mode,
+        dry_run: dryRun,
+        max_pages: maxP,
+        started_at: startTime.toISOString(),
+        status: 'running'
+      })
+      .select('id')
+      .single();
+      
+    if (runData && !runError) {
+      runId = runData.id;
+    }
+
     let currentUrl: string | null = `https://api.battlemetrics.com/servers?filter[game]=rust&page[size]=${pSize}`;
     
     if (query) {
@@ -64,7 +87,6 @@ Deno.serve(async (req) => {
       currentUrl += `&filter[search]=${encodeURIComponent(category.toLowerCase())}`;
     }
 
-    const startTime = new Date();
     let pagesProcessed = 0;
     let serversFound = 0;
     let serverUpsertAttempts = 0;
@@ -163,6 +185,49 @@ Deno.serve(async (req) => {
     }
 
     const finishedAt = new Date();
+    const finalStatus = errors.length > 0 ? (serverUpsertAttempts > 0 ? 'partial_success' : 'failed') : 'success';
+    const noteStr = dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.";
+    
+    if (runId) {
+      // Update run log
+      await supabase
+        .from('server_pulse_ingest_runs')
+        .update({
+          finished_at: finishedAt.toISOString(),
+          pages_processed: pagesProcessed,
+          servers_found: serversFound,
+          server_upsert_attempts: dryRun ? serversFound : serverUpsertAttempts,
+          snapshot_insert_attempts: dryRun ? serversFound : snapshotInsertAttempts,
+          errors_count: errors.length,
+          errors: errors.length > 0 ? errors : null,
+          status: finalStatus,
+          note: noteStr
+        })
+        .eq('id', runId);
+
+      // Also update scheduler state if category is one of the defaults
+      const catLower = category ? category.toLowerCase() : '';
+      if (['official', 'community', 'modded'].includes(catLower) && !dryRun) {
+         const updateObj: any = {
+           last_run_at: finishedAt.toISOString(),
+           updated_at: finishedAt.toISOString(),
+         };
+         if (finalStatus === 'success' || finalStatus === 'partial_success') {
+           updateObj.last_success_at = finishedAt.toISOString();
+           updateObj.consecutive_errors = 0;
+         } else {
+           updateObj.last_error_at = finishedAt.toISOString();
+           updateObj.last_error_message = errors[0] || 'Unknown error';
+           // In raw postgres we would do consecutive_errors + 1, here we would need to read it first.
+           // To keep it simple, we just set it to 1 or let a trigger handle it. We'll skip consecutive increment for now.
+         }
+         
+         await supabase
+           .from('server_pulse_scheduler_state')
+           .update(updateObj)
+           .eq('id', catLower);
+      }
+    }
     
     return new Response(
       JSON.stringify({
@@ -174,7 +239,7 @@ Deno.serve(async (req) => {
         snapshot_insert_attempts: dryRun ? serversFound : snapshotInsertAttempts,
         errors_count: errors.length,
         errors: errors.length > 0 ? errors : undefined,
-        note: dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.",
+        note: noteStr,
         started_at: startTime,
         finished_at: finishedAt
       }),

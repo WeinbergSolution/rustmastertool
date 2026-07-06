@@ -36,16 +36,23 @@ serve(async (req) => {
       }
 
       // Build the callback URL for this edge function
+      // Supabase Edge Functions terminate SSL at the gateway and strip /functions/v1 from req.url
+      // We must reconstruct the public URL using SUPABASE_URL if available
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
       const requestUrl = new URL(req.url);
-      const functionBaseUrl = `${requestUrl.origin}${requestUrl.pathname}`;
+      
+      const functionBaseUrl = supabaseUrl 
+        ? `${supabaseUrl}/functions/v1/steam-auth` 
+        : `${requestUrl.origin}/functions/v1/steam-auth`; // fallback for local dev if SUPABASE_URL isn't set perfectly
+        
       const callbackUrl = new URL(functionBaseUrl);
       
       callbackUrl.searchParams.set('action', 'callback');
       callbackUrl.searchParams.set('client_origin', cleanOrigin);
       
       const returnTo = callbackUrl.toString();
-      // Realm should just be the origin of the edge function / project
-      const realm = requestUrl.origin;
+      // Realm should be the project root
+      const realm = supabaseUrl || requestUrl.origin;
 
       const steamOpenIdUrl = new URL('https://steamcommunity.com/openid/login');
       steamOpenIdUrl.searchParams.set('openid.ns', 'http://specs.openid.net/auth/2.0');

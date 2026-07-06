@@ -16,6 +16,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [server, setServer] = useState<BattleMetricsServerDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAuthCta, setShowAuthCta] = useState<'watchlist' | 'active_server' | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -81,7 +82,13 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
         <>
           <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <button 
-              onClick={() => onToggleWatch(server.id, server.internal_uuid)}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  setShowAuthCta('watchlist');
+                  return;
+                }
+                onToggleWatch(server.id, server.internal_uuid);
+              }}
               style={{ 
                 width: '100%', padding: '0.75rem', borderRadius: '4px', cursor: 'pointer',
                 backgroundColor: isWatched ? 'var(--bg-hover)' : 'var(--accent-rust)',
@@ -92,21 +99,53 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
             >
               {isWatched ? `★ ${isLive ? 'Remove from Watchlist' : 'Remove from Local Watchlist'}` : `☆ ${isLive ? 'Add to Watchlist' : 'Add to Local Watchlist'}`}
             </button>
-            {isAuthenticated && (
-              <button 
-                onClick={() => onSetActiveServer && onSetActiveServer(server.id, server.internal_uuid)}
-                disabled={isActiveServer}
-                style={{ 
-                  width: '100%', padding: '0.75rem', borderRadius: '4px',
-                  cursor: isActiveServer ? 'default' : 'pointer',
-                  backgroundColor: isActiveServer ? 'var(--status-success)' : 'transparent',
-                  color: isActiveServer ? '#fff' : 'var(--text-primary)',
-                  border: isActiveServer ? 'none' : '1px solid var(--border-color)',
-                  fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center'
-                }}
-              >
-                {isActiveServer ? '✓ Active Server' : 'Set as Active Server'}
-              </button>
+            <button 
+              onClick={() => {
+                if (!isAuthenticated) {
+                  setShowAuthCta('active_server');
+                  return;
+                }
+                if (onSetActiveServer) onSetActiveServer(server.id, server.internal_uuid);
+              }}
+              disabled={isActiveServer}
+              style={{ 
+                width: '100%', padding: '0.75rem', borderRadius: '4px',
+                cursor: isActiveServer ? 'default' : 'pointer',
+                backgroundColor: isActiveServer ? 'var(--status-success)' : 'transparent',
+                color: isActiveServer ? '#fff' : 'var(--text-primary)',
+                border: isActiveServer ? 'none' : '1px solid var(--border-color)',
+                fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center'
+              }}
+            >
+              {isActiveServer ? '✓ Active Server' : 'Set as Active Server'}
+            </button>
+
+            {showAuthCta && (
+              <div style={{ marginTop: '0.5rem', padding: '1rem', border: '1px dashed var(--accent-rust)', borderRadius: '4px', backgroundColor: 'rgba(205, 65, 43, 0.1)' }}>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', textAlign: 'center' }}>
+                  {showAuthCta === 'watchlist' ? 'Sign in with Steam to add this server to your Watchlist.' : 'Sign in with Steam to set an Active Server.'}
+                </p>
+                <button 
+                  className="btn-steam" 
+                  onClick={() => {
+                     // Save context to session storage before redirecting
+                     window.sessionStorage.setItem('rm_search_pending_action', showAuthCta);
+                     window.sessionStorage.setItem('rm_search_selected_server', server.id);
+                     const query = (document.querySelector('input[placeholder="Search live Rust servers by name..."]') as HTMLInputElement)?.value || '';
+                     window.sessionStorage.setItem('rm_search_query', query);
+                     
+                     // Trigger Steam Login
+                     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                     if (supabaseUrl) {
+                       const origin = encodeURIComponent(window.location.origin);
+                       window.location.href = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
+                     }
+                  }}
+                  style={{ width: '100%', justifyContent: 'center' }}
+                >
+                  Sign in with Steam
+                </button>
+              </div>
             )}
           </div>
 

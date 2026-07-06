@@ -33,6 +33,12 @@ export function AuthUI() {
 
   const handleLogout = async () => {
     if (!supabase) return;
+    
+    // Clear search context on explicit sign out
+    window.sessionStorage.removeItem('rm_search_query');
+    window.sessionStorage.removeItem('rm_search_selected_server');
+    window.sessionStorage.removeItem('rm_search_pending_action');
+
     await supabase.auth.signOut();
   };
 

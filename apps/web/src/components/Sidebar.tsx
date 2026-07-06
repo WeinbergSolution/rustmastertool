@@ -1,6 +1,12 @@
 import { LayoutDashboard, Server, Eye, Map as MapIcon, Bell, Settings } from 'lucide-react';
+import type { ViewState } from './AppShell';
 
-export function Sidebar() {
+interface SidebarProps {
+  currentView?: ViewState;
+  onViewChange?: (view: ViewState) => void;
+}
+
+export function Sidebar({ currentView = 'dashboard', onViewChange }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -9,13 +15,21 @@ export function Sidebar() {
       </div>
       
       <nav className="sidebar-nav">
-        <div className="nav-item active" style={{ cursor: 'pointer' }}>
+        <div 
+          className={`nav-item ${currentView === 'dashboard' ? 'active' : ''}`} 
+          style={{ cursor: 'pointer' }}
+          onClick={() => onViewChange?.('dashboard')}
+        >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
         </div>
-        <div className="nav-item" style={{ opacity: 0.5, cursor: 'not-allowed' }} title="Coming in a future update">
+        <div 
+          className={`nav-item ${currentView === 'servers' ? 'active' : ''}`} 
+          style={{ cursor: 'pointer' }}
+          onClick={() => onViewChange?.('servers')}
+        >
           <Server size={20} />
-          <span>Servers <span style={{ fontSize: '0.65rem', marginLeft: '4px', color: 'var(--accent-rust)' }}>(Roadmap)</span></span>
+          <span>Servers</span>
         </div>
         <div className="nav-item" style={{ opacity: 0.5, cursor: 'not-allowed' }} title="Coming in a future update">
           <Eye size={20} />

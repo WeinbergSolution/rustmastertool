@@ -36,14 +36,16 @@ serve(async (req) => {
       }
 
       // Build the callback URL for this edge function
-      const callbackUrl = new URL(req.url);
-      callbackUrl.search = '';
+      const requestUrl = new URL(req.url);
+      const functionBaseUrl = `${requestUrl.origin}${requestUrl.pathname}`;
+      const callbackUrl = new URL(functionBaseUrl);
+      
       callbackUrl.searchParams.set('action', 'callback');
       callbackUrl.searchParams.set('client_origin', cleanOrigin);
       
       const returnTo = callbackUrl.toString();
       // Realm should just be the origin of the edge function / project
-      const realm = `${callbackUrl.protocol}//${callbackUrl.host}`;
+      const realm = requestUrl.origin;
 
       const steamOpenIdUrl = new URL('https://steamcommunity.com/openid/login');
       steamOpenIdUrl.searchParams.set('openid.ns', 'http://specs.openid.net/auth/2.0');

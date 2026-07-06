@@ -247,6 +247,13 @@ Deno.serve(async (req) => {
               confidence: conf,
               is_custom_map: mapType === 'custom',
               custom_map_url: details.rust_world_levelurl,
+              rustmaps_url: details.rust_maps?.url || null,
+              rustmaps_thumbnail_url: details.rust_maps?.thumbnailUrl || null,
+              rustmaps_map_url: details.rust_maps?.mapUrl || null,
+              monument_count: details.rust_maps?.monumentCount || null,
+              monument_names: details.rust_maps?.monuments || null,
+              monument_counts: details.rust_maps?.monumentCounts || null,
+              biome_percentages: details.rust_maps?.biomePercentages || null,
               raw_source: hasRustMaps ? details.rust_maps : { 
                 map: details.map, 
                 rust_world_seed: details.rust_world_seed, 

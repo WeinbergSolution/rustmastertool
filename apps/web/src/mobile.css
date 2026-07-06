@@ -23,6 +23,12 @@
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
   }
+  .unauth-hero {
+    background: radial-gradient(circle at top right, rgba(205, 65, 43, 0.15), transparent 60%);
+    padding: 2rem 1rem !important;
+    margin: -2rem -2rem 0 -2rem; /* bleed out of the card padding */
+    border-bottom: 1px solid var(--border-color);
+  }
   .phase-cards-rail {
     display: flex !important;
     overflow-x: auto;
@@ -85,7 +91,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
     z-index: 999;
     display: none;
     opacity: 0;
@@ -107,14 +114,19 @@
   }
 
   .mobile-menu-btn {
-    background: none;
-    border: none;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     color: var(--text-main);
     cursor: pointer;
     padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background 0.2s;
+  }
+  .mobile-menu-btn:active {
+    background: var(--bg-hover);
   }
 
   .content-area {
@@ -138,6 +150,14 @@
     padding-bottom: 1rem;
     height: auto !important;
     max-height: 50vh;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .servers-list-container::-webkit-scrollbar,
+  div[style*="width: 380px"]::-webkit-scrollbar,
+  div[style*="width: 400px"]::-webkit-scrollbar {
+    display: none;
   }
 
   div[style*="flex: 1; overflow-y: auto"],
@@ -152,6 +172,7 @@
     width: 100% !important;
     height: auto !important;
     object-fit: contain;
+    border-radius: 4px;
   }
 
   div[style*="display: flex; gap: 0.5rem; flex-wrap: wrap"] {
@@ -182,6 +203,9 @@
   div[style*="min-width: 320px"],
   .blueprint-card {
     min-width: 80vw !important;
+    background: linear-gradient(145deg, var(--bg-card), var(--bg-panel));
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   }
 
   /* Server Pulse */
@@ -207,5 +231,13 @@
     font-size: 0.875rem;
     display: flex;
     justify-content: center;
+    background: linear-gradient(180deg, #2a2e38 0%, #171a21 100%);
+    border-color: #000;
+  }
+  
+  .card {
+    background: linear-gradient(145deg, var(--bg-card), var(--bg-panel));
+    border: 1px solid #1f1f1f;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
   }
 }

@@ -288,3 +288,9 @@ a:hover {
   padding-left: 2rem;
   border-left: 1px solid var(--border-color);
 }
+
+.phase-cards-rail {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}

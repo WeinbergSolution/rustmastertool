@@ -116,37 +116,24 @@ export function Dashboard({ onViewChange }: DashboardProps) {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <p style={{ color: 'var(--text-muted)', margin: '0 0 1rem 0', fontSize: '1.1rem' }}>
-                Welcome to RustMasterTool. Sign in with Steam to unlock your personalized survival companion.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button 
-                  onClick={() => {
-                    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                    if (supabaseUrl) {
-                      const origin = encodeURIComponent(window.location.origin);
-                      window.location.href = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
-                    }
-                  }}
-                  className="btn-steam"
-                >
-                  Sign in with Steam
-                </button>
-                <button 
-                  onClick={() => onViewChange?.('servers')}
-                  style={{ padding: '0.5rem 1.5rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                  Browse Servers Anonymously
-                </button>
-              </div>
-            </div>
+          <div className="unauth-hero" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '1rem 0' }}>
+            <p style={{ color: 'var(--text-main)', margin: '0 0 1.5rem 0', fontSize: '1.1rem', maxWidth: '600px', lineHeight: '1.6' }}>
+              Find, filter, and analyze live Rust servers before you join. Track server performance, view map intelligence, and discover blueprints.
+            </p>
+            <button 
+              onClick={() => onViewChange?.('servers')}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.875rem 1.5rem', background: 'var(--accent-rust)', border: 'none', color: '#fff', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', boxShadow: '0 0 15px rgba(206, 66, 43, 0.4)', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+            >
+              <Server size={20} /> Explore Servers
+            </button>
+            <p style={{ color: 'var(--text-disabled)', fontSize: '0.85rem', marginTop: '1rem' }}>
+              Browsing works without login. Sign in with Steam to unlock saved watchlists and active connection tracking.
+            </p>
           </div>
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+      <div className="phase-cards-rail">
         
         {/* Pre-Game */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

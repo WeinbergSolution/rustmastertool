@@ -81,6 +81,7 @@ export function ServerCard({ server, onSelect }: { server: ServerCardData, onSel
             </span>
           )}
           {server.rank && <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>Rank #{server.rank}</span>}
+          <span className="badge" style={{ backgroundColor: 'rgba(205, 65, 43, 0.1)', color: 'var(--accent-rust)', border: '1px solid rgba(205, 65, 43, 0.3)' }}>Pulse collecting</span>
         </div>
       </div>
       

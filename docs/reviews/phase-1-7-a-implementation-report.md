@@ -1,39 +1,35 @@
-# Phase 1.7-A Implementation Report: Server Pulse Foundation
+# Phase 1.7-B Implementation Report: Server Pulse Activation
 
 ## Zielsetzung
-Aufbau einer Foundation für historische Serverdaten ("Server Pulse" / Population Retention Intelligence), mit deren Hilfe später Verlaufskurven, Queue-Druck und Health-Scores pro Rust-Server visualisiert werden können.
+Aktivierung der Server Pulse Foundation auf Staging und Ausarbeitung der Retention-Logik, ohne Fake-Daten zu generieren. Verbesserung der Gamer-UI durch Entfernen technischer Setup-Kommandos und Einführen ehrlicher "Collecting"-States.
 
-## Was implementiert wurde
-1. **DB-Schema (`20260706001000_server_population_snapshots.sql`)**:
-   - `server_population_snapshots`: Speichert regelmäßige Messpunkte von Server-Populationen.
-   - `server_wipe_events`: Speichert aufgetretene Wipes.
-   - Die Tabellen sind public read-only (für die Anzeige im UI). Writes erfolgen ausschließlich über Service Role (Edge Function).
-2. **Edge Function (`server-pulse-ingest`)**:
-   - Fetched BattleMetrics-Daten seitenweise (limitiert auf max 5 Seiten pro Lauf).
-   - Führt ein Upsert in `provider_servers` durch.
-   - Fügt Snapshots in `server_population_snapshots` ein (truncating to minute um Spams zu vermeiden).
-   - Abgesichert via `SERVER_PULSE_INGEST_SECRET`.
-3. **Frontend UI (Server Pulse)**:
-   - Neues `Server Pulse` Item in der Sidebar (Partial).
-   - Eigene `ServerPulseView.tsx` mit einer Info, was Pulse ist, und einem Ingest-Runbook-Block für Admins.
-   - Im `ServerDetailPanel.tsx` wird nach dem Fetch des internen Server-UUIDs ein Snapshot-Check durchgeführt. Falls Snapshots vorhanden sind, werden Anzahl und letzter Beobachtungszeitpunkt angezeigt (mit einem Mini-Graph-Platzhalter). Falls nicht, ein ehrlicher Empty State.
-4. **Docs & Runbooks**:
-   - `docs/runbooks/phase-1-7-a-server-pulse-ingest.md` angelegt.
+## Was implementiert wurde (Phase 1.7-B)
+1. **Remote Deployments**:
+   - `supabase db push` wurde erfolgreich ausgeführt (Migration `20260706001000_server_population_snapshots.sql` ist auf Staging).
+   - `server-pulse-ingest` Edge Function wurde erfolgreich auf Staging deployed.
+2. **Server Pulse View Aufwertung**:
+   - Die technischen `curl`-Runbook-Kommandos wurden aus der normalen UI entfernt.
+   - Eine echte Status-Anzeige ruft nun über Supabase den globalen Count von `provider_servers` und `server_population_snapshots` ab und zeigt "Data collection is active" oder "Waiting for first ingestion".
+3. **Retention Buckets Logik (`retention.ts`)**:
+   - Die Funktion `calculatePulseSummary` berechnet ehrlich Peak Players (innerhalb 24h nach Wipe) und baut Buckets (6h, 12h, 18h, 24h, 30h) auf Basis von echten Snapshots auf.
+   - Enthält Health Labels (`Strong Retention`, `Moderate Drop`, `Fast Dying`, `Not enough data`).
+4. **Server Card & Server Detail UI**:
+   - **Server Card**: Zeigt ein dezentes "Pulse collecting" Badge als Teaser für das neue Feature an.
+   - **Server Detail**: Zeigt die berechneten Retention-Buckets an, wenn genügend Snapshots vorhanden sind. Wenn nicht, wird ehrlich kommuniziert: "Server Pulse is collecting historical snapshots...".
+5. **Topbar Phase Label**:
+   - Wurde von "Phase 1.3-A" auf "Server Intelligence Alpha" aktualisiert.
 
 ## Was NICHT implementiert wurde (Guardrails eingehalten)
 - Keine Fake-Daten, keine Dummy-Graphen.
-- Kein aggressives Crawling, harte Limits auf Pages.
-- Keine ML oder Predictions.
-- Keine Map/Rust+ Integration.
-- Steam Login, Servers Explorer, Watchlist, Active Server und Logout Boundary blieben unberührt und intakt.
+- Kein aggressives Crawling.
+- **Ingestion Execution**: Da das Secret `SERVER_PULSE_INGEST_SECRET` auf Staging aktuell NICHT gesetzt war, wurde die Ingestion *nicht* getriggert, um Errors zu vermeiden. Dies ist nun ein Admin-Task für den Owner.
 
 ## Security Checks
-- Tokens/Secrets verbleiben im Backend.
-- Das Runbook enthält keine echten Passwörter.
-- RLS auf DB-Ebene schützt vor Client-Writes.
+- Typecheck & Build: GREEN
+- Secret Check: GREEN (Kein Ingest Secret, keine DB URLs im Frontend).
 
-## Nächste Schritte (Owner Gate)
-Der Code ist bereit, aber **es wurde noch nichts nach Remote gepusht/deployed.** 
-1. `npx supabase db push` nach Freigabe.
-2. `npx supabase functions deploy server-pulse-ingest` nach Freigabe.
-3. Danach manueller Ingest-Test via cURL.
+## Nächste Schritte (Owner Task)
+Da das `SERVER_PULSE_INGEST_SECRET` auf Supabase noch fehlt, muss der Owner Folgendes tun:
+1. `npx supabase secrets set SERVER_PULSE_INGEST_SECRET="<DEIN_WUNSCH_SECRET>"`
+2. Danach manueller Ingest-Test via cURL (Runbook liegt in `docs/runbooks/phase-1-7-a-server-pulse-ingest.md`).
+3. Browser öffnen und prüfen, ob die UI nach dem ersten Lauf erste Daten anzeigt.

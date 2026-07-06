@@ -8,7 +8,7 @@ export function Topbar() {
   return (
     <header className="topbar">
       <div className="brand">
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>RustMasterTool <span style={{ color: 'var(--text-disabled)', fontSize: '0.875rem' }}>Phase 1.3-A</span></h1>
+        <h1 style={{ fontSize: '1.25rem', fontWeight: 700 }}>RustMasterTool <span style={{ color: 'var(--text-disabled)', fontSize: '0.875rem' }}>Server Intelligence Alpha</span></h1>
       </div>
       
       <div className="badges">

@@ -122,13 +122,10 @@ export function ServersExplorer() {
 
   useEffect(() => {
     const isMainTab = activeTab === 'official' || activeTab === 'community' || activeTab === 'modded';
-    if (isMainTab && !servers.length && !hasSearched) {
+    if (isMainTab) {
       fetchServers(false);
-    } else if (isMainTab && hasSearched && !isSearching && !isLoadingMore) {
-       // if they click a new tab, we should refetch
-       // but we don't want an infinite loop. So we only trigger if we aren't loading.
-       // actually, it's safer to not auto-fetch on tab switch if we already have results? No, if tab changes we must fetch new category.
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleSearch = async (e?: React.FormEvent) => {
@@ -175,15 +172,7 @@ export function ServersExplorer() {
     } catch (e) {}
   };
 
-  // We should fetch when tab changes.
-  useEffect(() => {
-     if (activeTab === 'official' || activeTab === 'community' || activeTab === 'modded') {
-       if (!isSearching && hasSearched) {
-          fetchServers(false);
-       }
-     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+
 
   const pendingActionMsg = window.sessionStorage.getItem('serverExplorer.pendingAction');
 

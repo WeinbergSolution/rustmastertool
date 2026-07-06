@@ -213,9 +213,24 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', gridColumn: '1 / -1' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Address</span>
-                <span className="value-highlight" style={{ fontFamily: 'monospace', backgroundColor: 'var(--bg-hover)', padding: '0.5rem', borderRadius: '4px', userSelect: 'all' }}>
-                  client.connect {server.ip}:{server.port}
-                </span>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <span className="value-highlight" style={{ flex: 1, fontFamily: 'monospace', backgroundColor: 'var(--bg-hover)', padding: '0.5rem', borderRadius: '4px', userSelect: 'all', display: 'flex', alignItems: 'center' }}>
+                    client.connect {server.ip}:{server.port}
+                  </span>
+                  <button 
+                    onClick={(e) => {
+                       const btn = e.currentTarget;
+                       navigator.clipboard.writeText(`client.connect ${server.ip}:${server.port}`);
+                       const originalText = btn.innerText;
+                       btn.innerText = 'Copied!';
+                       setTimeout(() => { btn.innerText = originalText; }, 2000);
+                    }}
+                    style={{ padding: '0.5rem 1rem', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                    title="Copy connect command"
+                  >
+                    Copy Command
+                  </button>
+                </div>
               </div>
             </div>
           </div>

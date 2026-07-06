@@ -42,10 +42,11 @@ serve(async (req) => {
         
         if (query) {
           params.append('filter[search]', query.slice(0, 100));
+        } else if (rust_type && ['official', 'community', 'modded'].includes(rust_type.toLowerCase())) {
+          // Fallback to searching by category name if no query provided
+          params.append('filter[search]', rust_type.toLowerCase());
         }
-        if (rust_type && ['official', 'community', 'modded'].includes(rust_type.toLowerCase())) {
-          params.append('filter[rust_type]', rust_type.toLowerCase());
-        }
+        
         if (sort) {
           params.append('sort', sort);
         }
@@ -72,8 +73,9 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text()
       console.error(`BattleMetrics API Error: ${response.status} ${response.statusText}`, errorText)
-      return new Response(JSON.stringify({ error: `BattleMetrics API Error: ${response.status}` }), {
-        status: response.status,
+      // Return 200 so supabase-js doesn't throw a generic FunctionsHttpError, but pass the error in the payload
+      return new Response(JSON.stringify({ error: `BattleMetrics API Error: ${response.status}`, details: errorText }), {
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
@@ -131,10 +133,10 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Edge Function Error:', error)
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: error.message || 'Internal Server Error' }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }

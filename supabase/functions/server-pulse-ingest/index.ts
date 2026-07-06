@@ -45,7 +45,6 @@ Deno.serve(async (req) => {
     }
 
     let maxP = Math.min(maxPages, 5); // Default from payload, might be overridden by state
-    const pSize = Math.min(pageSize, 100);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -63,6 +62,7 @@ Deno.serve(async (req) => {
     const catLower = category ? category.toLowerCase() : '';
 
     // -- STATE RETRIEVAL FOR ROTATION --
+    let pSize = Math.min(pageSize, 100);
     let currentUrl: string | null = `https://api.battlemetrics.com/servers?filter[game]=rust&page[size]=${pSize}`;
     let startPage = 1;
     let startPageUrl = currentUrl;
@@ -81,6 +81,10 @@ Deno.serve(async (req) => {
          
          if (mode === 'scheduled') {
            maxP = stateData.max_pages_per_run || 1;
+         }
+         
+         if (stateData.page_size) {
+           pSize = Math.min(stateData.page_size, 100);
          }
          
          if (stateData.next_page_url) {

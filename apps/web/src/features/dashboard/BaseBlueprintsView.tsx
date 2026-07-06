@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert, Bookmark, BookmarkCheck } from 'lucide-react';
-import { discoverBaseBlueprints, searchBaseBlueprints, refreshBaseBlueprints, saveBlueprint, unsaveBlueprint, getSavedBlueprintIds, getSavedBlueprintsFull, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
+import { discoverBaseBlueprints, searchBaseBlueprints, saveBlueprint, unsaveBlueprint, getSavedBlueprintIds, getSavedBlueprintsFull, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 import { supabase } from '../../lib/supabaseClient';
 const DISCOVER_ROWS = [
   // Base Builds
@@ -42,10 +42,13 @@ const GROUPS = ['Base Builds', 'Rust Guides', 'Community / Risky'];
 
 const getRowBadge = (key: string) => {
   if (key === 'bandit_camp_casino') {
-    return <span style={{ backgroundColor: '#ff9900', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.5rem', fontWeight: 'bold', verticalAlign: 'middle' }}>GAMBLING</span>;
+    return <span style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#ccc', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle', border: '1px solid rgba(255,255,255,0.2)' }}>INFORMATIONAL</span>;
   }
   if (key === 'rust2_reveal' || key === 'rust2_news') {
-    return <span style={{ backgroundColor: '#3399ff', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.5rem', fontWeight: 'bold', verticalAlign: 'middle' }}>SPECULATION / LEAK</span>;
+    return <span style={{ backgroundColor: 'rgba(51, 153, 255, 0.1)', color: '#3399ff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle', border: '1px solid rgba(51,153,255,0.2)' }}>SPECULATIVE</span>;
+  }
+  if (key === 'cheater_reports') {
+    return <span style={{ backgroundColor: 'rgba(229, 9, 20, 0.1)', color: '#E50914', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle', border: '1px solid rgba(229,9,20,0.2)' }}>REPORTS / BANS</span>;
   }
   return null;
 };
@@ -72,9 +75,6 @@ export function BaseBlueprintsView() {
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const isDev = import.meta.env.DEV;
 
   useEffect(() => {
     if (!supabase) return;
@@ -108,23 +108,6 @@ export function BaseBlueprintsView() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeVideoId]);
-
-  const handleRefreshLibrary = async () => {
-    setIsRefreshing(true);
-    try {
-      // Dev only action to fill DB if needed from API
-      const rowsToRefresh = DISCOVER_ROWS.slice(0, 3);
-      await refreshBaseBlueprints(rowsToRefresh);
-      
-      setIsDiscoverLoading(true);
-      const rows = await discoverBaseBlueprints(DISCOVER_ROWS);
-      setDiscoverData(rows);
-    } catch (err) {
-      console.error('Failed to refresh library', err);
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
 
   useEffect(() => {
     let mounted = true;
@@ -214,30 +197,31 @@ export function BaseBlueprintsView() {
       <div 
         onClick={() => setActiveVideoId(video.id)}
         style={{ 
-          overflow: 'hidden',
+          overflow: 'visible',
           cursor: 'pointer',
-          transition: 'transform 0.3s, z-index 0.3s',
+          transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           display: 'flex',
           flexDirection: 'column',
-          minWidth: '320px',
-          maxWidth: '320px',
-          transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+          minWidth: '280px',
+          maxWidth: '280px',
+          transform: isHovered ? 'scale(1.06) translateY(-4px)' : 'scale(1)',
           zIndex: isHovered ? 10 : 1,
-          position: 'relative'
+          position: 'relative',
+          borderRadius: '8px'
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', backgroundColor: '#111', borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', backgroundColor: '#111', borderRadius: '8px', overflow: 'hidden', boxShadow: isHovered ? '0 10px 20px rgba(0,0,0,0.8)' : '0 4px 6px rgba(0,0,0,0.3)' }}>
           <img 
             src={video.thumbnailUrl} 
             alt={video.title} 
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
           />
           {isHovered && (
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                <Play size={24} fill="#fff" color="#fff" />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background-color 0.2s' }}>
+              <div style={{ backgroundColor: 'rgba(229, 9, 20, 0.9)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(229, 9, 20, 0.4)' }}>
+                <Play size={24} fill="#fff" color="#fff" style={{ marginLeft: '4px' }} />
               </div>
             </div>
           )}
@@ -246,22 +230,22 @@ export function BaseBlueprintsView() {
             style={{ 
               position: 'absolute', top: '0.5rem', right: '0.5rem', 
               padding: '0.5rem', borderRadius: '50%', 
-              backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+              backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
               display: isHovered || isSaved ? 'flex' : 'none',
               transition: 'background-color 0.2s',
               zIndex: 20
             }}
             title={isSaved ? "Remove from saved" : "Save blueprint"}
           >
-            {isSaved ? <BookmarkCheck size={18} color="#E50914" /> : <Bookmark size={18} color="#fff" />}
+            {isSaved ? <BookmarkCheck size={16} color="#E50914" /> : <Bookmark size={16} color="#fff" />}
           </div>
         </div>
-        <div style={{ padding: '0.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
-          <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 'bold', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.3, color: '#fff' }}>
+        <div style={{ padding: '0.75rem 0.25rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
+          <h3 style={{ margin: 0, fontSize: '0.9rem', fontWeight: '600', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4, color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
             {video.title.replace(/&#39;/g, "'").replace(/&amp;/g, '&')}
           </h3>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-            <div style={{ color: '#aaa', fontSize: '0.8rem' }}>
+            <div style={{ color: '#888', fontSize: '0.75rem', fontWeight: '500' }}>
               {video.channelTitle || 'YouTube'}
             </div>
           </div>
@@ -275,8 +259,8 @@ export function BaseBlueprintsView() {
       <div style={{ width: '200px', height: '24px', backgroundColor: 'var(--bg-panel)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
       <div style={{ display: 'flex', gap: '1rem', overflow: 'hidden' }}>
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} style={{ minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <div style={{ width: '100%', paddingTop: '56.25%', backgroundColor: 'var(--bg-panel)', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+          <div key={i} style={{ minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ width: '100%', paddingTop: '56.25%', backgroundColor: 'var(--bg-panel)', borderRadius: '8px', animation: 'pulse 1.5s infinite' }} />
             <div style={{ width: '90%', height: '16px', backgroundColor: 'var(--bg-panel)', borderRadius: '2px', animation: 'pulse 1.5s infinite' }} />
             <div style={{ width: '60%', height: '14px', backgroundColor: 'var(--bg-panel)', borderRadius: '2px', animation: 'pulse 1.5s infinite' }} />
           </div>
@@ -286,98 +270,73 @@ export function BaseBlueprintsView() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', backgroundColor: '#0a0a0a' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#0a0a0a' }}>
       <style>{`
         @keyframes pulse {
           0% { opacity: 1; }
           50% { opacity: 0.5; }
           100% { opacity: 1; }
         }
+        .netflix-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
         .netflix-scrollbar::-webkit-scrollbar {
-          height: 8px;
-        }
-        .netflix-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .netflix-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(255, 255, 255, 0.2);
-          border-radius: 4px;
-        }
-        .netflix-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(255, 255, 255, 0.4);
+          display: none;
         }
       `}</style>
       
-      {/* Hero Section */}
-      <div style={{ marginBottom: '2rem', padding: '2rem 1rem 0 1rem' }}>
-        <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#fff' }}>
-          <MonitorPlay size={40} style={{ color: '#E50914' }} />
-          Base Blueprints
-        </h2>
-        <p style={{ color: '#aaa', fontSize: '1.1rem', margin: 0, maxWidth: '800px' }}>
-          Watch Rust base builds, bunker designs, starter layouts and raid-resistant concepts without leaving RustMasterTool.
-        </p>
-      </div>
-
-      {/* Search & Header */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem', padding: '0 1rem' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.75rem', margin: '0', color: '#fff', fontWeight: 'bold' }}>Library</h2>
-          <p style={{ margin: '0.5rem 0 0 0', color: '#ccc', fontSize: '0.95rem' }}>
-            Discover top tier base designs and guides from the community.
+      {/* Hero & Search Section */}
+      <div style={{ marginBottom: '2.5rem', padding: '2rem 1rem 0 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div>
+          <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#fff' }}>
+            <MonitorPlay size={40} style={{ color: '#E50914' }} />
+            Base Blueprints
+          </h2>
+          <p style={{ color: '#aaa', fontSize: '1.1rem', margin: 0, maxWidth: '800px' }}>
+            Watch Rust base builds, bunker designs, starter layouts and raid-resistant concepts without leaving RustMasterTool.
           </p>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          {isDev && (
-            <button
-              onClick={handleRefreshLibrary}
-              disabled={isRefreshing}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: '#1a1a1a',
-                color: isRefreshing ? '#666' : '#fff',
-                border: '1px solid #333',
-                borderRadius: '4px',
-                cursor: isRefreshing ? 'not-allowed' : 'pointer',
-                fontSize: '0.875rem'
-              }}
-            >
-              {isRefreshing ? 'Refreshing...' : '[DEV] Fetch Live YT'}
-            </button>
-          )}
-          
-          <form onSubmit={handleSearchSubmit} style={{ position: 'relative', minWidth: '300px' }}>
-            <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>
-              <Search size={18} />
-            </div>
-            <input
-              type="text"
-              placeholder="Search builds (e.g. 'solo bunker')"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem 0.75rem 2.5rem',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                border: '1px solid #333',
-                borderRadius: '24px',
-                color: '#fff',
-                fontSize: '0.95rem',
-                outline: 'none',
-                transition: 'border-color 0.2s'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#E50914'}
-              onBlur={(e) => e.target.style.borderColor = '#333'}
-            />
-          </form>
-        </div>
+        <form onSubmit={handleSearchSubmit} style={{ position: 'relative', maxWidth: '400px' }}>
+          <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>
+            <Search size={18} />
+          </div>
+          <input
+            type="text"
+            placeholder="Search builds (e.g. 'solo bunker')"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem 0.75rem 2.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid transparent',
+              borderRadius: '24px',
+              color: '#fff',
+              fontSize: '0.95rem',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)'
+            }}
+            onFocus={(e) => {
+              e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+              e.target.style.borderColor = '#E50914';
+            }}
+            onBlur={(e) => {
+              if(!searchQuery) {
+                e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                e.target.style.borderColor = 'transparent';
+              }
+            }}
+          />
+        </form>
       </div>
 
       {/* Search Results Section */}
       {activeSearch && (
         <div style={{ marginBottom: '3rem', padding: '0 1rem' }}>
-          <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#fff' }}>Search Results: {activeSearch}</h3>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#aaa', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>SEARCH RESULTS: {activeSearch}</h2>
           
           {isSearchLoading ? (
             <SkeletonRail />
@@ -421,29 +380,29 @@ export function BaseBlueprintsView() {
              </p>
            </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
             
-            {savedBlueprints.length > 0 && (
+            {savedBlueprints.length > 0 && !activeSearch && (
               <div key="saved_blueprints_rail">
-                <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '0.5rem', marginRight: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <BookmarkCheck size={24} color="#E50914" /> My Saved Blueprints
+                <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#fff', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.5px' }}>
+                  <BookmarkCheck size={20} color="#E50914" /> MY SAVED BLUEPRINTS
                 </h2>
                 <div 
                   className="netflix-scrollbar"
-                  style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '1rem', paddingRight: '1rem' }}
+                  style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', paddingRight: '1rem' }}
                 >
                   {savedBlueprints.map(video => <VideoCard key={`saved-${video.id}`} video={video} />)}
                 </div>
               </div>
             )}
 
-            {GROUPS.map(group => {
+            {!activeSearch && GROUPS.map(group => {
               const groupRows = discoverData.filter((r: any) => r.group === group);
               if (groupRows.length === 0) return null;
               
               return (
                 <div key={group}>
-                  <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '0.5rem', marginRight: '1rem' }}>
+                  <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#aaa', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>
                     {group}
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
@@ -451,8 +410,8 @@ export function BaseBlueprintsView() {
                       if (row.items?.length === 0) return null; // Hide empty rows
                       
                       return (
-                        <div key={row.key} style={{ display: 'flex', flexDirection: 'column' }}>
-                          <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold' }}>
+                        <div key={row.key} style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                          <h3 style={{ fontSize: '1.15rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold', letterSpacing: '0.5px', display: 'flex', alignItems: 'center' }}>
                             {row.title}
                             {getRowBadge(row.key)}
                           </h3>
@@ -482,11 +441,13 @@ export function BaseBlueprintsView() {
 
       {/* Video Modal */}
       {activeVideoId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
            <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', position: 'relative', padding: '1rem' }}>
              <button 
                onClick={() => setActiveVideoId(null)}
-               style={{ position: 'absolute', top: '-3rem', right: '1rem', background: '#1a1a1a', border: '1px solid #333', borderRadius: '4px', color: '#fff', fontSize: '1rem', cursor: 'pointer', padding: '0.5rem 1.5rem', fontWeight: 'bold' }}
+               style={{ position: 'absolute', top: '-3rem', right: '1rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '24px', color: '#fff', fontSize: '0.9rem', cursor: 'pointer', padding: '0.5rem 1.5rem', fontWeight: 'bold', transition: 'background 0.2s' }}
+               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}
+               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
              >
                Close
              </button>

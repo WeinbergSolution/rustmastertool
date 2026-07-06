@@ -1,78 +1,189 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
-import { searchBaseBlueprints, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
+import { discoverBaseBlueprints, searchBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 
-const PRESETS = [
-  { label: 'Starter', query: 'Rust starter base' },
-  { label: 'Solo', query: 'Rust solo base build' },
-  { label: 'Duo', query: 'Rust duo base build' },
-  { label: 'Trio', query: 'Rust trio base build' },
-  { label: 'Bunker', query: 'Rust bunker base' },
-  { label: 'Widegap', query: 'Rust widegap base' },
-  { label: 'Cheap', query: 'Rust cheap base build' },
-  { label: 'Clan', query: 'Rust clan base' },
-  { label: 'Cave', query: 'Rust cave base' },
-  { label: 'Ocean', query: 'Rust ocean base' },
-  { label: 'Wipe Day', query: 'Rust wipe day base' },
+const QUICK_CHIPS = [
+  'Solo', 'Duo', 'Trio', 'Starter', 'Bunker', 'Unraidable', 
+  'Cheap', 'Big Clan', 'Funny', 'Cave', 'Ocean', 'Widegap'
+];
+
+const DISCOVER_ROWS = [
+  { key: 'solo', title: 'Solo Base Builds', query: 'rust solo base build', maxResults: 8 },
+  { key: 'duo', title: 'Duo Base Builds', query: 'rust duo base build', maxResults: 8 },
+  { key: 'trio', title: 'Trio Base Builds', query: 'rust trio base build', maxResults: 8 },
+  { key: 'starter', title: 'Starter / Wipe Day Bases', query: 'rust starter base wipe day build', maxResults: 8 },
+  { key: 'bunker', title: 'Bunker Bases', query: 'rust bunker base build', maxResults: 8 },
+  { key: 'unraidable', title: 'Unraidable / High Defense Bases', query: 'rust unraidable base rust build', maxResults: 8 },
+  { key: 'cheap', title: 'Cheap / Low Cost Bases', query: 'rust cheap base build low cost', maxResults: 8 },
+  { key: 'clan', title: 'Big Clan Bases', query: 'rust clan base build large group', maxResults: 8 },
+  { key: 'funny', title: 'Funny / Troll Bases', query: 'rust funny base build troll base', maxResults: 8 },
+  { key: 'cave', title: 'Cave Bases', query: 'rust cave base build', maxResults: 8 },
+  { key: 'ocean', title: 'Ocean / Water Bases', query: 'rust ocean base water base build', maxResults: 8 },
+  { key: 'widegap', title: 'Widegap Bases', query: 'rust widegap base build', maxResults: 8 }
 ];
 
 export function BaseBlueprintsView() {
-  const [activePreset, setActivePreset] = useState(PRESETS[0]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [videos, setVideos] = useState<YouTubeVideoSnippet[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeSearch, setActiveSearch] = useState('');
+  
+  // Discover State
+  const [discoverData, setDiscoverData] = useState<DiscoverRowResponse[]>([]);
+  const [isDiscoverLoading, setIsDiscoverLoading] = useState(true);
+  const [discoverGlobalError, setDiscoverGlobalError] = useState<string | null>(null);
+  
+  // Search State
+  const [searchResults, setSearchResults] = useState<YouTubeVideoSnippet[]>([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const lastFetchedQuery = useRef<string | null>(null);
+
+  const hasFetchedDiscover = useRef(false);
 
   useEffect(() => {
-    const q = searchQuery.trim() || activePreset.query;
-    
-    // Prevent double fetch in strict mode or quick re-renders if the query hasn't changed
-    if (lastFetchedQuery.current === q) return;
-    lastFetchedQuery.current = q;
+    if (hasFetchedDiscover.current) return;
+    hasFetchedDiscover.current = true;
 
     let mounted = true;
-    setIsLoading(true);
-    setError(null);
-    
-    searchBaseBlueprints(q).then(results => {
-      if (mounted) {
-        setVideos(results);
-      }
-    }).catch(err => {
-      if (mounted) {
-        if (err.message === 'NOT_DEPLOYED') {
-          setError('Base Blueprints backend is not deployed yet.');
-        } else if (err.message === 'YOUTUBE_API_KEY_MISSING') {
-          setError('YouTube integration is not configured yet.');
-        } else {
-          setError(err.message || 'Error fetching videos');
+    setIsDiscoverLoading(true);
+    discoverBaseBlueprints(DISCOVER_ROWS)
+      .then(rows => {
+        if (mounted) setDiscoverData(rows);
+      })
+      .catch(err => {
+        if (mounted) {
+          if (err.message === 'NOT_DEPLOYED') {
+            setDiscoverGlobalError('Base Blueprints backend is not deployed yet.');
+          } else if (err.message === 'YOUTUBE_API_KEY_MISSING') {
+            setDiscoverGlobalError('YouTube integration is not configured yet.');
+          } else {
+            setDiscoverGlobalError(err.message || 'Failed to load discover rows');
+          }
         }
-      }
-    }).finally(() => {
-      if (mounted) setIsLoading(false);
-    });
+      })
+      .finally(() => {
+        if (mounted) setIsDiscoverLoading(false);
+      });
 
-    return () => { mounted = false; lastFetchedQuery.current = null; };
-  }, [activePreset, searchQuery]);
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!activeSearch) {
+      setSearchResults([]);
+      setSearchError(null);
+      return;
+    }
+
+    let mounted = true;
+    setIsSearchLoading(true);
+    setSearchError(null);
+
+    searchBaseBlueprints(`rust ${activeSearch} base build`)
+      .then(results => {
+        if (mounted) setSearchResults(results);
+      })
+      .catch(err => {
+        if (mounted) {
+          if (err.message === 'NOT_DEPLOYED') {
+            setSearchError('Base Blueprints backend is not deployed yet.');
+          } else if (err.message === 'YOUTUBE_API_KEY_MISSING') {
+            setSearchError('YouTube integration is not configured yet.');
+          } else {
+            setSearchError(err.message || 'Error fetching search results');
+          }
+        }
+      })
+      .finally(() => {
+        if (mounted) setIsSearchLoading(false);
+      });
+
+    return () => { mounted = false; };
+  }, [activeSearch]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setActiveSearch(searchQuery.trim());
+  };
+
+  const handleChipClick = (chip: string) => {
+    setSearchQuery(chip);
+    setActiveSearch(chip);
+  };
+
+  const VideoCard = ({ video }: { video: YouTubeVideoSnippet }) => (
+    <div 
+      onClick={() => setActiveVideoId(video.id)}
+      style={{ 
+        backgroundColor: 'var(--bg-panel)', 
+        borderRadius: '8px', 
+        overflow: 'hidden',
+        border: '1px solid var(--border-color)',
+        cursor: 'pointer',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        display: 'flex',
+        flexDirection: 'column',
+        minWidth: '280px',
+        maxWidth: '280px'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.4)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
+    >
+      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', backgroundColor: '#000' }}>
+        <img 
+          src={video.thumbnailUrl} 
+          alt={video.title} 
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ 
+          position: 'absolute', 
+          bottom: 0, left: 0, right: 0, 
+          height: '50%', 
+          background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)' 
+        }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(255, 68, 68, 0.9)', borderRadius: '50%', padding: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.9 }}>
+          <Play size={20} fill="#fff" color="#fff" />
+        </div>
+      </div>
+      <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+        <h3 style={{ margin: 0, fontSize: '0.9rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4, color: '#fff' }}>
+          {video.title.replace(/&#39;/g, "'").replace(/&amp;/g, '&')}
+        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold' }}>
+            {video.channelTitle}
+          </div>
+          <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>
+            {new Date(video.publishedAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Hero */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <MonitorPlay size={32} style={{ color: '#FF0000' }} />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+      
+      {/* Hero Section */}
+      <div style={{ marginBottom: '2rem', paddingRight: '1rem' }}>
+        <h2 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <MonitorPlay size={40} style={{ color: 'var(--accent-rust)' }} />
           Base Blueprints
         </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', margin: 0 }}>
-          Find Rust base builds, bunker designs, wipe-day starters and raid-resistant layouts.
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', margin: 0, maxWidth: '800px' }}>
+          Watch Rust base builds, bunker designs, starter layouts and raid-resistant concepts without leaving RustMasterTool.
         </p>
       </div>
 
-      {/* Controls */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div style={{ position: 'relative', width: '100%', maxWidth: '600px' }}>
+      {/* Search & Quick Chips */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem', paddingRight: '1rem' }}>
+        <form onSubmit={handleSearchSubmit} style={{ position: 'relative', width: '100%', maxWidth: '600px' }}>
           <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input 
             type="text" 
@@ -90,96 +201,90 @@ export function BaseBlueprintsView() {
               outline: 'none'
             }}
           />
-        </div>
+        </form>
 
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {PRESETS.map((preset) => (
+          {QUICK_CHIPS.map((chip) => (
             <button
-              key={preset.label}
-              onClick={() => {
-                setActivePreset(preset);
-                setSearchQuery('');
-              }}
+              key={chip}
+              onClick={() => handleChipClick(chip)}
+              type="button"
               style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: activePreset.label === preset.label && !searchQuery ? 'var(--accent-rust)' : 'var(--bg-panel)',
-                color: activePreset.label === preset.label && !searchQuery ? '#fff' : 'var(--text-primary)',
+                padding: '0.4rem 0.8rem',
+                backgroundColor: activeSearch.toLowerCase().includes(chip.toLowerCase()) ? 'var(--accent-rust)' : 'var(--bg-panel)',
+                color: activeSearch.toLowerCase().includes(chip.toLowerCase()) ? '#fff' : 'var(--text-muted)',
                 border: '1px solid',
-                borderColor: activePreset.label === preset.label && !searchQuery ? 'var(--accent-rust)' : 'var(--border-color)',
-                borderRadius: '20px',
+                borderColor: activeSearch.toLowerCase().includes(chip.toLowerCase()) ? 'var(--accent-rust)' : 'var(--border-color)',
+                borderRadius: '16px',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
                 fontWeight: 'bold',
-                fontSize: '0.875rem'
+                fontSize: '0.75rem'
               }}
             >
-              {preset.label}
+              {chip}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grid */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }}>
-        {isLoading ? (
-          <div style={{ color: 'var(--text-muted)' }}>Loading blueprints...</div>
-        ) : error ? (
-          <div style={{ color: 'var(--status-error)', padding: '1rem', backgroundColor: 'rgba(255, 68, 68, 0.1)', borderRadius: '8px', border: '1px solid var(--status-error)' }}>
+      {/* Search Results Section */}
+      {activeSearch && (
+        <div style={{ marginBottom: '3rem' }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>Search Results: {activeSearch}</h3>
+          
+          {isSearchLoading ? (
+            <div style={{ color: 'var(--text-muted)' }}>Searching base builds...</div>
+          ) : searchError ? (
+            <div style={{ color: 'var(--status-error)', padding: '1rem', backgroundColor: 'rgba(255, 68, 68, 0.1)', borderRadius: '8px', border: '1px solid var(--status-error)' }}>
+               <ShieldAlert size={16} style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: 'text-bottom' }} />
+               {searchError}
+            </div>
+          ) : searchResults.length === 0 ? (
+            <div style={{ color: 'var(--text-muted)' }}>No blueprints found for this search.</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem', paddingRight: '1rem' }}>
+              {searchResults.map(video => <VideoCard key={`search-${video.id}`} video={video} />)}
+            </div>
+          )}
+          <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '2rem 1rem 2rem 0' }} />
+        </div>
+      )}
+
+      {/* Discover Rails (Netflix Style) */}
+      <div style={{ paddingBottom: '3rem' }}>
+        {isDiscoverLoading ? (
+           <div style={{ color: 'var(--text-muted)' }}>Loading discover rails...</div>
+        ) : discoverGlobalError ? (
+           <div style={{ color: 'var(--status-error)', padding: '1rem', backgroundColor: 'rgba(255, 68, 68, 0.1)', borderRadius: '8px', border: '1px solid var(--status-error)', marginRight: '1rem' }}>
              <ShieldAlert size={16} style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: 'text-bottom' }} />
-             {error}
-          </div>
-        ) : videos.length === 0 ? (
-           <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '4rem 0' }}>
-             No blueprints found for this category.
+             {discoverGlobalError}
+             <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem' }}>
+               Base Blueprints features are currently locked until the backend is fully deployed.
+             </p>
            </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-            {videos.map(video => (
-              <div 
-                key={video.id} 
-                onClick={() => setActiveVideoId(video.id)}
-                style={{ 
-                  backgroundColor: 'var(--bg-panel)', 
-                  borderRadius: '12px', 
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-color)',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', backgroundColor: '#000' }}>
-                  <img 
-                    src={video.thumbnailUrl} 
-                    alt={video.title} 
-                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Play size={24} fill="#fff" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+            {discoverData.map((row) => (
+              <div key={row.key} style={{ display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1.25rem', margin: '0 0 1rem 0', color: 'var(--text-primary)' }}>{row.title}</h3>
+                
+                {row.error ? (
+                  <div style={{ color: 'var(--status-error)', fontSize: '0.875rem' }}>Could not load {row.title.toLowerCase()}.</div>
+                ) : row.items.length === 0 ? (
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No videos found for this category.</div>
+                ) : (
+                  <div style={{ 
+                    display: 'flex', 
+                    gap: '1rem', 
+                    overflowX: 'auto', 
+                    paddingBottom: '1rem',
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'var(--border-color) transparent'
+                  }}>
+                    {row.items.map(video => <VideoCard key={`${row.key}-${video.id}`} video={video} />)}
                   </div>
-                </div>
-                <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                  <h3 style={{ margin: 0, fontSize: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4 }}>
-                    {video.title.replace(/&#39;/g, "'").replace(/&amp;/g, '&')}
-                  </h3>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontWeight: 'bold' }}>
-                    {video.channelTitle}
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem' }}>
-                    <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>
-                      {new Date(video.publishedAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
@@ -188,11 +293,11 @@ export function BaseBlueprintsView() {
 
       {/* Video Modal */}
       {activeVideoId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-           <div style={{ width: '100%', maxWidth: '1000px', aspectRatio: '16/9', position: 'relative', padding: '1rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+           <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', position: 'relative', padding: '1rem' }}>
              <button 
                onClick={() => setActiveVideoId(null)}
-               style={{ position: 'absolute', top: '-2rem', right: '1rem', background: 'none', border: 'none', color: '#fff', fontSize: '1.25rem', cursor: 'pointer', padding: '0.5rem' }}
+               style={{ position: 'absolute', top: '-3rem', right: '1rem', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', borderRadius: '20px', color: '#fff', fontSize: '1rem', cursor: 'pointer', padding: '0.5rem 1.5rem', fontWeight: 'bold' }}
              >
                Close
              </button>
@@ -204,14 +309,14 @@ export function BaseBlueprintsView() {
                frameBorder="0"
                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                allowFullScreen
-               style={{ borderRadius: '12px', backgroundColor: '#000' }}
+               style={{ borderRadius: '12px', backgroundColor: '#000', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
              ></iframe>
              <div style={{ marginTop: '1rem', textAlign: 'center' }}>
                <a 
                  href={`https://www.youtube.com/watch?v=${activeVideoId}`} 
                  target="_blank" 
                  rel="noopener noreferrer"
-                 style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.875rem' }}
+                 style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.875rem', padding: '0.5rem 1rem', border: '1px solid var(--border-color)', borderRadius: '20px' }}
                  onClick={(e) => e.stopPropagation()}
                >
                  Open on YouTube ↗

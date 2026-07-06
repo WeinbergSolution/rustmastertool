@@ -55,6 +55,44 @@ serve(async (req) => {
       );
     }
 
+    if (action === 'discover') {
+      const rows = body.rows || [];
+      if (!Array.isArray(rows)) throw new Error('Invalid rows parameter');
+
+      const promises = rows.map(async (row: any) => {
+        try {
+          const query = row.query || 'rust base build';
+          const maxResults = Math.min(parseInt(row.maxResults || '8'), 12);
+          const res = await fetch(`${YOUTUBE_API_URL}/search?part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${apiKey}`);
+          
+          if (!res.ok) {
+            return { ...row, error: `API returned ${res.status}`, items: [] };
+          }
+          const data = await res.json();
+          const items = (data.items || []).map((item: any) => ({
+            id: item.id?.videoId,
+            title: item.snippet?.title,
+            channelTitle: item.snippet?.channelTitle,
+            channelId: item.snippet?.channelId,
+            description: item.snippet?.description,
+            thumbnailUrl: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.default?.url,
+            publishedAt: item.snippet?.publishedAt,
+          })).filter((item: any) => item.id);
+          
+          return { ...row, items };
+        } catch (e: any) {
+          return { ...row, error: e.message, items: [] };
+        }
+      });
+
+      const processedRows = await Promise.all(promises);
+
+      return new Response(
+        JSON.stringify({ rows: processedRows }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: 'Invalid action' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }

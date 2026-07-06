@@ -42,3 +42,47 @@ export async function searchBaseBlueprints(query: string, maxResults: number = 1
     throw err;
   }
 }
+
+export interface DiscoverRowRequest {
+  key: string;
+  title: string;
+  query: string;
+  maxResults?: number;
+}
+
+export interface DiscoverRowResponse extends DiscoverRowRequest {
+  items: YouTubeVideoSnippet[];
+  error?: string;
+}
+
+export async function discoverBaseBlueprints(rows: DiscoverRowRequest[]): Promise<DiscoverRowResponse[]> {
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase.functions.invoke('base-blueprints', {
+      method: 'POST',
+      body: {
+        action: 'discover',
+        rows
+      }
+    });
+
+    if (error) {
+      if (error.name === 'FunctionsFetchError') {
+        throw new Error('NOT_DEPLOYED');
+      }
+      throw error;
+    }
+
+    if (data?.error === 'YOUTUBE_API_KEY_MISSING') {
+      throw new Error('YOUTUBE_API_KEY_MISSING');
+    }
+
+    return data?.rows || [];
+  } catch (err: any) {
+    if (err.message === 'NOT_DEPLOYED') throw new Error('NOT_DEPLOYED');
+    if (err.message === 'YOUTUBE_API_KEY_MISSING') throw new Error('YOUTUBE_API_KEY_MISSING');
+    if (err.name === 'FunctionsFetchError') throw new Error('NOT_DEPLOYED');
+    console.error('Error discovering base blueprints:', err);
+    throw err;
+  }
+}

@@ -19,34 +19,35 @@ serve(async (req) => {
     const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
     const action = body.action || url.searchParams.get('action');
 
-    const apiKey = Deno.env.get('YOUTUBE_API_KEY');
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({ error: 'YOUTUBE_API_KEY_MISSING', message: 'YouTube integration is not configured.' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase configuration missing');
     }
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     if (action === 'search') {
       const query = body.q || url.searchParams.get('q') || 'rust starter base';
       const maxResults = Math.min(parseInt(body.maxResults || url.searchParams.get('maxResults') || '12'), 24);
       
-      const res = await fetch(`${YOUTUBE_API_URL}/search?part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${apiKey}`);
-      
-      if (!res.ok) {
-        throw new Error(`YouTube API returned ${res.status}`);
+      const { data: searchResults, error: searchError } = await supabase
+        .from('base_blueprints')
+        .select('*')
+        .or(`title.ilike.%${query}%,category.ilike.%${query}%`)
+        .limit(maxResults);
+        
+      if (searchError) {
+        throw new Error(`DB Error: ${searchError.message}`);
       }
 
-      const data = await res.json();
-      
-      const results = data.items.map((item: any) => ({
-        id: item.id.videoId,
-        title: item.snippet.title,
-        channelTitle: item.snippet.channelTitle,
-        channelId: item.snippet.channelId,
-        description: item.snippet.description,
-        thumbnailUrl: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
-        publishedAt: item.snippet.publishedAt,
+      const results = (searchResults || []).map((item: any) => ({
+        id: item.youtube_video_id,
+        title: item.title,
+        channelTitle: item.channel_title,
+        channelId: item.channel_id,
+        description: item.description,
+        thumbnailUrl: item.thumbnail_url,
+        publishedAt: item.published_at,
       }));
 
       return new Response(
@@ -56,13 +57,6 @@ serve(async (req) => {
     }
 
     if (action === 'discover') {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-      if (!supabaseUrl || !supabaseKey) {
-        throw new Error('Supabase configuration missing');
-      }
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
       let rows = body.rows;
       if (!rows || !Array.isArray(rows) || rows.length === 0) {
         rows = [
@@ -71,20 +65,11 @@ serve(async (req) => {
           { key: 'trio', title: 'Trio Base Builds', query: 'rust trio base build', maxResults: 12 },
           { key: 'starter', title: 'Starter / Wipe Day Bases', query: 'rust starter base wipe day build', maxResults: 12 },
           { key: 'bunker', title: 'Bunker Bases', query: 'rust bunker base build', maxResults: 12 },
-          { key: 'trap', title: 'Trap Bases', query: 'rust trap base build', maxResults: 12 },
-          { key: 'air', title: 'Air Bases', query: 'rust air base build', maxResults: 12 },
-          { key: 'monument', title: 'Monument / Near Monument Bases', query: 'rust monument base build near monument', maxResults: 12 },
-          { key: 'unraidable', title: 'Unraidable / High Defense Bases', query: 'rust unraidable base build high defense', maxResults: 12 },
-          { key: 'cheap', title: 'Cheap / Low Cost Bases', query: 'rust cheap base build low cost', maxResults: 12 },
-          { key: 'clan', title: 'Big Clan Bases', query: 'rust clan base build large group', maxResults: 12 },
-          { key: 'funny', title: 'Funny / Troll Bases', query: 'rust funny base build troll base', maxResults: 12 },
-          { key: 'cave', title: 'Cave Bases', query: 'rust cave base build', maxResults: 12 },
-          { key: 'ocean', title: 'Ocean / Water Bases', query: 'rust ocean base water base build', maxResults: 12 },
-          { key: 'widegap', title: 'Widegap Bases', query: 'rust widegap base build', maxResults: 12 }
+          { key: 'trap', title: 'Trap Bases', query: 'rust trap base build', maxResults: 12 }
         ];
       }
 
-      // Fetch all cached items grouped by category (key)
+      // Fetch all cached items
       const { data: dbItems, error: dbError } = await supabase
         .from('base_blueprints')
         .select('*');
@@ -95,12 +80,13 @@ serve(async (req) => {
 
       const processedRows = rows.map((row: any) => {
         const rowKey = row.key;
-        const maxRes = Math.min(parseInt(row.maxResults || '12'), 12);
+        const maxRes = Math.min(parseInt(row.maxResults || '12'), 20);
         
         const cachedForCategory = (dbItems || [])
-          .filter(i => i.category === rowKey)
+          .filter((i: any) => i.category === rowKey || (i.tags && Array.isArray(i.tags) && i.tags.includes(rowKey)))
+          .sort((a: any, b: any) => (a.category === rowKey ? -1 : 1))
           .slice(0, maxRes)
-          .map(i => ({
+          .map((i: any) => ({
             id: i.youtube_video_id,
             title: i.title,
             channelTitle: i.channel_title,
@@ -124,13 +110,14 @@ serve(async (req) => {
     }
 
     if (action === 'refresh') {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-      if (!supabaseUrl || !supabaseKey) {
-        throw new Error('Supabase configuration missing');
+      const apiKey = Deno.env.get('YOUTUBE_API_KEY');
+      if (!apiKey) {
+        return new Response(
+          JSON.stringify({ error: 'YOUTUBE_API_KEY_MISSING', message: 'YouTube integration is not configured.' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
+      
       let rowsToRefresh = body.rows;
       if (!rowsToRefresh || !Array.isArray(rowsToRefresh) || rowsToRefresh.length === 0) {
         return new Response(JSON.stringify({ error: 'BAD_REQUEST', message: 'No rows provided to refresh' }), { status: 400, headers: corsHeaders });
@@ -193,7 +180,6 @@ serve(async (req) => {
               }
             }
             
-            // Clean up raw_youtube from response output to save bandwidth
             const cleanItems = items.map((i: any) => {
               const { raw_youtube, ...rest } = i;
               return rest;
@@ -220,7 +206,6 @@ serve(async (req) => {
         });
 
         if (i + chunkSize < rowsToRefresh.length) {
-          // 400ms delay between chunks to avoid YouTube rate limits
           await new Promise(resolve => setTimeout(resolve, 400));
         }
       }

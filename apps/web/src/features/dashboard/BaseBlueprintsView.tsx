@@ -3,22 +3,52 @@ import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
 import { discoverBaseBlueprints, searchBaseBlueprints, refreshBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 
 const DISCOVER_ROWS = [
-  { key: 'solo', title: 'Solo Base Builds', query: 'rust solo base build', maxResults: 12 },
-  { key: 'duo', title: 'Duo Base Builds', query: 'rust duo base build', maxResults: 12 },
-  { key: 'trio', title: 'Trio Base Builds', query: 'rust trio base build', maxResults: 12 },
-  { key: 'starter', title: 'Starter / Wipe Day Bases', query: 'rust starter base wipe day build', maxResults: 12 },
-  { key: 'bunker', title: 'Bunker Bases', query: 'rust bunker base build', maxResults: 12 },
-  { key: 'trap', title: 'Trap Bases', query: 'rust trap base build', maxResults: 12 },
-  { key: 'air', title: 'Air Bases', query: 'rust air base build', maxResults: 12 },
-  { key: 'monument', title: 'Monument / Near Monument Bases', query: 'rust monument base build near monument', maxResults: 12 },
-  { key: 'unraidable', title: 'Unraidable / High Defense Bases', query: 'rust unraidable base build high defense', maxResults: 12 },
-  { key: 'cheap', title: 'Cheap / Low Cost Bases', query: 'rust cheap base build low cost', maxResults: 12 },
-  { key: 'clan', title: 'Big Clan Bases', query: 'rust clan base build large group', maxResults: 12 },
-  { key: 'funny', title: 'Funny / Troll Bases', query: 'rust funny base build troll base', maxResults: 12 },
-  { key: 'cave', title: 'Cave Bases', query: 'rust cave base build', maxResults: 12 },
-  { key: 'ocean', title: 'Ocean / Water Bases', query: 'rust ocean base water base build', maxResults: 12 },
-  { key: 'widegap', title: 'Widegap Bases', query: 'rust widegap base build', maxResults: 12 }
-];
+  // Base Builds
+  { key: 'solo', title: 'Solo Base Builds', group: 'Base Builds' },
+  { key: 'duo', title: 'Duo Base Builds', group: 'Base Builds' },
+  { key: 'trio', title: 'Trio Base Builds', group: 'Base Builds' },
+  { key: 'starter_wipe_day', title: 'Starter / Wipe Day Bases', group: 'Base Builds' },
+  { key: 'bunker', title: 'Bunker Bases', group: 'Base Builds' },
+  { key: 'trap', title: 'Trap Bases', group: 'Base Builds' },
+  { key: 'air_airlock', title: 'Air / Airlock', group: 'Base Builds' },
+  { key: 'near_monument', title: 'Near Monument Bases', group: 'Base Builds' },
+  { key: 'unraidable', title: 'Unraidable Fortresses', group: 'Base Builds' },
+  { key: 'cheap', title: 'Cheap Bases', group: 'Base Builds' },
+  { key: 'big_clan', title: 'Big Clan Bases', group: 'Base Builds' },
+  { key: 'funny_troll', title: 'Funny / Troll Bases', group: 'Base Builds' },
+  { key: 'cave', title: 'Cave Bases', group: 'Base Builds' },
+  { key: 'ocean_water', title: 'Ocean / Water Bases', group: 'Base Builds' },
+  { key: 'widegap', title: 'Widegap Bases', group: 'Base Builds' },
+  { key: 'beautiful', title: 'Beautiful Bases', group: 'Base Builds' },
+  { key: 'crazy', title: 'Crazy Bases', group: 'Base Builds' },
+  
+  // Rust Guides
+  { key: 'tips', title: 'Tips', group: 'Rust Guides' },
+  { key: 'tricks', title: 'Tricks', group: 'Rust Guides' },
+  { key: 'green_card', title: 'Green Card Puzzles', group: 'Rust Guides' },
+  { key: 'blue_card', title: 'Blue Card Puzzles', group: 'Rust Guides' },
+  { key: 'red_card', title: 'Red Card Puzzles', group: 'Rust Guides' },
+  { key: 'farming', title: 'Farming Guides', group: 'Rust Guides' },
+  
+  // Community / Risky
+  { key: 'journey_wipe', title: 'Journey / Movie / Wipe', group: 'Community / Risky' },
+  { key: 'cheater_reports', title: 'Hacks / Cheater Exposed', group: 'Community / Risky' },
+  { key: 'bandit_camp_casino', title: 'Bandit Camp / Casino', group: 'Community / Risky' },
+  { key: 'rust2_reveal', title: 'Rust 2 – First Scene / Reveal', group: 'Community / Risky' },
+  { key: 'rust2_news', title: 'Rust 2 – Release Date / News', group: 'Community / Risky' }
+].map(r => ({ ...r, maxResults: 12, query: '' })); // query is no longer used for DB fetches
+
+const GROUPS = ['Base Builds', 'Rust Guides', 'Community / Risky'];
+
+const getRowBadge = (key: string) => {
+  if (key === 'bandit_camp_casino') {
+    return <span style={{ backgroundColor: '#ff9900', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.5rem', fontWeight: 'bold', verticalAlign: 'middle' }}>GAMBLING</span>;
+  }
+  if (key === 'rust2_reveal' || key === 'rust2_news') {
+    return <span style={{ backgroundColor: '#3399ff', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', marginLeft: '0.5rem', fontWeight: 'bold', verticalAlign: 'middle' }}>SPECULATION / LEAK</span>;
+  }
+  return null;
+};
 
 export function BaseBlueprintsView() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,14 +67,15 @@ export function BaseBlueprintsView() {
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const isDev = import.meta.env.DEV;
+
   const handleRefreshLibrary = async () => {
     setIsRefreshing(true);
     try {
-      // Refresh the first 3 rows as requested for controlled refresh
+      // Dev only action to fill DB if needed from API
       const rowsToRefresh = DISCOVER_ROWS.slice(0, 3);
       await refreshBaseBlueprints(rowsToRefresh);
       
-      // Reload discover from cache after refresh
       setIsDiscoverLoading(true);
       const rows = await discoverBaseBlueprints(DISCOVER_ROWS);
       setDiscoverData(rows);
@@ -56,19 +87,16 @@ export function BaseBlueprintsView() {
   };
 
   useEffect(() => {
-
     let mounted = true;
     setIsDiscoverLoading(true);
     discoverBaseBlueprints(DISCOVER_ROWS)
       .then(rows => {
-        if (mounted) setDiscoverData(rows);
+        if (mounted) setDiscoverData(rows as DiscoverRowResponse[]);
       })
       .catch(err => {
         if (mounted) {
           if (err.message === 'NOT_DEPLOYED') {
             setDiscoverGlobalError('Base Blueprints backend is not deployed yet.');
-          } else if (err.message === 'YOUTUBE_API_KEY_MISSING') {
-            setDiscoverGlobalError('YouTube integration is not configured yet.');
           } else {
             setDiscoverGlobalError(err.message || 'Failed to load discover rows');
           }
@@ -92,7 +120,7 @@ export function BaseBlueprintsView() {
     setIsSearchLoading(true);
     setSearchError(null);
 
-    searchBaseBlueprints(`rust ${activeSearch} base build`)
+    searchBaseBlueprints(activeSearch)
       .then(results => {
         if (mounted) setSearchResults(results);
       })
@@ -100,8 +128,6 @@ export function BaseBlueprintsView() {
         if (mounted) {
           if (err.message === 'NOT_DEPLOYED') {
             setSearchError('Base Blueprints backend is not deployed yet.');
-          } else if (err.message === 'YOUTUBE_API_KEY_MISSING') {
-            setSearchError('YouTube integration is not configured yet.');
           } else {
             setSearchError(err.message || 'Error fetching search results');
           }
@@ -146,7 +172,6 @@ export function BaseBlueprintsView() {
             alt={video.title} 
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          {/* Subtle gradient for text legibility if needed, but Netflix usually keeps it clean */}
           {isHovered && (
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
@@ -161,11 +186,8 @@ export function BaseBlueprintsView() {
           </h3>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
             <div style={{ color: '#aaa', fontSize: '0.8rem' }}>
-              {video.channelTitle}
+              {video.channelTitle || 'YouTube'}
             </div>
-            <span style={{ fontSize: '0.75rem', color: '#888' }}>
-              {new Date(video.publishedAt).toLocaleDateString()}
-            </span>
           </div>
         </div>
       </div>
@@ -221,31 +243,33 @@ export function BaseBlueprintsView() {
         </p>
       </div>
 
-      {/* Search & Quick Chips */}
+      {/* Search & Header */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem', padding: '0 1rem' }}>
         <div style={{ marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.75rem', margin: '0', color: '#fff', fontWeight: 'bold' }}>Base Blueprints</h2>
+          <h2 style={{ fontSize: '1.75rem', margin: '0', color: '#fff', fontWeight: 'bold' }}>Library</h2>
           <p style={{ margin: '0.5rem 0 0 0', color: '#ccc', fontSize: '0.95rem' }}>
-            Discover top tier base designs from the community.
+            Discover top tier base designs and guides from the community.
           </p>
         </div>
         
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button
-            onClick={handleRefreshLibrary}
-            disabled={isRefreshing}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#1a1a1a',
-              color: isRefreshing ? '#666' : '#fff',
-              border: '1px solid #333',
-              borderRadius: '4px',
-              cursor: isRefreshing ? 'not-allowed' : 'pointer',
-              fontSize: '0.875rem'
-            }}
-          >
-            {isRefreshing ? 'Refreshing...' : 'Refresh Base Blueprint Library'}
-          </button>
+          {isDev && (
+            <button
+              onClick={handleRefreshLibrary}
+              disabled={isRefreshing}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#1a1a1a',
+                color: isRefreshing ? '#666' : '#fff',
+                border: '1px solid #333',
+                borderRadius: '4px',
+                cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                fontSize: '0.875rem'
+              }}
+            >
+              {isRefreshing ? 'Refreshing...' : '[DEV] Fetch Live YT'}
+            </button>
+          )}
           
           <form onSubmit={handleSearchSubmit} style={{ position: 'relative', minWidth: '300px' }}>
             <div style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#888' }}>
@@ -312,74 +336,53 @@ export function BaseBlueprintsView() {
            <div style={{ color: '#ff4444', padding: '1rem', backgroundColor: 'rgba(255, 68, 68, 0.1)', borderRadius: '4px', border: '1px solid #ff4444', marginRight: '1rem' }}>
              <ShieldAlert size={16} style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: 'text-bottom' }} />
              {discoverGlobalError}
-             <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem' }}>
-               Base Blueprints features are currently locked until the backend is fully deployed.
-             </p>
            </div>
-        ) : discoverData.every(r => r.items.length === 0) ? (
+        ) : discoverData.every(r => (r as any).items?.length === 0) ? (
            <div style={{ color: '#ccc', padding: '2rem 1rem', textAlign: 'center' }}>
              <h3 style={{ margin: '0 0 1rem 0' }}>No cached base blueprint videos yet.</h3>
-             {discoverData.some(r => r.error?.code === 'YOUTUBE_RATE_LIMITED') && (
-               <p style={{ color: '#ff4444', marginBottom: '1rem' }}>
-                 YouTube rate limit reached before the library could be filled. Try again later or refresh with a new API quota.
-               </p>
-             )}
-             <p style={{ marginBottom: '1.5rem', color: '#888' }}>
-               Refresh the library to fetch YouTube videos into the database cache.
+             <p style={{ color: '#888' }}>
+               Please run the database seed migration to populate the library.
              </p>
-             <button
-               onClick={handleRefreshLibrary}
-               disabled={isRefreshing}
-               style={{
-                 padding: '0.75rem 1.5rem',
-                 backgroundColor: '#E50914',
-                 color: '#fff',
-                 border: 'none',
-                 borderRadius: '4px',
-                 cursor: isRefreshing ? 'not-allowed' : 'pointer',
-                 fontSize: '1rem',
-                 fontWeight: 'bold'
-               }}
-             >
-               {isRefreshing ? 'Refreshing...' : 'Refresh Library (Seed)'}
-             </button>
            </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            {discoverData.map((row) => {
-              if (row.error) {
-                console.warn("[BaseBlueprints] row failed", { key: row.key, status: row.error.status, code: row.error.code, message: row.error.message });
-              }
-              const isRateLimited = row.error?.code === 'YOUTUBE_RATE_LIMITED';
-              const showRateLimitWarning = isRateLimited && row.items.length === 0;
-
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+            {GROUPS.map(group => {
+              const groupRows = discoverData.filter((r: any) => r.group === group);
+              if (groupRows.length === 0) return null;
+              
               return (
-              <div key={row.key} style={{ display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold' }}>
-                  {row.title} {row.items.length > 0 && <span style={{ fontSize: '0.85rem', color: '#888', fontWeight: 'normal', marginLeft: '0.5rem' }}>({row.items.length} cached)</span>}
-                </h3>
-                
-                {showRateLimitWarning ? (
-                  <div style={{ color: '#ff4444', fontSize: '0.875rem' }}>YouTube quota/rate limit reached. Showing cached videos when available.</div>
-                ) : row.error && row.items.length === 0 ? (
-                  <div style={{ color: '#ff4444', fontSize: '0.875rem' }}>Could not load {row.title.toLowerCase()} ({row.error.code}).</div>
-                ) : row.items.length === 0 ? (
-                  <div style={{ color: '#888', fontSize: '0.875rem' }}>No videos found for this category.</div>
-                ) : (
-                  <div 
-                    className="netflix-scrollbar"
-                    style={{ 
-                      display: 'flex', 
-                      gap: '0.5rem', 
-                      overflowX: 'auto', 
-                      paddingBottom: '1rem',
-                      paddingRight: '1rem'
-                    }}
-                  >
-                    {row.items.map(video => <VideoCard key={`${row.key}-${video.id}`} video={video} />)}
+                <div key={group}>
+                  <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', color: '#fff', borderBottom: '1px solid #333', paddingBottom: '0.5rem', marginRight: '1rem' }}>
+                    {group}
+                  </h2>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                    {groupRows.map((row: any) => {
+                      if (row.items?.length === 0) return null; // Hide empty rows
+                      
+                      return (
+                        <div key={row.key} style={{ display: 'flex', flexDirection: 'column' }}>
+                          <h3 style={{ fontSize: '1.25rem', margin: '0 0 0.75rem 0', color: '#fff', fontWeight: 'bold' }}>
+                            {row.title}
+                            {getRowBadge(row.key)}
+                          </h3>
+                          
+                          <div 
+                            className="netflix-scrollbar"
+                            style={{ 
+                              display: 'flex', 
+                              gap: '0.5rem', 
+                              overflowX: 'auto', 
+                              paddingBottom: '1rem',
+                              paddingRight: '1rem'
+                            }}
+                          >
+                            {row.items.map((video: YouTubeVideoSnippet) => <VideoCard key={`${row.key}-${video.id}`} video={video} />)}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
+                </div>
               );
             })}
           </div>

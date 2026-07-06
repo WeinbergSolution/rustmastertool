@@ -11,7 +11,8 @@ serve(async (req) => {
   }
 
   try {
-    const { action, query, serverId } = await req.json()
+    const body = await req.json()
+    const { action, query, serverId, pageSize, rust_type, sort, nextUrl } = body
     
     // Normalize token usage
     const token = Deno.env.get("BATTLEMETRICS_TOKEN")
@@ -31,8 +32,26 @@ serve(async (req) => {
     let url = ''
 
     if (action === 'search') {
-      const safeQuery = encodeURIComponent(query || '').slice(0, 100) // max 100 chars
-      url = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${safeQuery}&page[size]=15`
+      if (nextUrl && nextUrl.startsWith('https://api.battlemetrics.com/servers')) {
+        url = nextUrl;
+      } else {
+        const size = pageSize ? parseInt(pageSize) : 25;
+        const params = new URLSearchParams();
+        params.append('filter[game]', 'rust');
+        params.append('page[size]', (size > 100 ? 100 : size).toString());
+        
+        if (query) {
+          params.append('filter[search]', query.slice(0, 100));
+        } else if (rust_type && ['official', 'community', 'modded'].includes(rust_type.toLowerCase())) {
+          // Fallback to searching by category name if no query provided
+          params.append('filter[search]', rust_type.toLowerCase());
+        }
+        
+        if (sort) {
+          params.append('sort', sort);
+        }
+        url = `https://api.battlemetrics.com/servers?${params.toString()}`;
+      }
     } else if (action === 'details' && serverId) {
       const safeId = encodeURIComponent(serverId)
       url = `https://api.battlemetrics.com/servers/${safeId}`
@@ -54,8 +73,9 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text()
       console.error(`BattleMetrics API Error: ${response.status} ${response.statusText}`, errorText)
-      return new Response(JSON.stringify({ error: `BattleMetrics API Error: ${response.status}` }), {
-        status: response.status,
+      // Return 200 so supabase-js doesn't throw a generic FunctionsHttpError, but pass the error in the payload
+      return new Response(JSON.stringify({ error: `BattleMetrics API Error: ${response.status}`, details: errorText }), {
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
@@ -113,10 +133,10 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Edge Function Error:', error)
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: error.message || 'Internal Server Error' }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }

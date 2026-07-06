@@ -1,6 +1,6 @@
-import { 
+import {
   LayoutDashboard, Server, Eye, Map as MapIcon, Filter, 
-  Activity, MapPin, Calculator, BookOpen, User, Settings 
+  Activity, MapPin, Calculator, BookOpen, User, Settings, Building
 } from 'lucide-react';
 import type { ViewState } from './AppShell';
 
@@ -87,6 +87,7 @@ export function Sidebar({ currentView = 'dashboard', onViewChange }: SidebarProp
         <NavGroup title="Pre-Game">
           <NavItem icon={Server} label="Servers" view="servers" currentView={currentView} onViewChange={onViewChange} />
           <NavItem icon={Eye} label="Watchlist" view="watchlist" currentView={currentView} onViewChange={onViewChange} />
+          <NavItem icon={Building} label="Base Blueprints" view="base_blueprints" currentView={currentView} onViewChange={onViewChange} badge="roadmap" />
           <NavItem icon={MapIcon} label="Map Intel" view="map_intel" currentView={currentView} onViewChange={onViewChange} badge="gated" />
           <NavItem icon={Filter} label="Filter Profiles" view="filter_profiles" currentView={currentView} onViewChange={onViewChange} badge="soon" />
         </NavGroup>

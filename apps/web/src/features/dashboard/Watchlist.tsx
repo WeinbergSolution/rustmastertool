@@ -3,11 +3,15 @@ import { X, ShieldAlert, Loader2 } from 'lucide-react';
 import { useAuth } from '../../lib/auth/useAuth';
 import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
+import { ServerDetailPanel } from './ServerDetailPanel';
+import { supabase } from '../../lib/supabaseClient';
 
 export function Watchlist() {
   const { status, user } = useAuth();
   const [watchedServers, setWatchedServers] = useState<BattleMetricsServerSummary[]>([]);
   const [isWatchlistLoading, setIsWatchlistLoading] = useState(true);
+  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
+  const [activeServerId, setActiveServerId] = useState<string | null>(null);
 
   const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
 
@@ -23,8 +27,13 @@ export function Watchlist() {
            } else if (mounted) {
              setWatchedServers([]);
            }
+           if (supabase) {
+             const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
+             if (p?.active_server_id && mounted) setActiveServerId(p.active_server_id);
+           }
         } else if (status === 'unauthenticated' && mounted) {
            setWatchedServers([]);
+           setActiveServerId(null);
         }
       } catch (e) {
         console.warn('Failed to load data', e);
@@ -76,6 +85,14 @@ export function Watchlist() {
     }
   };
 
+  const handleSetActiveServer = async (_serverId: string, internalUuid?: string) => {
+    if (status !== 'authenticated' || !supabase || !user || !internalUuid) return;
+    try {
+      const { error } = await supabase.from('profiles').update({ active_server_id: internalUuid }).eq('id', user.id);
+      if (!error) setActiveServerId(internalUuid);
+    } catch (e) {}
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', height: '100%' }}>
       <div className="card" style={{ flex: 1 }}>
@@ -103,12 +120,12 @@ export function Watchlist() {
           ) : (
             <div className="server-list" style={{ gridTemplateColumns: '1fr', gap: '0.75rem' }}>
               {watchedServers.map(server => (
-                <div key={server.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-panel)', padding: '1rem 1.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                <div key={server.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--bg-panel)', padding: '1rem 1.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', cursor: 'pointer' }} onClick={() => setSelectedServerId(server.id)}>
                   <div>
                     <div style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>{server.name}</div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{server.players} / {server.maxPlayers} Players • {server.status}</div>
                   </div>
-                  <button onClick={() => toggleWatch(server.id)} style={{ background: 'rgba(255, 50, 50, 0.1)', border: '1px solid rgba(255, 50, 50, 0.3)', color: 'var(--status-error)', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Remove from Watchlist">
+                  <button onClick={(e) => { e.stopPropagation(); toggleWatch(server.id); }} style={{ background: 'rgba(255, 50, 50, 0.1)', border: '1px solid rgba(255, 50, 50, 0.3)', color: 'var(--status-error)', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Remove from Watchlist">
                     <X size={20} />
                   </button>
                 </div>
@@ -117,6 +134,18 @@ export function Watchlist() {
           )}
         </div>
       </div>
+      
+      {selectedServerId && (
+        <ServerDetailPanel 
+          serverId={selectedServerId}
+          isWatched={true}
+          onClose={() => setSelectedServerId(null)}
+          onToggleWatch={toggleWatch}
+          onSetActiveServer={handleSetActiveServer}
+          isActiveServer={watchedServers.find(s => s.id === selectedServerId)?.internal_uuid ? watchedServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
+          isAuthenticated={status === 'authenticated'}
+        />
+      )}
     </div>
   );
 }

@@ -11,7 +11,8 @@ serve(async (req) => {
   }
 
   try {
-    const { action, query, serverId } = await req.json()
+    const body = await req.json()
+    const { action, query, serverId, pageSize, rust_type, sort, nextUrl } = body
     
     // Normalize token usage
     const token = Deno.env.get("BATTLEMETRICS_TOKEN")
@@ -31,8 +32,25 @@ serve(async (req) => {
     let url = ''
 
     if (action === 'search') {
-      const safeQuery = encodeURIComponent(query || '').slice(0, 100) // max 100 chars
-      url = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${safeQuery}&page[size]=15`
+      if (nextUrl && nextUrl.startsWith('https://api.battlemetrics.com/servers')) {
+        url = nextUrl;
+      } else {
+        const size = pageSize ? parseInt(pageSize) : 25;
+        const params = new URLSearchParams();
+        params.append('filter[game]', 'rust');
+        params.append('page[size]', (size > 100 ? 100 : size).toString());
+        
+        if (query) {
+          params.append('filter[search]', query.slice(0, 100));
+        }
+        if (rust_type && ['official', 'community', 'modded'].includes(rust_type.toLowerCase())) {
+          params.append('filter[rust_type]', rust_type.toLowerCase());
+        }
+        if (sort) {
+          params.append('sort', sort);
+        }
+        url = `https://api.battlemetrics.com/servers?${params.toString()}`;
+      }
     } else if (action === 'details' && serverId) {
       const safeId = encodeURIComponent(serverId)
       url = `https://api.battlemetrics.com/servers/${safeId}`

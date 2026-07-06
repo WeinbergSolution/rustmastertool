@@ -164,10 +164,21 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                <span style={{ color: 'var(--text-muted)' }}>Map Seed:</span>
                <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{server.details?.rust_world_seed || 'Unknown'}</span>
             </div>
+            <div style={{ backgroundColor: 'var(--bg-panel)', padding: '0.75rem', fontSize: '0.875rem', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)' }}>
+               <span style={{ color: 'var(--text-muted)' }}>Map Size:</span>
+               <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{server.details?.rust_world_size || 'Unknown'}</span>
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="card-title">Live Server Statistics</div>
+            {server.details?.rust_type && (
+               <div style={{ marginBottom: '1rem' }}>
+                 <span className="badge" style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--accent-rust)', color: 'var(--accent-rust)', textTransform: 'capitalize' }}>
+                   {server.details.rust_type}
+                 </span>
+               </div>
+            )}
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.875rem', backgroundColor: 'var(--bg-panel)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -195,6 +206,10 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Rank</span>
                 <span className="value-highlight">#{server.details?.rank || 'N/A'}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Wipe</span>
+                <span className="value-highlight">{server.details?.rust_last_wipe ? new Date(server.details.rust_last_wipe).toLocaleDateString() : 'Unknown'}</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', gridColumn: '1 / -1' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Address</span>

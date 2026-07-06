@@ -11,6 +11,7 @@ export type ViewState =
   | 'dashboard' 
   | 'servers' 
   | 'watchlist' 
+  | 'base_blueprints'
   | 'map_intel' 
   | 'filter_profiles' 
   | 'current_connection' 
@@ -45,6 +46,12 @@ export function AppShell() {
            <div style={{ display: currentView === 'watchlist' ? 'block' : 'none', height: '100%' }}>
              <Watchlist />
            </div>
+           {currentView === 'base_blueprints' && (
+             <RoadmapView 
+               title="Base Blueprints" 
+               message="Base Blueprints will collect Rust base builds, embedded guides, upkeep, build cost and raid-resistance analysis. Coming later."
+             />
+           )}
            {currentView === 'map_intel' && (
              <RoadmapView 
                title="Map Intelligence" 

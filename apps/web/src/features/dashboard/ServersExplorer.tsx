@@ -22,10 +22,12 @@ export function ServersExplorer() {
     const saved = window.sessionStorage.getItem('serverExplorer.results');
     return saved ? JSON.parse(saved) : [];
   });
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(() => window.sessionStorage.getItem('serverExplorer.nextPageUrl') || null);
   const [hasSearched, setHasSearched] = useState(() => window.sessionStorage.getItem('serverExplorer.hasSearched') === 'true');
   const [selectedServerId, setSelectedServerId] = useState<string | null>(() => window.sessionStorage.getItem('serverExplorer.selectedServerId') || null);
   
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [activeServerId, setActiveServerId] = useState<string | null>(null);
   const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
@@ -36,6 +38,10 @@ export function ServersExplorer() {
     window.sessionStorage.setItem('serverExplorer.results', JSON.stringify(servers));
     window.sessionStorage.setItem('serverExplorer.hasSearched', String(hasSearched));
   }, [servers, hasSearched]);
+  useEffect(() => {
+    if (nextPageUrl) window.sessionStorage.setItem('serverExplorer.nextPageUrl', nextPageUrl);
+    else window.sessionStorage.removeItem('serverExplorer.nextPageUrl');
+  }, [nextPageUrl]);
   useEffect(() => {
     if (selectedServerId) window.sessionStorage.setItem('serverExplorer.selectedServerId', selectedServerId);
     else window.sessionStorage.removeItem('serverExplorer.selectedServerId');
@@ -72,24 +78,62 @@ export function ServersExplorer() {
     };
   }, [status, user]);
 
-  const handleSearch = async (e?: React.FormEvent, overrideQuery?: string) => {
-    if (e) e.preventDefault();
-    const queryToUse = overrideQuery || searchQuery;
-    if (!queryToUse.trim()) return;
-
-    setIsSearching(true);
-    setSearchError(null);
-    setHasSearched(true);
+  const fetchServers = async (isLoadMore = false, overrideQuery?: string) => {
+    const queryToUse = overrideQuery !== undefined ? overrideQuery : searchQuery;
+    if (!isLoadMore) {
+      setIsSearching(true);
+      setSearchError(null);
+      setHasSearched(true);
+      setServers([]);
+    } else {
+      setIsLoadingMore(true);
+    }
 
     try {
-      const results = await searchServers(queryToUse);
-      setServers(results);
+      const options: any = {
+        pageSize: 25,
+        rustType: (activeTab === 'official' || activeTab === 'community' || activeTab === 'modded') ? activeTab : undefined,
+      };
+
+      if (isLoadMore && nextPageUrl) {
+        options.nextUrl = nextPageUrl;
+      } else {
+        options.query = queryToUse;
+      }
+
+      const response = await searchServers(options);
+      
+      if (isLoadMore) {
+        setServers(prev => [...prev, ...response.data]);
+      } else {
+        setServers(response.data);
+      }
+      
+      setNextPageUrl(response.links?.next || null);
+
     } catch (err: any) {
       setSearchError(err.message || 'Failed to search servers');
-      setServers([]);
+      if (!isLoadMore) setServers([]);
     } finally {
       setIsSearching(false);
+      setIsLoadingMore(false);
     }
+  };
+
+  useEffect(() => {
+    const isMainTab = activeTab === 'official' || activeTab === 'community' || activeTab === 'modded';
+    if (isMainTab && !servers.length && !hasSearched) {
+      fetchServers(false);
+    } else if (isMainTab && hasSearched && !isSearching && !isLoadingMore) {
+       // if they click a new tab, we should refetch
+       // but we don't want an infinite loop. So we only trigger if we aren't loading.
+       // actually, it's safer to not auto-fetch on tab switch if we already have results? No, if tab changes we must fetch new category.
+    }
+  }, [activeTab]);
+
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    fetchServers(false);
   };
 
   const toggleWatch = async (id: string, internalUuid?: string) => {
@@ -130,6 +174,16 @@ export function ServersExplorer() {
       if (!error) setActiveServerId(internalUuid);
     } catch (e) {}
   };
+
+  // We should fetch when tab changes.
+  useEffect(() => {
+     if (activeTab === 'official' || activeTab === 'community' || activeTab === 'modded') {
+       if (!isSearching && hasSearched) {
+          fetchServers(false);
+       }
+     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   const pendingActionMsg = window.sessionStorage.getItem('serverExplorer.pendingAction');
 
@@ -189,8 +243,8 @@ export function ServersExplorer() {
             </div>
             <button 
               type="submit" 
-              disabled={isSearching || !searchQuery.trim()}
-              style={{ padding: '0 2rem', backgroundColor: 'var(--accent-rust)', color: '#fff', border: 'none', borderRadius: '4px', cursor: (isSearching || !searchQuery.trim()) ? 'not-allowed' : 'pointer', opacity: (isSearching || !searchQuery.trim()) ? 0.7 : 1, fontWeight: 'bold' }}
+              disabled={isSearching}
+              style={{ padding: '0 2rem', backgroundColor: 'var(--accent-rust)', color: '#fff', border: 'none', borderRadius: '4px', cursor: isSearching ? 'not-allowed' : 'pointer', opacity: isSearching ? 0.7 : 1, fontWeight: 'bold' }}
             >
               Search
             </button>
@@ -236,7 +290,7 @@ export function ServersExplorer() {
             No servers found in this category. Try adjusting your filters.
           </div>
         ) : servers.length > 0 ? (
-          <div className="server-list" style={{ flex: 1, overflowY: 'auto' }}>
+          <div className="server-list" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {servers.map(server => (
               <ServerCard 
                 key={server.id} 
@@ -247,6 +301,16 @@ export function ServersExplorer() {
                 }}
               />
             ))}
+            
+            {nextPageUrl && (
+               <button 
+                 onClick={() => fetchServers(true)}
+                 disabled={isLoadingMore}
+                 style={{ padding: '1rem', marginTop: '1rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: isLoadingMore ? 'not-allowed' : 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+               >
+                 {isLoadingMore ? <Loader2 size={18} className="spin" /> : 'Load More Servers'}
+               </button>
+            )}
           </div>
         ) : (
           <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>

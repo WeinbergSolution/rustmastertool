@@ -75,6 +75,11 @@ export function ServerCard({ server, onSelect }: { server: ServerCardData, onSel
               <Clock size={14} /> Wipe: {new Date(server.lastWipe).toLocaleDateString()}
             </span>
           )}
+          {server.rustType && (
+            <span className="badge" style={{ backgroundColor: 'var(--bg-panel)', border: '1px solid var(--accent-rust)', color: 'var(--accent-rust)', textTransform: 'capitalize' }}>
+              {server.rustType}
+            </span>
+          )}
           {server.rank && <span className="badge" style={{ backgroundColor: 'var(--bg-hover)' }}>Rank #{server.rank}</span>}
         </div>
       </div>

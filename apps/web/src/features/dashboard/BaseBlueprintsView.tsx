@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, Search, MonitorPlay, ShieldAlert } from 'lucide-react';
 import { discoverBaseBlueprints, searchBaseBlueprints, type DiscoverRowResponse, type YouTubeVideoSnippet } from '../../lib/api/baseBlueprints';
 
@@ -36,11 +36,7 @@ export function BaseBlueprintsView() {
 
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
 
-  const hasFetchedDiscover = useRef(false);
-
   useEffect(() => {
-    if (hasFetchedDiscover.current) return;
-    hasFetchedDiscover.current = true;
 
     let mounted = true;
     setIsDiscoverLoading(true);
@@ -273,6 +269,8 @@ export function BaseBlueprintsView() {
                Base Blueprints features are currently locked until the backend is fully deployed.
              </p>
            </div>
+        ) : discoverData.length === 0 ? (
+           <div style={{ color: '#888', padding: '1rem' }}>No base blueprint videos returned yet.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             {discoverData.map((row) => (

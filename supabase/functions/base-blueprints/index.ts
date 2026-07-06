@@ -77,33 +77,51 @@ serve(async (req) => {
         ];
       }
 
-      const promises = rows.map(async (row: any) => {
-        try {
-          const query = row.query || 'rust base build';
-          const maxResults = Math.min(parseInt(row.maxResults || '8'), 12);
-          const res = await fetch(`${YOUTUBE_API_URL}/search?part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${apiKey}`);
-          
-          if (!res.ok) {
-            return { ...row, error: `API returned ${res.status}`, items: [] };
+      const processedRows: any[] = [];
+      const chunkSize = 3;
+      
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const chunk = rows.slice(i, i + chunkSize);
+        const chunkPromises = chunk.map(async (row: any) => {
+          try {
+            const query = row.query || 'rust base build';
+            const maxResults = Math.min(parseInt(row.maxResults || '8'), 12);
+            const res = await fetch(`${YOUTUBE_API_URL}/search?part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${apiKey}`);
+            
+            if (!res.ok) {
+              return { ...row, error: `API returned ${res.status}`, items: [] };
+            }
+            const data = await res.json();
+            const items = (data.items || []).map((item: any) => ({
+              id: item.id?.videoId,
+              title: item.snippet?.title,
+              channelTitle: item.snippet?.channelTitle,
+              channelId: item.snippet?.channelId,
+              description: item.snippet?.description,
+              thumbnailUrl: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.default?.url,
+              publishedAt: item.snippet?.publishedAt,
+            })).filter((item: any) => item.id);
+            
+            return { ...row, items };
+          } catch (e: any) {
+            return { ...row, error: e.message, items: [] };
           }
-          const data = await res.json();
-          const items = (data.items || []).map((item: any) => ({
-            id: item.id?.videoId,
-            title: item.snippet?.title,
-            channelTitle: item.snippet?.channelTitle,
-            channelId: item.snippet?.channelId,
-            description: item.snippet?.description,
-            thumbnailUrl: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.default?.url,
-            publishedAt: item.snippet?.publishedAt,
-          })).filter((item: any) => item.id);
-          
-          return { ...row, items };
-        } catch (e: any) {
-          return { ...row, error: e.message, items: [] };
-        }
-      });
+        });
 
-      const processedRows = await Promise.all(promises);
+        const chunkResults = await Promise.allSettled(chunkPromises);
+        chunkResults.forEach((result, idx) => {
+          if (result.status === 'fulfilled') {
+            processedRows.push(result.value);
+          } else {
+            processedRows.push({ ...chunk[idx], error: result.reason?.message || 'Unknown error', items: [] });
+          }
+        });
+
+        if (i + chunkSize < rows.length) {
+          // 400ms delay between chunks to avoid YouTube rate limits
+          await new Promise(resolve => setTimeout(resolve, 400));
+        }
+      }
 
       return new Response(
         JSON.stringify({ rows: processedRows }),

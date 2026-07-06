@@ -22,14 +22,12 @@ Aktivierung der Server Pulse Foundation auf Staging und Ausarbeitung der Retenti
 ## Was NICHT implementiert wurde (Guardrails eingehalten)
 - Keine Fake-Daten, keine Dummy-Graphen.
 - Kein aggressives Crawling.
-- **Ingestion Execution**: Da das Secret `SERVER_PULSE_INGEST_SECRET` auf Staging aktuell NICHT gesetzt war, wurde die Ingestion *nicht* getriggert, um Errors zu vermeiden. Dies ist nun ein Admin-Task für den Owner.
+- **Ingestion Execution & Telemetry**: Die `server-pulse-ingest` API liefert absichtlich `server_upsert_attempts` und `snapshot_insert_attempts` statt "inserted" zurück. Dies liegt daran, dass die Supabase-Datenbank aktiv Deduplizierung über `UNIQUE`-Constraints anwendet (z. B. überschneidende Server aus verschiedenen BattleMetrics-Kategorien oder wiederholte Snapshots innerhalb derselben Stunde). Das Frontend/UI zählt dagegen die *tatsächlichen* eindeutigen Zeilen aus der Datenbank und ist somit die Quelle der Wahrheit.
 
 ## Security Checks
 - Typecheck & Build: GREEN
 - Secret Check: GREEN (Kein Ingest Secret, keine DB URLs im Frontend).
 
-## Nächste Schritte (Owner Task)
-Da das `SERVER_PULSE_INGEST_SECRET` auf Supabase noch fehlt, muss der Owner Folgendes tun:
-1. `npx supabase secrets set SERVER_PULSE_INGEST_SECRET="<DEIN_WUNSCH_SECRET>"`
-2. Danach manueller Ingest-Test via cURL (Runbook liegt in `docs/runbooks/phase-1-7-a-server-pulse-ingest.md`).
-3. Browser öffnen und prüfen, ob die UI nach dem ersten Lauf erste Daten anzeigt.
+Da das Backend nun live ist, kann der Owner (oder ein Cron-Scheduler) die Ingestion lokal oder automatisiert auslösen:
+1. `curl` Command an die Edge Function absetzen (Runbook liegt in `docs/runbooks/phase-1-7-a-server-pulse-ingest.md`).
+2. Browser öffnen und prüfen, wie sich die echten Snapshots in der UI aufbauen.

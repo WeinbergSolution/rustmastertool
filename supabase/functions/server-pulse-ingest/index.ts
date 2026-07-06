@@ -67,8 +67,8 @@ Deno.serve(async (req) => {
     const startTime = new Date();
     let pagesProcessed = 0;
     let serversFound = 0;
-    let upsertedCount = 0;
-    let snapshotsInserted = 0;
+    let serverUpsertAttempts = 0;
+    let snapshotInsertAttempts = 0;
     const errors: string[] = [];
 
     // Bucket for snapshot time (truncate to nearest minute to avoid spam)
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
         if (upsertError) {
           errors.push(`Upsert Error: ${upsertError.message}`);
         } else if (upsertedServers) {
-          upsertedCount += upsertedServers.length;
+          serverUpsertAttempts += upsertRows.length;
           
           // Prepare Snapshots
           const snapshotRows = upsertedServers.map(us => {
@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
             if (snapError) {
               errors.push(`Snapshot Error: ${snapError.message}`);
             } else {
-              snapshotsInserted += snapshotRows.length;
+              snapshotInsertAttempts += snapshotRows.length;
             }
           }
 
@@ -170,10 +170,11 @@ Deno.serve(async (req) => {
         category,
         pages_processed: pagesProcessed,
         servers_found: serversFound,
-        servers_upserted: upsertedCount,
-        snapshots_inserted: snapshotsInserted,
+        server_upsert_attempts: dryRun ? serversFound : serverUpsertAttempts,
+        snapshot_insert_attempts: dryRun ? serversFound : snapshotInsertAttempts,
         errors_count: errors.length,
-        errors,
+        errors: errors.length > 0 ? errors : undefined,
+        note: dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.",
         started_at: startTime,
         finished_at: finishedAt
       }),

@@ -10,6 +10,8 @@ export interface RetentionBuckets {
 
 export type PulseStatus = 'ready' | 'collecting' | 'insufficient_data' | 'unknown_wipe';
 export type HealthLabel = 'Strong Retention' | 'Moderate Drop' | 'Fast Dying' | 'Not enough data';
+export type EarlyPredictionState = 'first_seen' | 'collecting' | 'early_trend' | 'retention_ready';
+export type EarlyTrendDirection = 'population_up' | 'population_stable' | 'population_down' | null;
 
 export interface PulseSummary {
   status: PulseStatus;
@@ -17,7 +19,10 @@ export interface PulseSummary {
   peakPlayers: number | null;
   snapshotCount: number;
   lastObservedAt: string | null;
+  firstObservedAt: string | null;
   healthLabel: HealthLabel;
+  earlyPredictionState: EarlyPredictionState;
+  earlyTrendDirection: EarlyTrendDirection;
 }
 
 export function calculatePulseSummary(snapshots: ServerPopulationSnapshot[], wipe_at: string | null | undefined): PulseSummary {
@@ -28,12 +33,43 @@ export function calculatePulseSummary(snapshots: ServerPopulationSnapshot[], wip
       peakPlayers: null,
       snapshotCount: 0,
       lastObservedAt: null,
-      healthLabel: 'Not enough data'
+      firstObservedAt: null,
+      healthLabel: 'Not enough data',
+      earlyPredictionState: 'first_seen',
+      earlyTrendDirection: null
     };
   }
 
   const snapshotCount = snapshots.length;
-  const lastObservedAt = snapshots[0].observed_at;
+  // Snapshots are usually returned newest first from our API if ordered by observed_at desc, but we should sort to be safe
+  const sorted = [...snapshots].sort((a, b) => new Date(a.observed_at).getTime() - new Date(b.observed_at).getTime());
+  const firstObservedAt = sorted[0].observed_at;
+  const lastObservedAt = sorted[sorted.length - 1].observed_at;
+  
+  let earlyPredictionState: EarlyPredictionState = 'collecting';
+  let earlyTrendDirection: EarlyTrendDirection = null;
+
+  if (snapshotCount === 1) {
+    earlyPredictionState = 'first_seen';
+  } else if (snapshotCount >= 2 && snapshotCount <= 3) {
+    earlyPredictionState = 'collecting';
+  } else if (snapshotCount > 3) {
+    const hoursDiff = (new Date(lastObservedAt).getTime() - new Date(firstObservedAt).getTime()) / (1000 * 60 * 60);
+    if (hoursDiff >= 2) {
+       earlyPredictionState = 'early_trend';
+       // Simple trend calculation: average of first two vs average of last two
+       const firstTwoAvg = ((sorted[0].players || 0) + (sorted[1].players || 0)) / 2;
+       const lastTwoAvg = ((sorted[sorted.length - 1].players || 0) + (sorted[sorted.length - 2].players || 0)) / 2;
+       
+       if (lastTwoAvg > firstTwoAvg * 1.05) {
+         earlyTrendDirection = 'population_up';
+       } else if (lastTwoAvg < firstTwoAvg * 0.95) {
+         earlyTrendDirection = 'population_down';
+       } else {
+         earlyTrendDirection = 'population_stable';
+       }
+    }
+  }
 
   if (!wipe_at) {
     return {
@@ -42,7 +78,10 @@ export function calculatePulseSummary(snapshots: ServerPopulationSnapshot[], wip
       peakPlayers: null,
       snapshotCount,
       lastObservedAt,
-      healthLabel: 'Not enough data'
+      firstObservedAt,
+      healthLabel: 'Not enough data',
+      earlyPredictionState,
+      earlyTrendDirection
     };
   }
 
@@ -58,7 +97,10 @@ export function calculatePulseSummary(snapshots: ServerPopulationSnapshot[], wip
       peakPlayers: null,
       snapshotCount,
       lastObservedAt,
-      healthLabel: 'Not enough data'
+      firstObservedAt,
+      healthLabel: 'Not enough data',
+      earlyPredictionState,
+      earlyTrendDirection
     };
   }
 
@@ -91,7 +133,10 @@ export function calculatePulseSummary(snapshots: ServerPopulationSnapshot[], wip
       peakPlayers: 0,
       snapshotCount,
       lastObservedAt,
-      healthLabel: 'Not enough data'
+      firstObservedAt,
+      healthLabel: 'Not enough data',
+      earlyPredictionState,
+      earlyTrendDirection
     };
   }
 
@@ -138,12 +183,19 @@ export function calculatePulseSummary(snapshots: ServerPopulationSnapshot[], wip
     else healthLabel = 'Fast Dying';
   }
 
+  if (buckets.h12 !== null || buckets.h24 !== null) {
+    earlyPredictionState = 'retention_ready';
+  }
+
   return {
     status: 'ready',
     buckets,
     peakPlayers,
     snapshotCount,
     lastObservedAt,
-    healthLabel
+    firstObservedAt,
+    healthLabel,
+    earlyPredictionState,
+    earlyTrendDirection
   };
 }

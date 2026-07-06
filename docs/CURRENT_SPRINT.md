@@ -1,33 +1,28 @@
-# Current Sprint (Phase 1.3)
+# Current Sprint (Phase 1.8-A)
 
-**Phase:** Phase 1.3-A Real BattleMetrics Server Explorer (GREEN - Owner Verification Required)
+**Phase:** Phase 1.8-A Base Blueprints YouTube Foundation (IMPLEMENTATION)
 
 ## Was geändert wurde
-- [x] Phase 0.4-C: BattleMetrics API Contract Audit
-- [x] Phase 0.5: Frontend Shell + Dashboard mit Fixture Data
-- [x] Phase 0.6: Supabase Product Foundation + Watchlist Persistence
-- [x] Phase 0.7: Watchlist UI Integration + Server Detail Flow
-- [x] Phase 0.8: Repository-backed Watchlist + Server Explorer Foundation
-- [x] Phase 0.8.1: Data-Layer Completion & Repo Hygiene
-- [x] Phase 0.9: Auth Boundary + Async Repository Preparation
-- [x] Phase 1.0: Supabase Local RLS Smoke (GREEN-B)
-- [x] Phase 1.1-A: Remote/Staging Migration Runbook
-- [x] Phase 1.1-B: Remote/Staging Migration Execution (GREEN)
-- [x] Phase 1.2-A: Auth Foundation + Profile Trigger (GREEN)
-- [x] Phase 1.3-A: Real BattleMetrics Server Explorer (GREEN)
-  - Code ist committed (`30a93dd`) und gepusht von Owner (Git Tracked-Clean bestätigt).
-  - Supabase Edge Function `battlemetrics` Proxy-Logik implementiert.
-  - Frontend-Integration auf Live-Daten umgestellt, Mock-Server im Explorer entfernt.
-  - Secret Check erfolgreich (keine Token/Service_Roles im Frontend oder git trackt).
-  - Edge Function Remote Deploy-Status unklar per CLI, aber Owner hat Funktion live verifiziert.
-  - **Runtime Fix:** Watchlist-Regression gefixt. Speichert nun echte Live-Server in der lokalen Watchlist und die Topbar zeigt ehrlich den Status "Live Provider Mode" anstelle von Fixture-Warnungen an.
+- [x] Phase 1.4-A: Steam Login + Active Server Core Loop
+- [x] Phase 1.5-A: Three-Layer Navigation + Command-Center Dashboard + MyRust Shell
+- [x] Phase 1.6-A: Server Explorer Data Expansion + BattleMetrics Filters + Base Blueprints Shell
+- [x] Phase 1.7-B: Server Pulse Activation + Retention Intelligence UI
+- [x] Phase 1.8-A: Base Blueprints YouTube Foundation
+  - **Datenbank**: Migration `20260706040901_base_blueprints_youtube.sql` erstellt. Beinhaltet Tabellen `base_blueprints` und `user_saved_blueprints`. (Dry-Run erfolgreich)
+  - **Edge Function**: `base-blueprints` geschrieben, fragt sicher serverseitig die YouTube Data API v3 ab.
+  - **Frontend API Client**: `apps/web/src/lib/api/baseBlueprints.ts` hinzugefügt, um sicher mit der Edge Function zu kommunizieren.
+  - **Base Blueprints UI**: `BaseBlueprintsView.tsx` erstellt, ersetzt die Roadmap-Ansicht. Beinhaltet Netflix-ähnliches Grid, Categories/Presets, YouTube Modal Embed und Search Bar.
 
-## Was nicht gemacht wurde
-- **Steam OpenID ist noch nicht implementiert**.
-- SupabaseWatchlistRepository bleibt inaktiv.
+## Was NICHT implementiert wurde (Guardrails eingehalten)
+- Keine Scraping-Logik, nur die offizielle YouTube Data API.
+- Keine `YOUTUBE_API_KEY` oder andere Secrets im Frontend geleakt.
+- Es fanden keine YouTube API Aufrufe direkt aus dem Client statt.
+- **REMOTE GATES SIND NOCH OFFEN**: Die Datenbankmigration und die Edge Function wurden noch nicht auf Supabase Staging (`fcmjevwfuwzqtpozwigf`) angewandt, da dies explizite Owner-Freigabe erfordert.
 
 ## Aktueller Fokus
-Owner Gate: Finaler manueller Browser-Test der korrigierten Watchlist-UI.
+Owner Gate: Freigabe von DB Push und Edge Function Deploy.
 
 ## Nächster sicherer Schritt
-Owner-Bestätigung (Smoke Test). Wenn erfolgreich, Merge nach main. Danach Phase 1.4 oder Steam Auth ADR/Spike.
+1. Owner bestätigt die Remote Gates.
+2. Der AI Engineer führt `supabase db push` und `supabase functions deploy base-blueprints` aus.
+3. Danach manueller Browser-Test der neuen YouTube UI.

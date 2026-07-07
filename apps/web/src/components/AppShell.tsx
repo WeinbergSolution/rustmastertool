@@ -9,6 +9,7 @@ import { MyRust } from '../features/account/MyRust';
 import { Watchlist } from '../features/dashboard/Watchlist';
 import { ServerPulseView } from '../features/dashboard/ServerPulseView';
 import { LearnHub } from '../features/learn/LearnHub';
+import { RustGuidesView } from '../features/learn/rust-guides/RustGuidesView';
 import { useIsMobile } from './mobile/useIsMobile';
 import { MobileAppShell } from './mobile/MobileAppShell';
 import { MobileHome } from './mobile/MobileHome';
@@ -20,6 +21,7 @@ export type ViewState =
   | 'watchlist'
   | 'server_pulse'
   | 'base_blueprints'
+  | 'rust_guides'
   | 'learn'
   | 'map_intel'
   | 'filter_profiles'
@@ -62,6 +64,9 @@ export function AppShell() {
       </div>
       <div style={{ display: currentView === 'base_blueprints' ? 'block' : 'none', height: '100%' }}>
         <BaseBlueprintsView />
+      </div>
+      <div style={{ display: currentView === 'rust_guides' ? 'block' : 'none', height: '100%' }}>
+        <RustGuidesView onViewChange={setCurrentView} />
       </div>
       {currentView === 'learn' && <LearnHub onViewChange={setCurrentView} />}
       {currentView === 'map_intel' && (

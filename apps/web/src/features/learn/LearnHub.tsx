@@ -1,4 +1,4 @@
-import { Building, BookOpen, ChevronRight, Lock } from 'lucide-react';
+import { Building, BookOpen, ChevronRight } from 'lucide-react';
 import type { ViewState } from '../../components/AppShell';
 
 interface LearnHubProps {
@@ -28,16 +28,17 @@ export function LearnHub({ onViewChange }: LearnHubProps) {
         <ChevronRight size={18} className="learn-card-chevron" />
       </button>
 
-      {/* Rust Guides — honest coming-soon, no fake content */}
-      <div className="learn-card learn-card--gated" aria-disabled="true">
+      {/* Rust Guides */}
+      <button className="learn-card" onClick={() => onViewChange('rust_guides')}>
         <div className="learn-card-icon"><BookOpen size={22} /></div>
         <div className="learn-card-body">
           <div className="learn-card-title">
-            Rust Guides <Lock size={13} style={{ verticalAlign: 'middle', marginLeft: 4, opacity: 0.7 }} />
+            Rust Guides
           </div>
-          <div className="learn-card-desc">Beginner-to-advanced Rust guides and video walkthroughs. Coming soon.</div>
+          <div className="learn-card-desc">Beginner-to-advanced Rust guides and video walkthroughs.</div>
         </div>
-      </div>
+        <ChevronRight size={18} className="learn-card-chevron" />
+      </button>
     </div>
   );
 }

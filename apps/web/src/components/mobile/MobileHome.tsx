@@ -45,25 +45,25 @@ export function MobileHome({ onViewChange }: MobileHomeProps) {
         </div>
       </section>
 
-      {/* Phase rail (swipeable) */}
+      {/* Phase cards — vertical stack */}
       <section className="mobile-rail-section">
         <div className="mobile-rail-title">Your session, end to end</div>
-        <div className="mobile-home-rail" role="list">
-          <button className="mobile-phase-card" role="listitem" onClick={() => onViewChange('servers')}>
+        <div className="mobile-home-stack">
+          <button className="mobile-phase-card" onClick={() => onViewChange('servers')}>
             <div className="mobile-phase-icon"><Server size={22} /></div>
             <div className="mobile-phase-name">Pre-Game</div>
             <div className="mobile-phase-desc">Browse & analyze servers, maps and wipes.</div>
             <div className="mobile-phase-cta">Open Servers <ChevronRight size={14} /></div>
           </button>
 
-          <button className="mobile-phase-card" role="listitem" onClick={() => onViewChange('current_connection')}>
+          <button className="mobile-phase-card" onClick={() => onViewChange('current_connection')}>
             <div className="mobile-phase-icon"><Crosshair size={22} /></div>
-            <div className="mobile-phase-name">In-Game Companion <span className="mobile-phase-badge">soon</span></div>
-            <div className="mobile-phase-desc">Live server context and tools while you play.</div>
-            <div className="mobile-phase-cta">Preview <ChevronRight size={14} /></div>
+            <div className="mobile-phase-name">In-Game · Live Track</div>
+            <div className="mobile-phase-desc">Set an active server to prepare live tracking.</div>
+            <div className="mobile-phase-cta">Open Live Track <ChevronRight size={14} /></div>
           </button>
 
-          <button className="mobile-phase-card" role="listitem" onClick={() => onViewChange('session_battle_log')}>
+          <button className="mobile-phase-card" onClick={() => onViewChange('session_battle_log')}>
             <div className="mobile-phase-icon"><History size={22} /></div>
             <div className="mobile-phase-name">After-Game <span className="mobile-phase-badge">soon</span></div>
             <div className="mobile-phase-desc">Session battle log and learnings for next time.</div>

@@ -322,3 +322,44 @@ Neue Mobile-Komponenten unter `apps/web/src/components/mobile/` (Desktop bleibt 
 - Umbenannt: Dashboard→**Home**, Server Pulse→**Pulse**, Current Connection→**Active Server/Live Companion**.
 
 **Empfohlene erste Implementierungsphase:** **Phase 2.2-B — Mobile Shell + Bottom-Nav Rebuild** (neuer Branch `feature/phase-2-2-b-mobile-shell-nav`, Owner-Smoke vor Merge).
+
+---
+
+# Addendum — Phase 2.2-B-FIX-1 (Owner-Feedback)
+
+## 1. Bottom-Nav Korrektur: `Pulse` → `Live`
+Owner-Feedback: **Pulse ist kein starkes Primär-Feature** — es visualisiert primär das Cron/Analytics-System. Langfristig sollen Pulse-Daten (Mini-Trend, Death/Decay-Kurve, Retention, Wipe-Health) **in Server-Karten und Server-Detail** einfließen, nicht als eigener Haupt-Tab.
+- **Neue Bottom-Nav:** `Home · Servers · Live · Learn · More`.
+- **Live-Tab** = Live Companion / Active-Server-Tracking-Foundation. Kein Active Server → ehrlicher Empty State „Choose an active server to start live tracking."; Active Server gesetzt → kompakte „tracking prepared"-Foundation (read-only, kein Fake-Live-Feed, keine neue Backend-Logik). Mappt auf den bestehenden `current_connection`-View (mobil = `MobileLive`, Desktop unverändert = RoadmapView).
+- **Pulse bleibt erreichbar** über **More → Tools → „Server Pulse"** (sekundär, nicht gated). Perspektivisch zusätzlich kontextuell in Server-Detail/-Karten.
+- Keine Cron-/Pulse-Datenlogik geändert — nur Navigation/Priorisierung.
+
+## 2. Home-Hierarchie
+- Phase-Cards jetzt **vertikal gestapelt** (full-width), kein horizontales Swipen mehr auf Home → natürliches Runterscrollen, kein abgeschnittener Card-Rand.
+- **In-Game-Card** verkauft kein fettes „soon" mehr, sondern führt in die **Live-Track-Foundation** (ehrlicher Empty State). **After-Game** bleibt ehrlich „soon" (RoadmapView).
+- Primary-CTA bleibt „Explore Servers"; ein Login-Hinweis; kein doppelter Sign-in-CTA, kein Browse-Anonymously-Button.
+
+## 3. ServerCardMobile — Feedback für Phase 2.2-C (dokumentiert, nicht in 2.2-B implementiert)
+Rust-Spieler brauchen einen **Server-Browser-Look**, kein Admin-Monitoring. Redesign-Vorgaben für 2.2-C:
+- **Compact Badges statt Buttons:** „Modded" → kleines **„M"-Eck-Badge**; Rank → kleine **„#123"-Zahl in einer Ecke** (kein großer Pill-Button).
+- **„Pulse Collecting" entfernen/entdezenten** — keine relevante Spieler-Info auf der Card (höchstens ein winziger Health-Dot).
+- **Sofort sichtbar (Priorität):** Servername · Spieler/Max/Queue · **Wipe-Alter / letzter Wipe** · Map-Type/Size/**Seed** (falls vorhanden) · Region · **IP/connect** · **Map-available-Indicator** · später Mini-Trend/Decay-Sparkline.
+- **IP** korrekt sichtbar machen; **Seed** überhaupt anzeigen (fehlt aktuell).
+- Quick-Actions (★/⚑) **nicht dominant**; sauberes Tap-Target; Card = Rust-Serverbrowser-Ästhetik.
+- Neu-Komponente `ServerCardMobile` (+ Mini-Trend/Death-Curve) → **Phase 2.2-C**. Keine Server-Fetch-/Search-Logik in 2.2-B geändert.
+
+## 4. Preview-Auth / ALLOWED_ORIGINS (Konfiguration, kein Code)
+**Diagnose:** Der `403 Invalid origin` auf der Feature-Preview ist **kein DB-/Supabase-Client-Problem**. Die App ruft `steam-auth` korrekt auf, aber die **Preview-Origin steht nicht in `ALLOWED_ORIGINS`** der `steam-auth` Edge Function. → **Konfigurations-Fix im Supabase-Dashboard**, keine Codeänderung. (Kein steam-auth-Code angefasst, kein Deploy — Gate eingehalten.)
+
+**Kurzfristige Owner-Action** (Owner kann den Wert nur **ersetzen**, daher der **vollständige** Zielwert; keine Leerzeichen, keine trailing slashes):
+```
+http://localhost:5173,http://localhost:5174,https://rustmastertool-web.vercel.app,https://rustmastertool-web-git-main-pascals-projects-8f00c30a.vercel.app,https://rustmastertool-web-git-feature-36abe6-pascals-projects-8f00c30a.vercel.app,https://rustmastertool-web-git-feature-12ebca-pascals-projects-8f00c30a.vercel.app
+```
+
+**Langfristige Empfehlung (project-scoped, keine offene Wildcard):**
+Statt jede neue Vercel-Preview-URL manuell zu pflegen, sollte `steam-auth` Origins gegen ein **projekt-gebundenes Pattern** prüfen — **nicht** `*.vercel.app` (zu offen), sondern exakt auf dieses Vercel-Projekt gescoped:
+```
+rustmastertool-web-git-*-pascals-projects-8f00c30a.vercel.app
+```
+Sichere Umsetzung: `ALLOWED_ORIGINS` bleibt exakte Allowlist für stabile Domains (localhost, prod, main); zusätzlich ein **separates, projekt-gebundenes Regex/Suffix-Match** nur für Preview-Branches dieses Projekts (fixes Suffix `-pascals-projects-8f00c30a.vercel.app` + fixer Prefix `rustmastertool-web-git-`, nur der Branch-Slug variiert). So werden neue Feature-Branch-Previews automatisch akzeptiert, ohne fremde `vercel.app`-Domains zu erlauben.
+**Wichtig:** Das erfordert eine **Codeänderung in `steam-auth`** → **STOP/Gate**: erst als eigene, reviewbare Phase umsetzen + deployen, **nicht** in 2.2-B. Für jetzt genügt der Dashboard-Wert oben.

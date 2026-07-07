@@ -12,6 +12,7 @@ import { LearnHub } from '../features/learn/LearnHub';
 import { useIsMobile } from './mobile/useIsMobile';
 import { MobileAppShell } from './mobile/MobileAppShell';
 import { MobileHome } from './mobile/MobileHome';
+import { MobileLive } from './mobile/MobileLive';
 
 export type ViewState =
   | 'dashboard'
@@ -76,10 +77,12 @@ export function AppShell() {
         />
       )}
       {currentView === 'current_connection' && (
-        <RoadmapView
-          title="Current Connection"
-          message="Shows your active server connection context. Live data stream requires Rust+ integration. Coming later."
-        />
+        isMobile
+          ? <MobileLive onViewChange={setCurrentView} />
+          : <RoadmapView
+              title="Current Connection"
+              message="Shows your active server connection context. Live data stream requires Rust+ integration. Coming later."
+            />
       )}
       {currentView === 'live_map' && (
         <RoadmapView

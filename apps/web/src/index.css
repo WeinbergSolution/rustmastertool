@@ -640,6 +640,71 @@ html, body {
   font-size: 0.8rem;
 }
 
+/* Vertical stack of phase cards on Home (full width, no horizontal swipe). */
+.mobile-home-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mobile-home-stack .mobile-phase-card {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+}
+
+/* ============================================================
+   Mobile Live Track
+   ============================================================ */
+.mobile-live { display: flex; flex-direction: column; gap: 1.25rem; }
+.mobile-live-header { display: flex; align-items: center; gap: 0.85rem; }
+.mobile-live-icon {
+  width: 46px; height: 46px; flex: 0 0 46px;
+  border-radius: 10px;
+  background-color: var(--bg-hover);
+  color: var(--accent-rust);
+  display: flex; align-items: center; justify-content: center;
+}
+.mobile-live-title { font-size: 1.4rem; font-weight: 800; }
+.mobile-live-sub { font-size: 0.88rem; color: var(--text-muted); }
+.mobile-live-card,
+.mobile-live-empty {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.mobile-live-empty { align-items: flex-start; }
+.mobile-live-badge {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--status-online);
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.mobile-live-text,
+.mobile-live-empty-text { font-size: 0.9rem; color: var(--text-muted); }
+.mobile-live-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--accent-rust);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+
 /* ============================================================
    Learn hub
    ============================================================ */

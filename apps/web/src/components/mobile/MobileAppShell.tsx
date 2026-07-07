@@ -14,15 +14,15 @@ interface MobileAppShellProps {
 const TAB_FOR_VIEW: Partial<Record<ViewState, MobileTab>> = {
   dashboard: 'home',
   servers: 'servers',
-  server_pulse: 'pulse',
+  current_connection: 'live',
   learn: 'learn',
   base_blueprints: 'learn',
 };
 
 // Views that are reached via the "More" sheet -> highlight the More tab.
 const MORE_VIEWS: ViewState[] = [
-  'my_rust', 'watchlist', 'settings',
-  'current_connection', 'live_map', 'raid_calculator',
+  'my_rust', 'watchlist', 'settings', 'server_pulse',
+  'live_map', 'raid_calculator',
   'session_battle_log', 'filter_profiles', 'map_intel',
 ];
 
@@ -46,7 +46,7 @@ export function MobileAppShell({ currentView, onViewChange, children }: MobileAp
     switch (tab) {
       case 'home': onViewChange('dashboard'); break;
       case 'servers': onViewChange('servers'); break;
-      case 'pulse': onViewChange('server_pulse'); break;
+      case 'live': onViewChange('current_connection'); break;
       case 'learn': onViewChange('learn'); break;
     }
   };

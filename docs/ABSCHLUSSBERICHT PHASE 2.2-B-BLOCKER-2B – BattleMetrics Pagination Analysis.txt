@@ -1,0 +1,46 @@
+ABSCHLUSSBERICHT: PHASE 2.2-B-BLOCKER-2B – BattleMetrics Pagination Analysis
+
+Ich habe die Tests exakt wie gefordert read-only gegen die BattleMetrics API ausgeführt. Das Ergebnis ist eindeutig: Keine der aktuellen Such-Strategien erlaubt Deep-Pagination. Wir landen bei Option C.
+
+Hier sind die Testergebnisse und Antworten auf deine Fragen:
+
+1. Welche aktuelle Function-URL war das Problem?
+Die Function baut aktuell initial diese URLs (mit page_size=100):
+
+https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=official&page[size]=100
+https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=community&page[size]=100
+https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=modded&page[size]=100
+2. Ob filter[search] genutzt wurde?
+Ja. Die Function nutzt aktuell filter[search], was bei BattleMetrics eine Volltextsuche über Servernamen ist. BattleMetrics limitiert Search-Queries extrem hart: Der Offset darf niemals größer als 90 sein.
+
+3. Test-Ergebnisse (Welche URL liefert links.next und ist pageable?)
+A, B, C (Aktuell, size=100):
+data.length: 100
+links.next: null (Weil der nächste Offset 100 wäre, was > 90 ist).
+D, E, F (filter[details][rust_type], size=100):
+Error: "must NOT have additional properties" (BattleMetrics unterstützt diesen Filter nicht am servers Endpoint).
+G (filter[search], size=90):
+Erste Seite: data.length=90, links.next vorhanden (offset=90).
+Zweite Seite: data.length=90, links.next=null (Weil nächster Offset 180 > 90).
+Ergebnis: Maximal 180 Server abrufbar.
+H (filter[search], size=50):
+Erste Seite: data.length=50, links.next vorhanden (offset=50).
+Zweite Seite: data.length=50, links.next=null (Weil nächster Offset 100 > 90).
+Ergebnis: Maximal 100 Server abrufbar.
+4. Entscheidung: Option C
+Keine der Varianten ist sauber für Deep Pagination nutzbar. Mit filter[search] kommen wir systembedingt nie über 100 bzw. 180 Server hinaus.
+
+Alternative Deep-Discovery-Strategie (Vorschlag): Wir müssen filter[search] komplett entfernen und stattdessen Keyset-Pagination nutzen.
+
+Die Query: https://api.battlemetrics.com/servers?filter[game]=rust&filter[status]=online&sort=-players&page[size]=100
+Warum das funktioniert: Diese URL nutzt sort=-players statt search. BattleMetrics liefert hier page[key] statt page[offset]. Dadurch können wir endlos in die Tiefe blättern (Tausende Server).
+Wie trennen wir Official/Community/Modded? Der Crawler extrahiert ohnehin schon details.rust_type aus der API und speichert es in unserer DB (Zeile 195: rust_type: s.attributes?.details?.rust_type). Anstatt drei getrennte unvollständige Crawler zu betreiben, sollten wir entweder einen zentralen Deep-Discovery-Scheduler laufen lassen, oder die drei Kategorien einfach parallel auf dem Gesamt-Pool (z.B. nach Rank sortiert mit Keys) crawlen lassen, da die DB beim Upsert ohnehin dedupliziert und korrekte rust_types zuweist.
+Antworten auf die Checkliste
+Ob URL Builder geändert wurde: Nein, der URL Builder wurde in diesem Schritt nicht modifiziert. Ich warte auf das Gate.
+Ob page_size Änderung nötig ist: Nein, eine Verkleinerung (auf 90 oder 50) löst das Problem nicht nachhaltig (maximal 180 Server). Wir müssen die Strategie ändern.
+Ob DB-State-Reset nötig ist: Ja, wenn wir die Strategie wechseln, müssen next_page_url und current_page zurückgesetzt werden, um mit der neuen Suchstrategie sauber bei Seite 1 zu beginnen.
+Ob Gate für Function Deploy offen ist: NEIN (Gestoppt).
+Ob Gate für SQL-State-Update offen ist: NEIN (Gestoppt).
+Typecheck: SUCCESS
+Build: SUCCESS
+Secret Check: SUCCESS. Keine Secrets gelesen oder geschrieben.

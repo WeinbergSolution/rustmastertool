@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
     let startPageUrl = currentUrl;
     let maxPageWindow = 20;
 
-    if (['official', 'community', 'modded'].includes(catLower)) {
+    if (['official', 'community', 'modded', 'global'].includes(catLower)) {
       const { data: stateData } = await supabase
         .from('server_pulse_scheduler_state')
         .select('*')
@@ -115,7 +115,11 @@ Deno.serve(async (req) => {
          if (stateData.next_page_url) {
            currentUrl = stateData.next_page_url;
          } else {
-           currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${encodeURIComponent(catLower)}&page[size]=${pSize}`;
+           if (catLower === 'global') {
+             currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[status]=online&sort=-players&page[size]=${pSize}`;
+           } else {
+             currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${encodeURIComponent(catLower)}&page[size]=${pSize}`;
+           }
          }
          startPageUrl = currentUrl;
       }
@@ -340,7 +344,7 @@ Deno.serve(async (req) => {
         .eq('id', runId);
 
       // Also update scheduler state if category is one of the defaults
-      if (['official', 'community', 'modded'].includes(catLower) && !dryRun) {
+      if (['official', 'community', 'modded', 'global'].includes(catLower) && !dryRun) {
          let nextCurrentPage = startPage + pagesProcessed;
          let nextUrlToStore = endNextPageUrl;
          let resetAt: string | null = null;

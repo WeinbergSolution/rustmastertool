@@ -1,0 +1,29 @@
+ABSCHLUSSBERICHT: PHASE 2.2-B-BLOCKER-2 – Crawler Pagination Fix
+
+Ich habe den Code analysiert und die gewünschten Fixes für die server-pulse-ingest Funktion in den Branch gepusht. Hier ist die detaillierte Auswertung:
+
+Root Cause der fehlenden Rotation
+Die Ursache, warum der Crawler bei official, community und modded immer auf Seite 1 festhing, ist ein Zusammenspiel aus zwei Faktoren:
+
+Fehlende Robustheit: json.links?.next wurde direkt ausgelesen. Wenn das Objekt fehlerhaft, als relativer Pfad oder als leeres Array kam, wurde es im Catch-Block oder als Falsy-Wert verschluckt und auf null gesetzt.
+BattleMetrics API Limitierung (Wichtiges Finding!): Ich habe statische Tests gegen die BM API gefahren. BattleMetrics blockiert bei filter[search]-Queries einen Offset > 90. Da unsere page_size in der DB auf 100 steht, gibt BattleMetrics bei einem filter[search]=official auf der ersten Seite gar kein links.next zurück (da der nächste Offset 100 wäre und somit geblockt wird). Dadurch wurde endNextPageUrl sofort null.
+Wie next_page_url verloren ging und jetzt gelesen wird
+Verloren: Wenn endNextPageUrl zu null evaluiert wurde (Zeile 279), löste das den Reset-Block aus (if (!endNextPageUrl || nextCurrentPage > maxPageWindow)), wodurch nextCurrentPage wieder hart auf 1 und die URL auf null gesetzt wurde.
+Neu (extractBattleMetricsNextUrl): Ich habe genau nach Vorgabe die Helper-Funktion implementiert. Sie prüft strikt auf typeof payload.links.next === 'string'. Wenn es ein absoluter Link ist, wird verifiziert, dass die Domain api.battlemetrics.com lautet. Relative Links werden sicher gegen die Base-URL aufgelöst.
+Wie current_page aktualisiert wird
+Wenn ein valider Link zurückkommt, wird pagesProcessed (1) auf die startPage addiert (-> Seite 2). Da maxPages=1 ist, bricht die While-Schleife ab. Der berechnete Status (Seite 2 und die sichere Next-URL) wird sauber im server_pulse_scheduler_state gespeichert.
+
+Parameter Status & Disziplin
+maxPages=1: Wird zu 100% korrekt als "Lade exakt eine Seite pro Cron-Run" behandelt. Die While-Schleife terminiert sauber nach dem ersten Fetch, persistiert den Cursor und wartet auf den nächsten Run.
+page_size: Bleibt unverändert auf dem DB-Wert 100. (Hinweis für die Zukunft: Solange wir filter[search]=official nutzen, blockiert BM die Pagination bei size=100. Wir müssen hier ggf. bald den URL-Builder anpassen oder page_size verringern, aber ich habe wie angewiesen keine API-Logik oder Settings verändert!)
+Cron: Unverändert.
+DB/Migration: War unnötig, das Datenmodell stimmt.
+Logging: Erfolgreich ins Feld note integriert, ohne Secrets offenzulegen ("Pagination next link captured." bzw. "No next link returned; resetting category window.").
+Checks
+Typecheck: npm run typecheck:web -> SUCCESS
+Build: npm run build:web -> SUCCESS
+Secret Check: Sauber. Keine lokalen .env.local berührt. Keine Keys ausgelesen oder geloggt.
+Commit: fix: persist battlemetrics pagination cursor gepusht in feature/phase-2-2-b-mobile-shell-nav.
+STOP vor Deploy.
+
+Gate: CONFIRM DEPLOY SERVER PULSE INGEST PAGINATION FIX TO fcmjevwfuwzqtpozwigf

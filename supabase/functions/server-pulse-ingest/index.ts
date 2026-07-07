@@ -14,6 +14,31 @@ interface IngestOptions {
   dryRun?: boolean;
 }
 
+function extractBattleMetricsNextUrl(payload: any): string | null {
+  if (!payload || !payload.links || typeof payload.links.next !== 'string') {
+    return null;
+  }
+  
+  const nextLink = payload.links.next.trim();
+  if (!nextLink) return null;
+
+  try {
+    if (nextLink.startsWith('http')) {
+      const url = new URL(nextLink);
+      if (url.hostname === 'api.battlemetrics.com') {
+        return url.toString();
+      }
+      return null;
+    } else {
+      const url = new URL(nextLink, 'https://api.battlemetrics.com');
+      return url.toString();
+    }
+  } catch (err) {
+    console.error('Failed to parse next URL', err);
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -68,7 +93,7 @@ Deno.serve(async (req) => {
     let startPageUrl = currentUrl;
     let maxPageWindow = 20;
 
-    if (['official', 'community', 'modded'].includes(catLower)) {
+    if (['official', 'community', 'modded', 'global'].includes(catLower)) {
       const { data: stateData } = await supabase
         .from('server_pulse_scheduler_state')
         .select('*')
@@ -90,7 +115,11 @@ Deno.serve(async (req) => {
          if (stateData.next_page_url) {
            currentUrl = stateData.next_page_url;
          } else {
-           currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${encodeURIComponent(catLower)}&page[size]=${pSize}`;
+           if (catLower === 'global') {
+             currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[status]=online&sort=-players&page[size]=${pSize}`;
+           } else {
+             currentUrl = `https://api.battlemetrics.com/servers?filter[game]=rust&filter[search]=${encodeURIComponent(catLower)}&page[size]=${pSize}`;
+           }
          }
          startPageUrl = currentUrl;
       }
@@ -276,13 +305,21 @@ Deno.serve(async (req) => {
         }
       }
 
-      endNextPageUrl = json.links?.next || null;
+      endNextPageUrl = extractBattleMetricsNextUrl(json);
       currentUrl = endNextPageUrl;
     }
 
     const finishedAt = new Date();
     const finalStatus = errors.length > 0 ? (serverUpsertAttempts > 0 ? 'partial_success' : 'failed') : 'success';
-    const noteStr = dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.";
+    let noteStr = dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.";
+    
+    if (!dryRun) {
+      if (endNextPageUrl) {
+        noteStr += " Pagination next link captured.";
+      } else {
+        noteStr += " No next link returned; resetting category window.";
+      }
+    }
     
     const endPage = startPage + Math.max(0, pagesProcessed - 1);
 
@@ -307,7 +344,7 @@ Deno.serve(async (req) => {
         .eq('id', runId);
 
       // Also update scheduler state if category is one of the defaults
-      if (['official', 'community', 'modded'].includes(catLower) && !dryRun) {
+      if (['official', 'community', 'modded', 'global'].includes(catLower) && !dryRun) {
          let nextCurrentPage = startPage + pagesProcessed;
          let nextUrlToStore = endNextPageUrl;
          let resetAt: string | null = null;

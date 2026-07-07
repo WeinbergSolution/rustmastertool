@@ -15,8 +15,11 @@ interface ServerDetailPanelProps {
   isAuthenticated?: boolean;
 }
 
+import { supabase } from '../../lib/supabaseClient';
+
 export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch, onSetActiveServer, isActiveServer, isAuthenticated }: ServerDetailPanelProps) {
   const [server, setServer] = useState<BattleMetricsServerDetail | null>(null);
+  const [mapIdentity, setMapIdentity] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAuthCta, setShowAuthCta] = useState<'watchlist' | 'active_server' | null>(null);
@@ -42,10 +45,21 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
         if (mounted) setIsLoading(false);
       });
 
-    // Also fetch snapshots if we have the internal_uuid, but at this point we only have serverId (battlemetrics id)
-    // We can fetch snapshots after we get the internal_uuid, or we can fetch by provider_id.
-    // Our API expects provider_server_id (internal). So we need to wait until we get server.internal_uuid.
-    
+    // Also fetch map identity from DB
+    if (supabase) {
+      supabase
+        .from('server_map_identity')
+        .select('rustmaps_thumbnail_url, is_custom_map, seed, world_size, map_type')
+        .eq('battlemetrics_server_id', serverId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .then(({ data }) => {
+          if (mounted && data && data.length > 0) {
+            setMapIdentity(data[0]);
+          }
+        });
+    }
+
     return () => {
       mounted = false;
     };
@@ -174,10 +188,17 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
           <div style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
              {(() => {
                 const details = server.details || {};
-                const mapType = details.map === 'Procedural Map' ? 'procedural' : details.map === 'Barren' ? 'barren' : 'custom';
+                const mapType = mapIdentity?.map_type || (details.map === 'Procedural Map' ? 'procedural' : details.map === 'Barren' ? 'barren' : 'custom');
                 const hasRustMaps = !!details.rust_maps;
                 
-                if (mapType === 'custom') {
+                // Priority 1: DB server_map_identity.rustmaps_thumbnail_url
+                // Priority 2: BM embedded details.rust_maps.thumbnailUrl
+                const thumbnailUrl = mapIdentity?.rustmaps_thumbnail_url || (hasRustMaps ? details.rust_maps?.thumbnailUrl : null);
+                const isCustomMap = mapIdentity?.is_custom_map || mapType === 'custom';
+                const mapSeed = mapIdentity?.seed || details.rust_world_seed;
+                const mapSize = mapIdentity?.world_size || details.rust_world_size;
+                
+                if (isCustomMap && !thumbnailUrl) {
                    return (
                      <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
                        <AlertTriangle size={32} style={{ color: 'var(--status-warning)' }} />
@@ -185,23 +206,20 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
                          Custom map detected. Seed/size may not identify this map.
                        </p>
-                       {hasRustMaps && details.rust_maps?.thumbnailUrl && (
-                         <img src={details.rust_maps.thumbnailUrl} alt="Map Thumbnail" style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '4px', marginTop: '0.5rem' }} />
-                       )}
                      </div>
                    );
                 }
 
-                if (hasRustMaps && details.rust_maps?.thumbnailUrl) {
+                if (thumbnailUrl) {
                    return (
                      <div style={{ display: 'flex', flexDirection: 'column' }}>
                        <div style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111' }}>
-                         <img src={details.rust_maps.thumbnailUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                         <img src={thumbnailUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', backgroundColor: 'rgba(0,0,0,0.7)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
-                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} · {details.rust_world_size} · Seed {details.rust_world_seed}
+                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} · {mapSize} · Seed {mapSeed}
                          </div>
                        </div>
-                       {details.rust_maps.monuments && details.rust_maps.monuments.length > 0 && (
+                       {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
                          <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                            {details.rust_maps.monuments.slice(0, 5).map((m: string) => (
                              <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
@@ -218,7 +236,21 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                      </div>
                    );
                 }
+                
+                // Priority 3: Seed+Size placeholder
+                if (mapSeed) {
+                   return (
+                     <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
+                       <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />
+                       <h4 style={{ margin: 0, color: '#fff' }}>Seed {mapSeed} · Size {mapSize}</h4>
+                       <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                         Seed detected. Map preview not cached yet.
+                       </p>
+                     </div>
+                   );
+                }
 
+                // Priority 4: Unavailable placeholder
                 return (
                    <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
                      <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />

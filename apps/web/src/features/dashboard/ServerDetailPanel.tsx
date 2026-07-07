@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, type CSSProperties } from 'react';
 import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle } from 'lucide-react';
 import { getServerDetails, type BattleMetricsServerDetail } from '../../lib/api/battlemetrics';
 import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api/serverPulse';
 import { calculatePulseSummary } from '../../lib/api/retention';
 import { LineChart as LineChartIcon } from 'lucide-react';
+import { useIsMobile } from '../../components/mobile/useIsMobile';
 
 interface ServerDetailPanelProps {
   serverId: string;
@@ -13,11 +14,12 @@ interface ServerDetailPanelProps {
   onSetActiveServer?: (serverId: string, internalUuid?: string) => void;
   isActiveServer?: boolean;
   isAuthenticated?: boolean;
+  initialFocus?: 'map' | null;
 }
 
 import { supabase } from '../../lib/supabaseClient';
 
-export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch, onSetActiveServer, isActiveServer, isAuthenticated }: ServerDetailPanelProps) {
+export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch, onSetActiveServer, isActiveServer, isAuthenticated, initialFocus }: ServerDetailPanelProps) {
   const [server, setServer] = useState<BattleMetricsServerDetail | null>(null);
   const [mapIdentity, setMapIdentity] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +27,8 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [showAuthCta, setShowAuthCta] = useState<'watchlist' | 'active_server' | null>(null);
   const [snapshots, setSnapshots] = useState<ServerPopulationSnapshot[]>([]);
   const [isSnapshotsLoading, setIsSnapshotsLoading] = useState(false);
+  const isMobile = useIsMobile();
+  const mapSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -79,13 +83,32 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
     return () => { mounted = false; };
   }, [server?.internal_uuid]);
 
+  // When opened via the card's map indicator, scroll to the map section once loaded.
+  useEffect(() => {
+    if (!isLoading && server && initialFocus === 'map' && mapSectionRef.current) {
+      mapSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isLoading, server, initialFocus]);
+
+  const containerStyle: CSSProperties = isMobile
+    ? {
+        position: 'fixed', inset: 0, width: '100%', maxWidth: 'none',
+        backgroundColor: 'var(--bg-card)', zIndex: 100,
+        display: 'flex', flexDirection: 'column',
+        padding: '1rem',
+        paddingTop: 'calc(1rem + env(safe-area-inset-top))',
+        paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
+        overflowX: 'hidden', overflowY: 'auto',
+      }
+    : {
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '450px',
+        backgroundColor: 'var(--bg-card)', borderLeft: '1px solid var(--border-color)',
+        boxShadow: '-4px 0 25px rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', flexDirection: 'column',
+        padding: '2rem', overflowY: 'auto',
+      };
+
   return (
-    <div style={{
-      position: 'fixed', top: 0, right: 0, bottom: 0, width: '450px',
-      backgroundColor: 'var(--bg-card)', borderLeft: '1px solid var(--border-color)',
-      boxShadow: '-4px 0 25px rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', flexDirection: 'column',
-      padding: '2rem', overflowY: 'auto'
-    }}>
+    <div style={containerStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
         <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1.25rem', lineHeight: 1.3 }}>
           {!isLoading && server && (
@@ -185,7 +208,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
           )}
 
           {/* Map Preview MVP */}
-          <div style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+          <div ref={mapSectionRef} style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', scrollMarginTop: '1rem' }}>
              {(() => {
                 const details = server.details || {};
                 const mapType = mapIdentity?.map_type || (details.map === 'Procedural Map' ? 'procedural' : details.map === 'Barren' ? 'barren' : 'custom');

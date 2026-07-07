@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
-import { Search, AlertTriangle, Loader2, Filter, Globe, Users, Map as MapIcon, Clock, HardDrive, HelpCircle } from 'lucide-react';
+import { Search, AlertTriangle, Loader2, Filter, Globe, Users, Map as MapIcon, Clock, HardDrive, HelpCircle, Lock } from 'lucide-react';
 import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 import { useAuth } from '../../lib/auth/useAuth';
 import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import { supabase } from '../../lib/supabaseClient';
+import { useIsMobile } from '../../components/mobile/useIsMobile';
+import { ServerCardMobile } from '../../components/mobile/ServerCardMobile';
+import { BottomSheet } from '../../components/mobile/BottomSheet';
 
 type TabType = 'official' | 'community' | 'modded' | 'favorites' | 'history';
 
@@ -31,6 +34,9 @@ export function ServersExplorer() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [activeServerId, setActiveServerId] = useState<string | null>(null);
   const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
+  const isMobile = useIsMobile();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
 
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.tab', activeTab); }, [activeTab]);
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.query', searchQuery); }, [searchQuery]);
@@ -175,6 +181,112 @@ export function ServersExplorer() {
 
 
   const pendingActionMsg = window.sessionStorage.getItem('serverExplorer.pendingAction');
+
+  // ---- Mobile presentation (2.2-C). Same state & handlers; different layout only. ----
+  if (isMobile) {
+    return (
+      <>
+        <div className="mobile-servers">
+          <div className="mobile-seg" role="tablist">
+            {(['official', 'community', 'modded'] as TabType[]).map(tab => (
+              <button
+                key={tab}
+                className={`mobile-seg-btn${activeTab === tab ? ' active' : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <form className="mobile-search-row" onSubmit={handleSearch}>
+            <div className="mobile-search-input">
+              <Search size={16} />
+              <input
+                type="text"
+                placeholder="Search Rust servers…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="mobile-search-btn" disabled={isSearching}>Search</button>
+          </form>
+
+          <div className="mobile-servers-toolbar">
+            <button className="mobile-filter-btn" onClick={() => setFiltersOpen(true)}>
+              <Filter size={14} /> Filters
+            </button>
+            {servers.length > 0 && <span className="mobile-servers-count">{servers.length} shown</span>}
+          </div>
+
+          {pendingActionMsg && status === 'authenticated' && (
+            <div className="mobile-restore-banner">
+              Your server search was restored. {pendingActionMsg === 'watchlist' ? 'Continue adding to your Watchlist.' : 'Continue setting your Active Server.'}
+            </div>
+          )}
+
+          {isSearching ? (
+            <div className="mobile-servers-state"><Loader2 size={28} className="spin" /><span>Fetching live server data…</span></div>
+          ) : searchError ? (
+            <div className="mobile-servers-state mobile-servers-state--error">
+              <AlertTriangle size={26} /><strong>Search failed</strong><span>{searchError}</span>
+            </div>
+          ) : hasSearched && servers.length === 0 ? (
+            <div className="mobile-servers-state">No servers found in this category. Try another search.</div>
+          ) : servers.length > 0 ? (
+            <div className="mobile-servers-list">
+              {servers.map(server => (
+                <ServerCardMobile
+                  key={server.id}
+                  server={server}
+                  onSelect={() => {
+                    setSelectedServerId(server.id);
+                    setDetailFocus(null);
+                    window.sessionStorage.removeItem('serverExplorer.pendingAction');
+                  }}
+                  onSelectMap={() => {
+                    setSelectedServerId(server.id);
+                    setDetailFocus('map');
+                    window.sessionStorage.removeItem('serverExplorer.pendingAction');
+                  }}
+                />
+              ))}
+              {nextPageUrl && (
+                <button className="mobile-loadmore" onClick={() => fetchServers(true)} disabled={isLoadingMore}>
+                  {isLoadingMore ? <Loader2 size={16} className="spin" /> : 'Load more servers'}
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="mobile-servers-state"><Filter size={28} style={{ opacity: 0.3 }} />Search live Rust servers by name.</div>
+          )}
+        </div>
+
+        <BottomSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
+          <p className="mobile-filters-note">
+            Advanced filters (region, players, wipe schedule, map size) are coming soon.
+            For now use the category tabs and search.
+          </p>
+          {['Region / Country', 'Players', 'Server Type', 'Map Size', 'Wipe Schedule'].map(f => (
+            <div key={f} className="mobile-filter-coming"><Lock size={13} /> {f}</div>
+          ))}
+        </BottomSheet>
+
+        {selectedServerId && (
+          <ServerDetailPanel
+            serverId={selectedServerId}
+            isWatched={watchedServers.some(s => s.id === selectedServerId)}
+            onClose={() => { setSelectedServerId(null); setDetailFocus(null); }}
+            onToggleWatch={toggleWatch}
+            onSetActiveServer={handleSetActiveServer}
+            isActiveServer={servers.find(s => s.id === selectedServerId)?.internal_uuid ? servers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
+            isAuthenticated={status === 'authenticated'}
+            initialFocus={detailFocus}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative', height: '100%' }}>

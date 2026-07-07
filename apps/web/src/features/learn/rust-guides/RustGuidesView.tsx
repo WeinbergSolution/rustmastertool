@@ -19,6 +19,7 @@ interface RustGuidesViewProps {
 export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeStage, setActiveStage] = useState<string | null>(null);
+  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
 
   // Memoized search filtering
   const filteredVideos = useMemo(() => {
@@ -77,7 +78,7 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
           <h3 className="section-title">Search Results ({filteredVideos.length})</h3>
           <div className="video-grid">
             {filteredVideos.map(video => (
-              <VideoCard key={`search-${video.id}`} video={video} />
+              <VideoCard key={`search-${video.id}`} video={video} onClick={() => setActiveVideoId(video.youtubeId)} />
             ))}
           </div>
           {filteredVideos.length === 0 && (
@@ -121,7 +122,7 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
                   {stage.categorySlugs.map(catSlug => {
                     const category = RUST_GUIDE_CATEGORIES.find(c => c.slug === catSlug);
                     if (!category) return null;
-                    return <CategorySection key={category.slug} category={category} />;
+                    return <CategorySection key={category.slug} category={category} onVideoClick={setActiveVideoId} />;
                   })}
                 </div>
               </section>
@@ -129,11 +130,45 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
           </div>
         </>
       )}
+
+      {/* Video Modal */}
+      {activeVideoId && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', position: 'relative', padding: '1rem' }}>
+            <button
+              onClick={() => setActiveVideoId(null)}
+              style={{ position: 'absolute', top: '-40px', right: '1rem', background: 'transparent', border: 'none', color: '#fff', fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+            >
+              Close
+            </button>
+            <iframe
+              width="100%"
+              height="100%"
+              src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=1`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ borderRadius: '4px', backgroundColor: '#000', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
+            ></iframe>
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <a 
+                href={`https://www.youtube.com/watch?v=${activeVideoId}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ color: '#a0a0a0', fontSize: '14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                Watch on YouTube <ExternalLink size={14} />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function CategorySection({ category }: { category: RustGuideCategory }) {
+function CategorySection({ category, onVideoClick }: { category: RustGuideCategory, onVideoClick: (id: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   
   const displayLimit = 6;
@@ -148,7 +183,7 @@ function CategorySection({ category }: { category: RustGuideCategory }) {
       
       <div className="video-grid">
         {displayedVideos.map(video => (
-          <VideoCard key={video.id} video={video} />
+          <VideoCard key={video.id} video={video} onClick={() => onVideoClick(video.youtubeId)} />
         ))}
       </div>
       
@@ -165,15 +200,14 @@ function CategorySection({ category }: { category: RustGuideCategory }) {
   );
 }
 
-function VideoCard({ video }: { video: RustGuideVideo }) {
+function VideoCard({ video, onClick }: { video: RustGuideVideo, onClick: () => void }) {
   const thumbnailUrl = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
   
   return (
-    <a 
-      href={video.url} 
-      target="_blank" 
-      rel="noopener noreferrer" 
+    <button 
+      onClick={onClick}
       className="video-card"
+      style={{ textAlign: 'left', border: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.02)', padding: 0 }}
     >
       <div className="video-thumb-container">
         <img src={thumbnailUrl} alt={video.title} className="video-thumbnail" loading="lazy" />
@@ -184,9 +218,9 @@ function VideoCard({ video }: { video: RustGuideVideo }) {
       <div className="video-info">
         <h4 className="video-title" title={video.title}>{video.title}</h4>
         <div className="video-meta">
-          <span className="external-link">Watch on YouTube <ExternalLink size={12} /></span>
+          <span className="external-link">Play Video <PlaySquare size={12} style={{marginLeft: '2px'}}/></span>
         </div>
       </div>
-    </a>
+    </button>
   );
 }

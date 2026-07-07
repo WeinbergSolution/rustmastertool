@@ -321,55 +321,15 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "progression-fortschritt",
     "title": "Progression / Fortschritt",
-    "count": 19,
+    "count": 10,
     "stageSlug": "start_here",
     "description": "Guides and tutorials for Progression / Fortschritt",
     "videos": [
-      {
-        "id": "progression-fortschritt-kr0spV5-NRI",
-        "title": "How to 100% Progress in Rust",
-        "url": "https://www.youtube.com/watch?v=kr0spV5-NRI",
-        "youtubeId": "kr0spV5-NRI",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "progression-fortschritt-xmfY_V5OA2Y",
-        "title": "Ein vollständiger Leitfaden",
-        "url": "https://www.youtube.com/watch?v=xmfY_V5OA2Y",
-        "youtubeId": "xmfY_V5OA2Y",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
       {
         "id": "progression-fortschritt-Q_5GK7LV5oo",
         "title": "Veteran's Ultimate Beginner Guide",
         "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
         "youtubeId": "Q_5GK7LV5oo",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "progression-fortschritt-Wc0ZJo06oAw",
-        "title": "Der ultimative Rust-Anfängerguide",
-        "url": "https://www.youtube.com/watch?v=Wc0ZJo06oAw",
-        "youtubeId": "Wc0ZJo06oAw",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "progression-fortschritt-NqaO-wMEwSk",
-        "title": "How to Have a Perfect Start",
-        "url": "https://www.youtube.com/watch?v=NqaO-wMEwSk",
-        "youtubeId": "NqaO-wMEwSk",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "progression-fortschritt-gPa_ZK8JBtw",
-        "title": "Der ultimative RUST-Anfängerleitfaden",
-        "url": "https://www.youtube.com/watch?v=gPa_ZK8JBtw",
-        "youtubeId": "gPa_ZK8JBtw",
         "categorySlug": "progression-fortschritt",
         "stageSlug": "start_here"
       },
@@ -382,26 +342,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "progression-fortschritt-trjVKr5PEqo",
-        "title": "So spielt man Rust SOLO",
-        "url": "https://www.youtube.com/watch?v=trjVKr5PEqo",
-        "youtubeId": "trjVKr5PEqo",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "progression-fortschritt-6ScoiF0wPi4",
         "title": "Die besten Strategien für den Start",
         "url": "https://www.youtube.com/watch?v=6ScoiF0wPi4",
         "youtubeId": "6ScoiF0wPi4",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "progression-fortschritt-ENMi9FVyowI",
-        "title": "Wie man 2025 mit RUST beginnt",
-        "url": "https://www.youtube.com/watch?v=ENMi9FVyowI",
-        "youtubeId": "ENMi9FVyowI",
         "categorySlug": "progression-fortschritt",
         "stageSlug": "start_here"
       },
@@ -418,14 +362,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How to Progress as a Solo",
         "url": "https://www.youtube.com/watch?v=IkpkGy6VHzQ",
         "youtubeId": "IkpkGy6VHzQ",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "progression-fortschritt-OHJCcV6gtog",
-        "title": "A Complete Beginner's Guide",
-        "url": "https://www.youtube.com/watch?v=OHJCcV6gtog",
-        "youtubeId": "OHJCcV6gtog",
         "categorySlug": "progression-fortschritt",
         "stageSlug": "start_here"
       },
@@ -462,14 +398,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "progression-fortschritt-jw6UFiNMPRI",
-        "title": "I tried Rust as a complete beginner",
-        "url": "https://www.youtube.com/watch?v=jw6UFiNMPRI",
-        "youtubeId": "jw6UFiNMPRI",
-        "categorySlug": "progression-fortschritt",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "progression-fortschritt-Yn_f5XuT9u4",
         "title": "I Tested 4 Secret Solo Methods",
         "url": "https://www.youtube.com/watch?v=Yn_f5XuT9u4",
@@ -482,7 +410,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "workbench-tech-tree-blueprints",
     "title": "Workbench & Tech Tree (Blueprints)",
-    "count": 17,
+    "count": 16,
     "stageSlug": "start_here",
     "description": "Guides and tutorials for Workbench & Tech Tree (Blueprints)",
     "videos": [
@@ -507,14 +435,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "The New Workbench Tech Tree",
         "url": "https://www.youtube.com/watch?v=qA_Ci1mzWO4",
         "youtubeId": "qA_Ci1mzWO4",
-        "categorySlug": "workbench-tech-tree-blueprints",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "workbench-tech-tree-blueprints-Q_5GK7LV5oo",
-        "title": "Veteran's Ultimate Beginner Guide",
-        "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
-        "youtubeId": "Q_5GK7LV5oo",
         "categorySlug": "workbench-tech-tree-blueprints",
         "stageSlug": "start_here"
       },
@@ -627,26 +547,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "solo-survival",
     "title": "Solo Survival",
-    "count": 20,
+    "count": 10,
     "stageSlug": "start_here",
     "description": "Guides and tutorials for Solo Survival",
     "videos": [
-      {
-        "id": "solo-survival-trjVKr5PEqo",
-        "title": "So spielt man Rust SOLO",
-        "url": "https://www.youtube.com/watch?v=trjVKr5PEqo",
-        "youtubeId": "trjVKr5PEqo",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-N4QO8boc0Qg",
-        "title": "How a Solo with 11,362 Hours",
-        "url": "https://www.youtube.com/watch?v=N4QO8boc0Qg",
-        "youtubeId": "N4QO8boc0Qg",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
       {
         "id": "solo-survival-ctLS9PBdt0A",
         "title": "How a solo with 14,782 Hours",
@@ -656,50 +560,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "solo-survival-aI3uceNGhyo",
-        "title": "The Solo Strategy Explained",
-        "url": "https://www.youtube.com/watch?v=aI3uceNGhyo",
-        "youtubeId": "aI3uceNGhyo",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-gPa_ZK8JBtw",
-        "title": "Der ultimative RUST-Anfängerleitfaden",
-        "url": "https://www.youtube.com/watch?v=gPa_ZK8JBtw",
-        "youtubeId": "gPa_ZK8JBtw",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-Wc0ZJo06oAw",
-        "title": "Der ultimative Rust-Anfängerguide",
-        "url": "https://www.youtube.com/watch?v=Wc0ZJo06oAw",
-        "youtubeId": "Wc0ZJo06oAw",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-X0nt5S21Aho",
-        "title": "How a Solo with 14,274 hours",
-        "url": "https://www.youtube.com/watch?v=X0nt5S21Aho",
-        "youtubeId": "X0nt5S21Aho",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "solo-survival-zXl4ZrM8Yq4",
         "title": "How a solo builder with 12,487h",
         "url": "https://www.youtube.com/watch?v=zXl4ZrM8Yq4",
         "youtubeId": "zXl4ZrM8Yq4",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-kr0spV5-NRI",
-        "title": "How to 100% Progress in Rust",
-        "url": "https://www.youtube.com/watch?v=kr0spV5-NRI",
-        "youtubeId": "kr0spV5-NRI",
         "categorySlug": "solo-survival",
         "stageSlug": "start_here"
       },
@@ -736,26 +600,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "solo-survival-Q_5GK7LV5oo",
-        "title": "Veteran's Ultimate Beginner Guide",
-        "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
-        "youtubeId": "Q_5GK7LV5oo",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "solo-survival-GHbIwk7RnUM",
         "title": "How I took over the Jungle",
         "url": "https://www.youtube.com/watch?v=GHbIwk7RnUM",
         "youtubeId": "GHbIwk7RnUM",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-IkpkGy6VHzQ",
-        "title": "How to Progress as a Solo",
-        "url": "https://www.youtube.com/watch?v=IkpkGy6VHzQ",
-        "youtubeId": "IkpkGy6VHzQ",
         "categorySlug": "solo-survival",
         "stageSlug": "start_here"
       },
@@ -780,14 +628,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "I designed a new Solo Strategy",
         "url": "https://www.youtube.com/watch?v=4V-HogxU_OY",
         "youtubeId": "4V-HogxU_OY",
-        "categorySlug": "solo-survival",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "solo-survival-xmfY_V5OA2Y",
-        "title": "Ein vollständiger Leitfaden",
-        "url": "https://www.youtube.com/watch?v=xmfY_V5OA2Y",
-        "youtubeId": "xmfY_V5OA2Y",
         "categorySlug": "solo-survival",
         "stageSlug": "start_here"
       }
@@ -1118,7 +958,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "metall-hqm-farm",
     "title": "Metall & HQM-Farm",
-    "count": 19,
+    "count": 18,
     "stageSlug": "economy_resources",
     "description": "Guides and tutorials for Metall & HQM-Farm",
     "videos": [
@@ -1143,14 +983,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Kurzanleitung – 9000 Schrott",
         "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
         "youtubeId": "vPVyWbT4hh0",
-        "categorySlug": "metall-hqm-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "metall-hqm-farm-7s-RaVquK_I",
-        "title": "Knotenpunkte-Leitfaden",
-        "url": "https://www.youtube.com/watch?v=7s-RaVquK_I",
-        "youtubeId": "7s-RaVquK_I",
         "categorySlug": "metall-hqm-farm",
         "stageSlug": "economy_resources"
       },
@@ -1279,7 +1111,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "holz-stein-farm",
     "title": "Holz & Stein-Farm",
-    "count": 10,
+    "count": 7,
     "stageSlug": "economy_resources",
     "description": "Guides and tutorials for Holz & Stein-Farm",
     "videos": [
@@ -1288,14 +1120,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How to Collect Wood – Quick",
         "url": "https://www.youtube.com/watch?v=_NWZIbrOhq4",
         "youtubeId": "_NWZIbrOhq4",
-        "categorySlug": "holz-stein-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "holz-stein-farm-7s-RaVquK_I",
-        "title": "Knotenpunkte-Leitfaden",
-        "url": "https://www.youtube.com/watch?v=7s-RaVquK_I",
-        "youtubeId": "7s-RaVquK_I",
         "categorySlug": "holz-stein-farm",
         "stageSlug": "economy_resources"
       },
@@ -1324,26 +1148,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "economy_resources"
       },
       {
-        "id": "holz-stein-farm-aj9pMpehhEI",
-        "title": "Best Ways to Farm Scrap",
-        "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-        "youtubeId": "aj9pMpehhEI",
-        "categorySlug": "holz-stein-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
         "id": "holz-stein-farm-xNSZ4vS8BM4",
         "title": "Console Beginners Guide",
         "url": "https://www.youtube.com/watch?v=xNSZ4vS8BM4",
         "youtubeId": "xNSZ4vS8BM4",
-        "categorySlug": "holz-stein-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "holz-stein-farm-rT1-1mw2Pro",
-        "title": "How To Get Scrap Fast",
-        "url": "https://www.youtube.com/watch?v=rT1-1mw2Pro",
-        "youtubeId": "rT1-1mw2Pro",
         "categorySlug": "holz-stein-farm",
         "stageSlug": "economy_resources"
       },
@@ -1368,34 +1176,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "scrap-farm",
     "title": "Scrap-Farm",
-    "count": 18,
+    "count": 14,
     "stageSlug": "economy_resources",
     "description": "Guides and tutorials for Scrap-Farm",
     "videos": [
-      {
-        "id": "scrap-farm-vPVyWbT4hh0",
-        "title": "Kurzanleitung – 9000 Schrott",
-        "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-        "youtubeId": "vPVyWbT4hh0",
-        "categorySlug": "scrap-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "scrap-farm-aj9pMpehhEI",
-        "title": "Best Ways to Farm Scrap",
-        "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-        "youtubeId": "aj9pMpehhEI",
-        "categorySlug": "scrap-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "scrap-farm-rT1-1mw2Pro",
-        "title": "How To Get Scrap Fast",
-        "url": "https://www.youtube.com/watch?v=rT1-1mw2Pro",
-        "youtubeId": "rT1-1mw2Pro",
-        "categorySlug": "scrap-farm",
-        "stageSlug": "economy_resources"
-      },
       {
         "id": "scrap-farm-xX8rUXQobxA",
         "title": "Bei weitem das BESTE sichere",
@@ -1505,14 +1289,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How To Get Scrap",
         "url": "https://www.youtube.com/watch?v=WFicKjb6pjU",
         "youtubeId": "WFicKjb6pjU",
-        "categorySlug": "scrap-farm",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "scrap-farm-z5SKkOXL_ms",
-        "title": "Der Arbeiter – Basis",
-        "url": "https://www.youtube.com/watch?v=z5SKkOXL_ms",
-        "youtubeId": "z5SKkOXL_ms",
         "categorySlug": "scrap-farm",
         "stageSlug": "economy_resources"
       }
@@ -1682,58 +1458,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "components-komponenten-farmen",
     "title": "Components / Komponenten farmen",
-    "count": 18,
+    "count": 6,
     "stageSlug": "economy_resources",
     "description": "Guides and tutorials for Components / Komponenten farmen",
     "videos": [
-      {
-        "id": "components-komponenten-farmen-p3OdpHJNIl4",
-        "title": "Farming & Genetics Guide",
-        "url": "https://www.youtube.com/watch?v=p3OdpHJNIl4",
-        "youtubeId": "p3OdpHJNIl4",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-ln5GcMwrB8I",
-        "title": "Beste Komponenten-Rangliste",
-        "url": "https://www.youtube.com/watch?v=ln5GcMwrB8I",
-        "youtubeId": "ln5GcMwrB8I",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-EeLINRhtBG0",
-        "title": "Farming 3.0 – Ultimativer Leitfaden",
-        "url": "https://www.youtube.com/watch?v=EeLINRhtBG0",
-        "youtubeId": "EeLINRhtBG0",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-aj9pMpehhEI",
-        "title": "Best Ways to Farm Scrap",
-        "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-        "youtubeId": "aj9pMpehhEI",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-vPVyWbT4hh0",
-        "title": "Kurzanleitung – 9000 Schrott",
-        "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-        "youtubeId": "vPVyWbT4hh0",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-eavfD_HCHu4",
-        "title": "10 Farming-Tipps",
-        "url": "https://www.youtube.com/watch?v=eavfD_HCHu4",
-        "youtubeId": "eavfD_HCHu4",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
       {
         "id": "components-komponenten-farmen-dM6QvlF7aAI",
         "title": "Full Underground Tunnel Guide",
@@ -1751,30 +1479,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "economy_resources"
       },
       {
-        "id": "components-komponenten-farmen-rT1-1mw2Pro",
-        "title": "How To Get Scrap Fast",
-        "url": "https://www.youtube.com/watch?v=rT1-1mw2Pro",
-        "youtubeId": "rT1-1mw2Pro",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-9qgmClfvlRY",
-        "title": "Neuer Blueprint-Fragment-Guide",
-        "url": "https://www.youtube.com/watch?v=9qgmClfvlRY",
-        "youtubeId": "9qgmClfvlRY",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-7s-RaVquK_I",
-        "title": "Knotenpunkte-Leitfaden",
-        "url": "https://www.youtube.com/watch?v=7s-RaVquK_I",
-        "youtubeId": "7s-RaVquK_I",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
         "id": "components-komponenten-farmen-fvRAZ0rF3Q8",
         "title": "What Every Electrical Component",
         "url": "https://www.youtube.com/watch?v=fvRAZ0rF3Q8",
@@ -1787,30 +1491,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Komponenten – was behalten",
         "url": "https://www.youtube.com/watch?v=1EhnL6P15VM",
         "youtubeId": "1EhnL6P15VM",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-kAOjuWTlxeE",
-        "title": "Best Ways to Farm HQM",
-        "url": "https://www.youtube.com/watch?v=kAOjuWTlxeE",
-        "youtubeId": "kAOjuWTlxeE",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-oWd7t7Cy1fY",
-        "title": "Ultimativer Industrieleitfaden",
-        "url": "https://www.youtube.com/watch?v=oWd7t7Cy1fY",
-        "youtubeId": "oWd7t7Cy1fY",
-        "categorySlug": "components-komponenten-farmen",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "components-komponenten-farmen-Q_5GK7LV5oo",
-        "title": "Veteran's Ultimate Beginner Guide",
-        "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
-        "youtubeId": "Q_5GK7LV5oo",
         "categorySlug": "components-komponenten-farmen",
         "stageSlug": "economy_resources"
       },
@@ -1835,26 +1515,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "recycler-recycling",
     "title": "Recycler & Recycling",
-    "count": 19,
+    "count": 15,
     "stageSlug": "economy_resources",
     "description": "Guides and tutorials for Recycler & Recycling",
     "videos": [
-      {
-        "id": "recycler-recycling-ln5GcMwrB8I",
-        "title": "Beste Komponenten-Rangliste",
-        "url": "https://www.youtube.com/watch?v=ln5GcMwrB8I",
-        "youtubeId": "ln5GcMwrB8I",
-        "categorySlug": "recycler-recycling",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "recycler-recycling-1EhnL6P15VM",
-        "title": "Komponenten – was behalten",
-        "url": "https://www.youtube.com/watch?v=1EhnL6P15VM",
-        "youtubeId": "1EhnL6P15VM",
-        "categorySlug": "recycler-recycling",
-        "stageSlug": "economy_resources"
-      },
       {
         "id": "recycler-recycling-Qyd_WT7Mo4Q",
         "title": "How A Solo Exploits The New Recycler",
@@ -1876,14 +1540,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How to use a Recycler",
         "url": "https://www.youtube.com/watch?v=qlUx9QwEBs0",
         "youtubeId": "qlUx9QwEBs0",
-        "categorySlug": "recycler-recycling",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "recycler-recycling-vPVyWbT4hh0",
-        "title": "Kurzanleitung – 9000 Schrott",
-        "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-        "youtubeId": "vPVyWbT4hh0",
         "categorySlug": "recycler-recycling",
         "stageSlug": "economy_resources"
       },
@@ -1916,14 +1572,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Wo befindet sich das Recycling",
         "url": "https://www.youtube.com/watch?v=nEsp0ocdiQE",
         "youtubeId": "nEsp0ocdiQE",
-        "categorySlug": "recycler-recycling",
-        "stageSlug": "economy_resources"
-      },
-      {
-        "id": "recycler-recycling-aj9pMpehhEI",
-        "title": "Best Ways to Farm Scrap",
-        "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-        "youtubeId": "aj9pMpehhEI",
         "categorySlug": "recycler-recycling",
         "stageSlug": "economy_resources"
       },
@@ -1996,47 +1644,15 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "anpflanzen-planter-genetik-kreuzung",
     "title": "Anpflanzen, Planter & Genetik/Kreuzung",
-    "count": 15,
+    "count": 8,
     "stageSlug": "start_here",
     "description": "Guides and tutorials for Anpflanzen, Planter & Genetik/Kreuzung",
     "videos": [
-      {
-        "id": "anpflanzen-planter-genetik-kreuzung-p3OdpHJNIl4",
-        "title": "Farming & Genetics Guide",
-        "url": "https://www.youtube.com/watch?v=p3OdpHJNIl4",
-        "youtubeId": "p3OdpHJNIl4",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "anpflanzen-planter-genetik-kreuzung-EeLINRhtBG0",
-        "title": "Farming 3.0 – Ultimativer Leitfaden",
-        "url": "https://www.youtube.com/watch?v=EeLINRhtBG0",
-        "youtubeId": "EeLINRhtBG0",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
       {
         "id": "anpflanzen-planter-genetik-kreuzung-Z_rW0QkCags",
         "title": "Lernen Sie Kreuzung in Rust",
         "url": "https://www.youtube.com/watch?v=Z_rW0QkCags",
         "youtubeId": "Z_rW0QkCags",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "anpflanzen-planter-genetik-kreuzung-k6M6Zjozlwk",
-        "title": "Genetics Guide | What They Are",
-        "url": "https://www.youtube.com/watch?v=k6M6Zjozlwk",
-        "youtubeId": "k6M6Zjozlwk",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "anpflanzen-planter-genetik-kreuzung-m9y6ACVQR-M",
-        "title": "Crossbreed a God Clone (lazy)",
-        "url": "https://www.youtube.com/watch?v=m9y6ACVQR-M",
-        "youtubeId": "m9y6ACVQR-M",
         "categorySlug": "anpflanzen-planter-genetik-kreuzung",
         "stageSlug": "start_here"
       },
@@ -2053,22 +1669,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How To Crossbreed | Guide",
         "url": "https://www.youtube.com/watch?v=pKG1z1p1fFA",
         "youtubeId": "pKG1z1p1fFA",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "anpflanzen-planter-genetik-kreuzung-eavfD_HCHu4",
-        "title": "10 Farming-Tipps",
-        "url": "https://www.youtube.com/watch?v=eavfD_HCHu4",
-        "youtubeId": "eavfD_HCHu4",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "anpflanzen-planter-genetik-kreuzung-4ElucWHyfbM",
-        "title": "How to get perfect clones",
-        "url": "https://www.youtube.com/watch?v=4ElucWHyfbM",
-        "youtubeId": "4ElucWHyfbM",
         "categorySlug": "anpflanzen-planter-genetik-kreuzung",
         "stageSlug": "start_here"
       },
@@ -2097,14 +1697,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "anpflanzen-planter-genetik-kreuzung-E3EWe2p6I44",
-        "title": "Wie ein Profi-Farmer farmt",
-        "url": "https://www.youtube.com/watch?v=E3EWe2p6I44",
-        "youtubeId": "E3EWe2p6I44",
-        "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "anpflanzen-planter-genetik-kreuzung-BT31_nCkGbY",
         "title": "This Update Changed Farming",
         "url": "https://www.youtube.com/watch?v=BT31_nCkGbY",
@@ -2125,7 +1717,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "tee-mixing-table",
     "title": "Tee & Mixing Table",
-    "count": 15,
+    "count": 13,
     "stageSlug": "start_here",
     "description": "Guides and tutorials for Tee & Mixing Table",
     "videos": [
@@ -2142,14 +1734,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "The Ultimate Rust Tea Guide",
         "url": "https://www.youtube.com/watch?v=VeE076brslE",
         "youtubeId": "VeE076brslE",
-        "categorySlug": "tee-mixing-table",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "tee-mixing-table-mgTUFN7XjY8",
-        "title": "Fortgeschrittener Leitfaden",
-        "url": "https://www.youtube.com/watch?v=mgTUFN7XjY8",
-        "youtubeId": "mgTUFN7XjY8",
         "categorySlug": "tee-mixing-table",
         "stageSlug": "start_here"
       },
@@ -2240,21 +1824,13 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "youtubeId": "yZENuY5oi5A",
         "categorySlug": "tee-mixing-table",
         "stageSlug": "start_here"
-      },
-      {
-        "id": "tee-mixing-table-O5bmJK5wphk",
-        "title": "Farming-Guide: So erreichst du",
-        "url": "https://www.youtube.com/watch?v=O5bmJK5wphk",
-        "youtubeId": "O5bmJK5wphk",
-        "categorySlug": "tee-mixing-table",
-        "stageSlug": "start_here"
       }
     ]
   },
   {
     "slug": "jagd-tiere-hunting",
     "title": "Jagd / Tiere (Hunting)",
-    "count": 11,
+    "count": 10,
     "stageSlug": "food_farming_animals",
     "description": "Guides and tutorials for Jagd / Tiere (Hunting)",
     "videos": [
@@ -2287,14 +1863,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How to Fight New Jungle Animals",
         "url": "https://www.youtube.com/watch?v=_1GVrcPaJD8",
         "youtubeId": "_1GVrcPaJD8",
-        "categorySlug": "jagd-tiere-hunting",
-        "stageSlug": "food_farming_animals"
-      },
-      {
-        "id": "jagd-tiere-hunting-vPVyWbT4hh0",
-        "title": "Kurzanleitung – 9000 Schrott",
-        "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-        "youtubeId": "vPVyWbT4hh0",
         "categorySlug": "jagd-tiere-hunting",
         "stageSlug": "food_farming_animals"
       },
@@ -2504,7 +2072,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "angeln-fishing",
     "title": "Angeln (Fishing)",
-    "count": 20,
+    "count": 17,
     "stageSlug": "food_farming_animals",
     "description": "Guides and tutorials for Angeln (Fishing)",
     "videos": [
@@ -2573,14 +2141,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "food_farming_animals"
       },
       {
-        "id": "angeln-fishing-xX8rUXQobxA",
-        "title": "Bestes sicheres Scrap",
-        "url": "https://www.youtube.com/watch?v=xX8rUXQobxA",
-        "youtubeId": "xX8rUXQobxA",
-        "categorySlug": "angeln-fishing",
-        "stageSlug": "food_farming_animals"
-      },
-      {
         "id": "angeln-fishing-gNMutNFURFE",
         "title": "How to catch Every Fish",
         "url": "https://www.youtube.com/watch?v=gNMutNFURFE",
@@ -2637,22 +2197,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "food_farming_animals"
       },
       {
-        "id": "angeln-fishing-NjFT0Qa3L20",
-        "title": "Werde reich mit deiner Basis",
-        "url": "https://www.youtube.com/watch?v=NjFT0Qa3L20",
-        "youtubeId": "NjFT0Qa3L20",
-        "categorySlug": "angeln-fishing",
-        "stageSlug": "food_farming_animals"
-      },
-      {
-        "id": "angeln-fishing-vPVyWbT4hh0",
-        "title": "Kurzanleitung – 9000 Schrott",
-        "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-        "youtubeId": "vPVyWbT4hh0",
-        "categorySlug": "angeln-fishing",
-        "stageSlug": "food_farming_animals"
-      },
-      {
         "id": "angeln-fishing-9pYMdwIdNJo",
         "title": "Top 3 Easy Beach Fishing",
         "url": "https://www.youtube.com/watch?v=9pYMdwIdNJo",
@@ -2673,7 +2217,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "nahrung-kochen-h-hner-kompost",
     "title": "Nahrung, Kochen & Hühner/Kompost",
-    "count": 47,
+    "count": 41,
     "stageSlug": "food_farming_animals",
     "description": "Guides and tutorials for Nahrung, Kochen & Hühner/Kompost",
     "videos": [
@@ -2686,14 +2230,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "food_farming_animals"
       },
       {
-        "id": "nahrung-kochen-h-hner-kompost-ewj1d-hy0ao",
-        "title": "Ultimativer Kuchen-Koch-Leitfaden",
-        "url": "https://www.youtube.com/watch?v=ewj1d-hy0ao",
-        "youtubeId": "ewj1d-hy0ao",
-        "categorySlug": "nahrung-kochen-h-hner-kompost",
-        "stageSlug": "food_farming_animals"
-      },
-      {
         "id": "nahrung-kochen-h-hner-kompost-yTBzyDbHfEs",
         "title": "How To Cook Food",
         "url": "https://www.youtube.com/watch?v=yTBzyDbHfEs",
@@ -2702,26 +2238,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "food_farming_animals"
       },
       {
-        "id": "nahrung-kochen-h-hner-kompost-ZF3qACRDSw8",
-        "title": "Mischtabelle, Tee- und Beeren-Guide",
-        "url": "https://www.youtube.com/watch?v=ZF3qACRDSw8",
-        "youtubeId": "ZF3qACRDSw8",
-        "categorySlug": "nahrung-kochen-h-hner-kompost",
-        "stageSlug": "food_farming_animals"
-      },
-      {
         "id": "nahrung-kochen-h-hner-kompost-9exljSpM4CU",
         "title": "Rust für Anfänger – Nahrung",
         "url": "https://www.youtube.com/watch?v=9exljSpM4CU",
         "youtubeId": "9exljSpM4CU",
-        "categorySlug": "nahrung-kochen-h-hner-kompost",
-        "stageSlug": "food_farming_animals"
-      },
-      {
-        "id": "nahrung-kochen-h-hner-kompost-VCQNoaKTVtc",
-        "title": "How To Get Crafting Quality (Cooking)",
-        "url": "https://www.youtube.com/watch?v=VCQNoaKTVtc",
-        "youtubeId": "VCQNoaKTVtc",
         "categorySlug": "nahrung-kochen-h-hner-kompost",
         "stageSlug": "food_farming_animals"
       },
@@ -2754,14 +2274,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Die 10 wichtigsten Stromkreise",
         "url": "https://www.youtube.com/watch?v=UBiDjyjtSaM",
         "youtubeId": "UBiDjyjtSaM",
-        "categorySlug": "nahrung-kochen-h-hner-kompost",
-        "stageSlug": "food_farming_animals"
-      },
-      {
-        "id": "nahrung-kochen-h-hner-kompost-fvRAZ0rF3Q8",
-        "title": "What Every Electrical Component",
-        "url": "https://www.youtube.com/watch?v=fvRAZ0rF3Q8",
-        "youtubeId": "fvRAZ0rF3Q8",
         "categorySlug": "nahrung-kochen-h-hner-kompost",
         "stageSlug": "food_farming_animals"
       },
@@ -2846,14 +2358,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "food_farming_animals"
       },
       {
-        "id": "nahrung-kochen-h-hner-kompost-fPk-fyP9MFM",
-        "title": "Ultimate Beginner's Guide",
-        "url": "https://www.youtube.com/watch?v=fPk-fyP9MFM",
-        "youtubeId": "fPk-fyP9MFM",
-        "categorySlug": "nahrung-kochen-h-hner-kompost",
-        "stageSlug": "food_farming_animals"
-      },
-      {
         "id": "nahrung-kochen-h-hner-kompost-R4WIXh-c5eI",
         "title": "Stromerzeugung & -speicherung",
         "url": "https://www.youtube.com/watch?v=R4WIXh-c5eI",
@@ -2874,14 +2378,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Rust-Experte: beste Setups",
         "url": "https://www.youtube.com/watch?v=oW9bPJO3CcM",
         "youtubeId": "oW9bPJO3CcM",
-        "categorySlug": "nahrung-kochen-h-hner-kompost",
-        "stageSlug": "food_farming_animals"
-      },
-      {
-        "id": "nahrung-kochen-h-hner-kompost-oWd7t7Cy1fY",
-        "title": "Ultimativer Industrieleitfaden",
-        "url": "https://www.youtube.com/watch?v=oWd7t7Cy1fY",
-        "youtubeId": "oWd7t7Cy1fY",
         "categorySlug": "nahrung-kochen-h-hner-kompost",
         "stageSlug": "food_farming_animals"
       },
@@ -3058,119 +2554,15 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "elektrik-electricity",
     "title": "Elektrik / Electricity",
-    "count": 16,
+    "count": 3,
     "stageSlug": "base_systems",
     "description": "Guides and tutorials for Elektrik / Electricity",
     "videos": [
-      {
-        "id": "elektrik-electricity-SxwIHO4iCa0",
-        "title": "Rust Elektrizitätshandbuch – Vom Anfänger zum Profi",
-        "url": "https://www.youtube.com/watch?v=SxwIHO4iCa0",
-        "youtubeId": "SxwIHO4iCa0",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-5yZWc8VAX9A",
-        "title": "The BEST Rust Electricity Guide for Beginners",
-        "url": "https://www.youtube.com/watch?v=5yZWc8VAX9A",
-        "youtubeId": "5yZWc8VAX9A",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-UBiDjyjtSaM",
-        "title": "Die 10 wichtigsten Stromkreise in Rust",
-        "url": "https://www.youtube.com/watch?v=UBiDjyjtSaM",
-        "youtubeId": "UBiDjyjtSaM",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-ulfq_qr-DvA",
-        "title": "5 essenzielle Stromkreise, die jeder Rust-Spieler kennen muss",
-        "url": "https://www.youtube.com/watch?v=ulfq_qr-DvA",
-        "youtubeId": "ulfq_qr-DvA",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-XCsIUd_UVz8",
-        "title": "Ultimate Electricity Guide – Beginner To Pro",
-        "url": "https://www.youtube.com/watch?v=XCsIUd_UVz8",
-        "youtubeId": "XCsIUd_UVz8",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-dHawUz3q-Oo",
-        "title": "Das EINZIGE Rust-Sortiersystem-Tutorial",
-        "url": "https://www.youtube.com/watch?v=dHawUz3q-Oo",
-        "youtubeId": "dHawUz3q-Oo",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-fvRAZ0rF3Q8",
-        "title": "What Every Electrical Component Does in Rust",
-        "url": "https://www.youtube.com/watch?v=fvRAZ0rF3Q8",
-        "youtubeId": "fvRAZ0rF3Q8",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-eJCmG1M9q_4",
-        "title": "Rust advanced electricity",
-        "url": "https://www.youtube.com/watch?v=eJCmG1M9q_4",
-        "youtubeId": "eJCmG1M9q_4",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-ZjjGlpC-Lf4",
-        "title": "Rust Power Distribution And Logic Flow",
-        "url": "https://www.youtube.com/watch?v=ZjjGlpC-Lf4",
-        "youtubeId": "ZjjGlpC-Lf4",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity--0BR8BN5WGg",
-        "title": "Beginners Guide To Electricity – Understanding Basics",
-        "url": "https://www.youtube.com/watch?v=-0BR8BN5WGg",
-        "youtubeId": "-0BR8BN5WGg",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-p4MyY_FuPMw",
-        "title": "RUST Electrical – How To WIRE LIKE A PRO",
-        "url": "https://www.youtube.com/watch?v=p4MyY_FuPMw",
-        "youtubeId": "p4MyY_FuPMw",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
       {
         "id": "elektrik-electricity-HgpRufq9oJw",
         "title": "Ultimate Guide to Electric Furnace Automation",
         "url": "https://www.youtube.com/watch?v=HgpRufq9oJw",
         "youtubeId": "HgpRufq9oJw",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-ixzQazNVL80",
-        "title": "RUST 101: Electricity Guide – Solar Panels",
-        "url": "https://www.youtube.com/watch?v=ixzQazNVL80",
-        "youtubeId": "ixzQazNVL80",
-        "categorySlug": "elektrik-electricity",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "elektrik-electricity-3a2i9bU9WJU",
-        "title": "Pushing Base Limits With Rust Electricity",
-        "url": "https://www.youtube.com/watch?v=3a2i9bU9WJU",
-        "youtubeId": "3a2i9bU9WJU",
         "categorySlug": "elektrik-electricity",
         "stageSlug": "base_systems"
       },
@@ -3195,90 +2587,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "industrie-system-f-rderb-nder-pipes-sorter",
     "title": "Industrie-System (Förderbänder/Pipes/Sorter)",
-    "count": 16,
+    "count": 5,
     "stageSlug": "base_systems",
     "description": "Guides and tutorials for Industrie-System (Förderbänder/Pipes/Sorter)",
     "videos": [
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-KcTqG_2YD-g",
-        "title": "Rust Modular Sorting System V2 Tutorial",
-        "url": "https://www.youtube.com/watch?v=KcTqG_2YD-g",
-        "youtubeId": "KcTqG_2YD-g",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-Fz_HkoeXH2g",
-        "title": "The Most EFFICIENT Way to Organize Your Loot",
-        "url": "https://www.youtube.com/watch?v=Fz_HkoeXH2g",
-        "youtubeId": "Fz_HkoeXH2g",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-EDvZ21gcNgU",
-        "title": "The best auto-sorter design – Rust Tutorial",
-        "url": "https://www.youtube.com/watch?v=EDvZ21gcNgU",
-        "youtubeId": "EDvZ21gcNgU",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-jWI6dCUm4Jc",
-        "title": "Rust Auto Sorting System – NEVER Mess Up",
-        "url": "https://www.youtube.com/watch?v=jWI6dCUm4Jc",
-        "youtubeId": "jWI6dCUm4Jc",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-oW9bPJO3CcM",
-        "title": "RUST-Experte verrät die besten Geheimnisse",
-        "url": "https://www.youtube.com/watch?v=oW9bPJO3CcM",
-        "youtubeId": "oW9bPJO3CcM",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-oWd7t7Cy1fY",
-        "title": "Ultimativer Industrieleitfaden – So automatisierst du",
-        "url": "https://www.youtube.com/watch?v=oWd7t7Cy1fY",
-        "youtubeId": "oWd7t7Cy1fY",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-uAeHH0INIFI",
-        "title": "Meistern Sie Rust INDUSTRIELLE Kombinierer",
-        "url": "https://www.youtube.com/watch?v=uAeHH0INIFI",
-        "youtubeId": "uAeHH0INIFI",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-80LCDpEFjCE",
-        "title": "Industrieller Handwerker Rust: Automatisierung",
-        "url": "https://www.youtube.com/watch?v=80LCDpEFjCE",
-        "youtubeId": "80LCDpEFjCE",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-uXfRoMIddeQ",
-        "title": "Die einfache Anleitung zur vollautomatischen Basis",
-        "url": "https://www.youtube.com/watch?v=uXfRoMIddeQ",
-        "youtubeId": "uXfRoMIddeQ",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-bv-YJiHAvhc",
-        "title": "The Auto Sorting System of Your Dreams",
-        "url": "https://www.youtube.com/watch?v=bv-YJiHAvhc",
-        "youtubeId": "bv-YJiHAvhc",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
       {
         "id": "industrie-system-f-rderb-nder-pipes-sorter-nE_hCjU31pM",
         "title": "Rust Automatic Sorting System – Industrial",
@@ -3312,14 +2624,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "base_systems"
       },
       {
-        "id": "industrie-system-f-rderb-nder-pipes-sorter-dHawUz3q-Oo",
-        "title": "Das EINZIGE Rust-Sortiersystem-Tutorial",
-        "url": "https://www.youtube.com/watch?v=dHawUz3q-Oo",
-        "youtubeId": "dHawUz3q-Oo",
-        "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-        "stageSlug": "base_systems"
-      },
-      {
         "id": "industrie-system-f-rderb-nder-pipes-sorter-T3kgpLryzmI",
         "title": "Sorters and Conveyors Tutorial",
         "url": "https://www.youtube.com/watch?v=T3kgpLryzmI",
@@ -3332,7 +2636,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "auto-turret-flame-turret-shotgun-trap",
     "title": "Auto-Turret / Flame Turret / Shotgun Trap",
-    "count": 15,
+    "count": 14,
     "stageSlug": "vehicles",
     "description": "Guides and tutorials for Auto-Turret / Flame Turret / Shotgun Trap",
     "videos": [
@@ -3341,14 +2645,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Traps & Turrets – Defence & Base Guide",
         "url": "https://www.youtube.com/watch?v=kNQljV77PgQ",
         "youtubeId": "kNQljV77PgQ",
-        "categorySlug": "auto-turret-flame-turret-shotgun-trap",
-        "stageSlug": "vehicles"
-      },
-      {
-        "id": "auto-turret-flame-turret-shotgun-trap-WcAOA9PiJwU",
-        "title": "The Auto Turret & Setup Guide – Rust Tutorial",
-        "url": "https://www.youtube.com/watch?v=WcAOA9PiJwU",
-        "youtubeId": "WcAOA9PiJwU",
         "categorySlug": "auto-turret-flame-turret-shotgun-trap",
         "stageSlug": "vehicles"
       },
@@ -3461,7 +2757,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "sprengstoff-munition-craften",
     "title": "Sprengstoff & Munition craften",
-    "count": 14,
+    "count": 13,
     "stageSlug": "combat_raiding",
     "description": "Guides and tutorials for Sprengstoff & Munition craften",
     "videos": [
@@ -3478,14 +2774,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Rust Tips – How To Get Explosives FAST!",
         "url": "https://www.youtube.com/watch?v=cqRTbM7hOfc",
         "youtubeId": "cqRTbM7hOfc",
-        "categorySlug": "sprengstoff-munition-craften",
-        "stageSlug": "combat_raiding"
-      },
-      {
-        "id": "sprengstoff-munition-craften-_T5adqyJdXg",
-        "title": "How to Craft Explosives in Rust (Step-by-Step)",
-        "url": "https://www.youtube.com/watch?v=_T5adqyJdXg",
-        "youtubeId": "_T5adqyJdXg",
         "categorySlug": "sprengstoff-munition-craften",
         "stageSlug": "combat_raiding"
       },
@@ -3655,18 +2943,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "alle-monumente-bersicht",
     "title": "Alle Monumente (Übersicht)",
-    "count": 15,
+    "count": 13,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Alle Monumente (Übersicht)",
     "videos": [
-      {
-        "id": "alle-monumente-bersicht-Lb0jzj2QUZk",
-        "title": "Rust Monuments",
-        "url": "https://www.youtube.com/watch?v=Lb0jzj2QUZk",
-        "youtubeId": "Lb0jzj2QUZk",
-        "categorySlug": "alle-monumente-bersicht",
-        "stageSlug": "monuments_keycards"
-      },
       {
         "id": "alle-monumente-bersicht-geW88NvTzPI",
         "title": "Leitfaden zu allen Fundorten der Monumente",
@@ -3724,14 +3004,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "monuments_keycards"
       },
       {
-        "id": "alle-monumente-bersicht-kr0spV5-NRI",
-        "title": "How to 100% PROGRESS in Rust 2025",
-        "url": "https://www.youtube.com/watch?v=kr0spV5-NRI",
-        "youtubeId": "kr0spV5-NRI",
-        "categorySlug": "alle-monumente-bersicht",
-        "stageSlug": "monuments_keycards"
-      },
-      {
         "id": "alle-monumente-bersicht-gOqiN2sHTzY",
         "title": "Big meta changes, BP frags, New monuments",
         "url": "https://www.youtube.com/watch?v=gOqiN2sHTzY",
@@ -3784,7 +3056,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "airfield",
     "title": "Airfield",
-    "count": 10,
+    "count": 9,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Airfield",
     "videos": [
@@ -3793,14 +3065,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Airfield Monument Loot & Puzzle Guide",
         "url": "https://www.youtube.com/watch?v=Nmv0_y7X6zo",
         "youtubeId": "Nmv0_y7X6zo",
-        "categorySlug": "airfield",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "airfield-Xr7AvpLUnRo",
-        "title": "Airfield Monument – Loot & Puzzle Guide 2025",
-        "url": "https://www.youtube.com/watch?v=Xr7AvpLUnRo",
-        "youtubeId": "Xr7AvpLUnRo",
         "categorySlug": "airfield",
         "stageSlug": "monuments_keycards"
       },
@@ -3873,7 +3137,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "launch-site",
     "title": "Launch Site",
-    "count": 10,
+    "count": 8,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Launch Site",
     "videos": [
@@ -3910,14 +3174,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "monuments_keycards"
       },
       {
-        "id": "launch-site-Inn345Rwd8I",
-        "title": "The ULTIMATE Tier 3 Monuments Guide",
-        "url": "https://www.youtube.com/watch?v=Inn345Rwd8I",
-        "youtubeId": "Inn345Rwd8I",
-        "categorySlug": "launch-site",
-        "stageSlug": "monuments_keycards"
-      },
-      {
         "id": "launch-site-YFCFr2oKCUk",
         "title": "Launch Site Red Card Puzzle Guide",
         "url": "https://www.youtube.com/watch?v=YFCFr2oKCUk",
@@ -3930,14 +3186,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Launch Site Keycard Puzzle Tutorial",
         "url": "https://www.youtube.com/watch?v=tiSYf3mCyzw",
         "youtubeId": "tiSYf3mCyzw",
-        "categorySlug": "launch-site",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "launch-site-geW88NvTzPI",
-        "title": "ALL Monument Keycard Puzzle Locations",
-        "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
-        "youtubeId": "geW88NvTzPI",
         "categorySlug": "launch-site",
         "stageSlug": "monuments_keycards"
       },
@@ -3962,7 +3210,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "military-tunnels",
     "title": "Military Tunnels",
-    "count": 10,
+    "count": 9,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Military Tunnels",
     "videos": [
@@ -4015,14 +3263,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "monuments_keycards"
       },
       {
-        "id": "military-tunnels-Inn345Rwd8I",
-        "title": "The ULTIMATE Tier 3 Monuments Guide",
-        "url": "https://www.youtube.com/watch?v=Inn345Rwd8I",
-        "youtubeId": "Inn345Rwd8I",
-        "categorySlug": "military-tunnels",
-        "stageSlug": "monuments_keycards"
-      },
-      {
         "id": "military-tunnels-OIImYNdnz7w",
         "title": "Military Tunnels Full Puzzle Walkthrough",
         "url": "https://www.youtube.com/watch?v=OIImYNdnz7w",
@@ -4051,7 +3291,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "water-treatment-plant",
     "title": "Water Treatment Plant",
-    "count": 8,
+    "count": 7,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Water Treatment Plant",
     "videos": [
@@ -4084,14 +3324,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "ULTIMATE Rust Water Treatment Guide 2026",
         "url": "https://www.youtube.com/watch?v=9Qg6Istthxs",
         "youtubeId": "9Qg6Istthxs",
-        "categorySlug": "water-treatment-plant",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "water-treatment-plant-FICzFsiiA5k",
-        "title": "Sewer Branch Monument – Loot & Puzzle Guide",
-        "url": "https://www.youtube.com/watch?v=FICzFsiiA5k",
-        "youtubeId": "FICzFsiiA5k",
         "categorySlug": "water-treatment-plant",
         "stageSlug": "monuments_keycards"
       },
@@ -4197,7 +3429,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "power-plant",
     "title": "Power Plant",
-    "count": 10,
+    "count": 9,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Power Plant",
     "videos": [
@@ -4258,14 +3490,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "monuments_keycards"
       },
       {
-        "id": "power-plant-geW88NvTzPI",
-        "title": "ALL Monument Keycard Puzzle Locations",
-        "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
-        "youtubeId": "geW88NvTzPI",
-        "categorySlug": "power-plant",
-        "stageSlug": "monuments_keycards"
-      },
-      {
         "id": "power-plant-svpV9z-QN_Y",
         "title": "Power Plant Keycard Puzzle in 160 Seconds",
         "url": "https://www.youtube.com/watch?v=svpV9z-QN_Y",
@@ -4286,7 +3510,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "harbor",
     "title": "Harbor",
-    "count": 10,
+    "count": 9,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Harbor",
     "videos": [
@@ -4331,14 +3555,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "monuments_keycards"
       },
       {
-        "id": "harbor-geW88NvTzPI",
-        "title": "ALL Monument Keycard Puzzle Locations",
-        "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
-        "youtubeId": "geW88NvTzPI",
-        "categorySlug": "harbor",
-        "stageSlug": "monuments_keycards"
-      },
-      {
         "id": "harbor-n0W33_8XA0g",
         "title": "Harbor Puzzle Guide in Rust",
         "url": "https://www.youtube.com/watch?v=n0W33_8XA0g",
@@ -4375,18 +3591,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
     "title": "Kleine Monumente (Gas Station/Supermarket/Junkyard/Satellite/Sewer)",
-    "count": 10,
+    "count": 8,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Kleine Monumente (Gas Station/Supermarket/Junkyard/Satellite/Sewer)",
     "videos": [
-      {
-        "id": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer-u6zHvXaKQaA",
-        "title": "Small Rust Monuments Guide – Everything You Need",
-        "url": "https://www.youtube.com/watch?v=u6zHvXaKQaA",
-        "youtubeId": "u6zHvXaKQaA",
-        "categorySlug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
-        "stageSlug": "monuments_keycards"
-      },
       {
         "id": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer-aUIqlLkoxMI",
         "title": "Small Monuments Guide – Rust Tutorial",
@@ -4432,14 +3640,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Rust Monument Guide – The Junkyard",
         "url": "https://www.youtube.com/watch?v=7NKv6p9P2CI",
         "youtubeId": "7NKv6p9P2CI",
-        "categorySlug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer-FICzFsiiA5k",
-        "title": "Sewer Branch Monument – Loot & Puzzle Guide",
-        "url": "https://www.youtube.com/watch?v=FICzFsiiA5k",
-        "youtubeId": "FICzFsiiA5k",
         "categorySlug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
         "stageSlug": "monuments_keycards"
       },
@@ -4545,7 +3745,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "giant-excavator",
     "title": "Giant Excavator",
-    "count": 9,
+    "count": 7,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Giant Excavator",
     "videos": [
@@ -4582,14 +3782,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "monuments_keycards"
       },
       {
-        "id": "giant-excavator-Inn345Rwd8I",
-        "title": "The ULTIMATE Tier 3 Monuments Guide",
-        "url": "https://www.youtube.com/watch?v=Inn345Rwd8I",
-        "youtubeId": "Inn345Rwd8I",
-        "categorySlug": "giant-excavator",
-        "stageSlug": "monuments_keycards"
-      },
-      {
         "id": "giant-excavator-BXLNJgKZles",
         "title": "Rust Monument Guide – The Large Excavator",
         "url": "https://www.youtube.com/watch?v=BXLNJgKZles",
@@ -4602,14 +3794,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "RUST EXCAVATOR PIT MONUMENT GUIDE",
         "url": "https://www.youtube.com/watch?v=5Yu3sbY-_2g",
         "youtubeId": "5Yu3sbY-_2g",
-        "categorySlug": "giant-excavator",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "giant-excavator-AYymth531fk",
-        "title": "How to use The GIANT EXCAVATOR in Rust",
-        "url": "https://www.youtube.com/watch?v=AYymth531fk",
-        "youtubeId": "AYymth531fk",
         "categorySlug": "giant-excavator",
         "stageSlug": "monuments_keycards"
       },
@@ -4845,7 +4029,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "oil-rig-small-large",
     "title": "Oil Rig (Small & Large)",
-    "count": 10,
+    "count": 8,
     "stageSlug": "monuments_keycards",
     "description": "Guides and tutorials for Oil Rig (Small & Large)",
     "videos": [
@@ -4910,22 +4094,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Rust Monument Guide – The Small Oil Rig",
         "url": "https://www.youtube.com/watch?v=DjHWtWKBD4w",
         "youtubeId": "DjHWtWKBD4w",
-        "categorySlug": "oil-rig-small-large",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "oil-rig-small-large-u6zHvXaKQaA",
-        "title": "Small Rust Monuments Guide – Everything",
-        "url": "https://www.youtube.com/watch?v=u6zHvXaKQaA",
-        "youtubeId": "u6zHvXaKQaA",
-        "categorySlug": "oil-rig-small-large",
-        "stageSlug": "monuments_keycards"
-      },
-      {
-        "id": "oil-rig-small-large-GXHn0NGvfNk",
-        "title": "Harbor Monument Guide – Small and Large",
-        "url": "https://www.youtube.com/watch?v=GXHn0NGvfNk",
-        "youtubeId": "GXHn0NGvfNk",
         "categorySlug": "oil-rig-small-large",
         "stageSlug": "monuments_keycards"
       }
@@ -5087,7 +4255,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "bradley-apc-panzer-besiegen",
     "title": "Bradley APC (Panzer) besiegen",
-    "count": 9,
+    "count": 8,
     "stageSlug": "events_bosses",
     "description": "Guides and tutorials for Bradley APC (Panzer) besiegen",
     "videos": [
@@ -5144,14 +4312,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "Bradley Guide Rust Launch Site (90 Seconds)",
         "url": "https://www.youtube.com/watch?v=EGCoqfBQd_8",
         "youtubeId": "EGCoqfBQd_8",
-        "categorySlug": "bradley-apc-panzer-besiegen",
-        "stageSlug": "events_bosses"
-      },
-      {
-        "id": "bradley-apc-panzer-besiegen-kWEb_lX1orc",
-        "title": "Taking Bradley with a Drone and C4",
-        "url": "https://www.youtube.com/watch?v=kWEb_lX1orc",
-        "youtubeId": "kWEb_lX1orc",
         "categorySlug": "bradley-apc-panzer-besiegen",
         "stageSlug": "events_bosses"
       },
@@ -5249,7 +4409,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "attack-helicopter",
     "title": "Attack Helicopter",
-    "count": 8,
+    "count": 7,
     "stageSlug": "events_bosses",
     "description": "Guides and tutorials for Attack Helicopter",
     "videos": [
@@ -5290,14 +4450,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How to Use The Turret in The Attack Heli",
         "url": "https://www.youtube.com/watch?v=5dNUDXDMiho",
         "youtubeId": "5dNUDXDMiho",
-        "categorySlug": "attack-helicopter",
-        "stageSlug": "events_bosses"
-      },
-      {
-        "id": "attack-helicopter-B-UbBrHbAh0",
-        "title": "NEW Patrol Helicopter & Tower Guide",
-        "url": "https://www.youtube.com/watch?v=B-UbBrHbAh0",
-        "youtubeId": "B-UbBrHbAh0",
         "categorySlug": "attack-helicopter",
         "stageSlug": "events_bosses"
       },
@@ -5411,7 +4563,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "modular-cars-autos",
     "title": "Modular Cars (Autos)",
-    "count": 9,
+    "count": 8,
     "stageSlug": "vehicles",
     "description": "Guides and tutorials for Modular Cars (Autos)",
     "videos": [
@@ -5420,14 +4572,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "title": "How to Make a Car in Rust Quick Guide",
         "url": "https://www.youtube.com/watch?v=3JHZjZ9NAvs",
         "youtubeId": "3JHZjZ9NAvs",
-        "categorySlug": "modular-cars-autos",
-        "stageSlug": "vehicles"
-      },
-      {
-        "id": "modular-cars-autos-eihAv_MueUQ",
-        "title": "The Best Vehicle Build In Rust 2024",
-        "url": "https://www.youtube.com/watch?v=eihAv_MueUQ",
-        "youtubeId": "eihAv_MueUQ",
         "categorySlug": "modular-cars-autos",
         "stageSlug": "vehicles"
       },
@@ -5492,7 +4636,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "u-boote-submarines",
     "title": "U-Boote (Submarines)",
-    "count": 9,
+    "count": 7,
     "stageSlug": "vehicles",
     "description": "Guides and tutorials for U-Boote (Submarines)",
     "videos": [
@@ -5545,26 +4689,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "vehicles"
       },
       {
-        "id": "u-boote-submarines-Yj38XRHpD_o",
-        "title": "Underwater Labs Guide – Rust Tutorial",
-        "url": "https://www.youtube.com/watch?v=Yj38XRHpD_o",
-        "youtubeId": "Yj38XRHpD_o",
-        "categorySlug": "u-boote-submarines",
-        "stageSlug": "vehicles"
-      },
-      {
         "id": "u-boote-submarines-5cgKQhsgGHA",
         "title": "How to Use Torpedoes in Rust",
         "url": "https://www.youtube.com/watch?v=5cgKQhsgGHA",
         "youtubeId": "5cgKQhsgGHA",
-        "categorySlug": "u-boote-submarines",
-        "stageSlug": "vehicles"
-      },
-      {
-        "id": "u-boote-submarines-bfxdIUg4FcE",
-        "title": "Rust Underwater Labs Guide – 2 Minute Tutorial",
-        "url": "https://www.youtube.com/watch?v=bfxdIUg4FcE",
-        "youtubeId": "bfxdIUg4FcE",
         "categorySlug": "u-boote-submarines",
         "stageSlug": "vehicles"
       }
@@ -5824,7 +4952,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "z-ge-workcart-above-ground-rail",
     "title": "Züge / Workcart / Above-Ground Rail",
-    "count": 10,
+    "count": 7,
     "stageSlug": "start_here",
     "description": "Guides and tutorials for Züge / Workcart / Above-Ground Rail",
     "videos": [
@@ -5861,14 +4989,6 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "z-ge-workcart-above-ground-rail-ntoudT6eZuA",
-        "title": "Train Yard Monument Loot & Puzzle Guide",
-        "url": "https://www.youtube.com/watch?v=ntoudT6eZuA",
-        "youtubeId": "ntoudT6eZuA",
-        "categorySlug": "z-ge-workcart-above-ground-rail",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "z-ge-workcart-above-ground-rail--6mFK1Tb9eA",
         "title": "Freight Transit Line Guide – Rust Tutorial",
         "url": "https://www.youtube.com/watch?v=-6mFK1Tb9eA",
@@ -5885,26 +5005,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "start_here"
       },
       {
-        "id": "z-ge-workcart-above-ground-rail-a30ETOIV4Ss",
-        "title": "NEW Train Event – Train Yard Monument",
-        "url": "https://www.youtube.com/watch?v=a30ETOIV4Ss",
-        "youtubeId": "a30ETOIV4Ss",
-        "categorySlug": "z-ge-workcart-above-ground-rail",
-        "stageSlug": "start_here"
-      },
-      {
         "id": "z-ge-workcart-above-ground-rail-uE_oQy121I8",
         "title": "Rust Train Yard Expansion Overview",
         "url": "https://www.youtube.com/watch?v=uE_oQy121I8",
         "youtubeId": "uE_oQy121I8",
-        "categorySlug": "z-ge-workcart-above-ground-rail",
-        "stageSlug": "start_here"
-      },
-      {
-        "id": "z-ge-workcart-above-ground-rail-dOdFE3FI6l0",
-        "title": "Ultimate Rust TRAINYARD Puzzle Guide",
-        "url": "https://www.youtube.com/watch?v=dOdFE3FI6l0",
-        "youtubeId": "dOdFE3FI6l0",
         "categorySlug": "z-ge-workcart-above-ground-rail",
         "stageSlug": "start_here"
       }
@@ -5913,7 +5017,7 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "raiding-guide-kosten-basics",
     "title": "Raiding Guide (Kosten & Basics)",
-    "count": 9,
+    "count": 7,
     "stageSlug": "combat_raiding",
     "description": "Guides and tutorials for Raiding Guide (Kosten & Basics)",
     "videos": [
@@ -5926,26 +5030,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "combat_raiding"
       },
       {
-        "id": "raiding-guide-kosten-basics-MoiAyqT6UyA",
-        "title": "Ultimate Raiding Guide – Most Efficient Way",
-        "url": "https://www.youtube.com/watch?v=MoiAyqT6UyA",
-        "youtubeId": "MoiAyqT6UyA",
-        "categorySlug": "raiding-guide-kosten-basics",
-        "stageSlug": "combat_raiding"
-      },
-      {
         "id": "raiding-guide-kosten-basics-Ny7fL1RQPoY",
         "title": "Ultimate Solo Raiding Guide – Best Strategies",
         "url": "https://www.youtube.com/watch?v=Ny7fL1RQPoY",
         "youtubeId": "Ny7fL1RQPoY",
-        "categorySlug": "raiding-guide-kosten-basics",
-        "stageSlug": "combat_raiding"
-      },
-      {
-        "id": "raiding-guide-kosten-basics-XWlNXkitj7o",
-        "title": "NEW Raiding META? – Ultimate Primitive Raiding",
-        "url": "https://www.youtube.com/watch?v=XWlNXkitj7o",
-        "youtubeId": "XWlNXkitj7o",
         "categorySlug": "raiding-guide-kosten-basics",
         "stageSlug": "combat_raiding"
       },
@@ -5994,18 +5082,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
   {
     "slug": "wie-raiden-sprengstoff-einsetzen",
     "title": "Wie raiden (Sprengstoff einsetzen)",
-    "count": 10,
+    "count": 4,
     "stageSlug": "combat_raiding",
     "description": "Guides and tutorials for Wie raiden (Sprengstoff einsetzen)",
     "videos": [
-      {
-        "id": "wie-raiden-sprengstoff-einsetzen-MoiAyqT6UyA",
-        "title": "Ultimate Raiding Guide – Most Efficient Way",
-        "url": "https://www.youtube.com/watch?v=MoiAyqT6UyA",
-        "youtubeId": "MoiAyqT6UyA",
-        "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-        "stageSlug": "combat_raiding"
-      },
       {
         "id": "wie-raiden-sprengstoff-einsetzen-7VrvVsXeTaQ",
         "title": "Rust How to Raid 2021",
@@ -6015,50 +5095,10 @@ export const RUST_GUIDE_CATEGORIES: RustGuideCategory[] = [
         "stageSlug": "combat_raiding"
       },
       {
-        "id": "wie-raiden-sprengstoff-einsetzen-Q3sZdKLzSgE",
-        "title": "Raiding Guide – Rust Tutorial",
-        "url": "https://www.youtube.com/watch?v=Q3sZdKLzSgE",
-        "youtubeId": "Q3sZdKLzSgE",
-        "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-        "stageSlug": "combat_raiding"
-      },
-      {
-        "id": "wie-raiden-sprengstoff-einsetzen-Ny7fL1RQPoY",
-        "title": "Ultimate Solo Raiding Guide",
-        "url": "https://www.youtube.com/watch?v=Ny7fL1RQPoY",
-        "youtubeId": "Ny7fL1RQPoY",
-        "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-        "stageSlug": "combat_raiding"
-      },
-      {
         "id": "wie-raiden-sprengstoff-einsetzen-McRM05n6Aig",
         "title": "How To Get And Use Explosives in Rust",
         "url": "https://www.youtube.com/watch?v=McRM05n6Aig",
         "youtubeId": "McRM05n6Aig",
-        "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-        "stageSlug": "combat_raiding"
-      },
-      {
-        "id": "wie-raiden-sprengstoff-einsetzen-sr0J7BZL55Y",
-        "title": "How To Rust: Day 44! – Using C4, Rockets",
-        "url": "https://www.youtube.com/watch?v=sr0J7BZL55Y",
-        "youtubeId": "sr0J7BZL55Y",
-        "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-        "stageSlug": "combat_raiding"
-      },
-      {
-        "id": "wie-raiden-sprengstoff-einsetzen-cqRTbM7hOfc",
-        "title": "Rust Tips – How To Get Explosives FAST!",
-        "url": "https://www.youtube.com/watch?v=cqRTbM7hOfc",
-        "youtubeId": "cqRTbM7hOfc",
-        "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-        "stageSlug": "combat_raiding"
-      },
-      {
-        "id": "wie-raiden-sprengstoff-einsetzen-XWlNXkitj7o",
-        "title": "NEW Raiding META?",
-        "url": "https://www.youtube.com/watch?v=XWlNXkitj7o",
-        "youtubeId": "XWlNXkitj7o",
         "categorySlug": "wie-raiden-sprengstoff-einsetzen",
         "stageSlug": "combat_raiding"
       },
@@ -6503,50 +5543,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "progression-fortschritt-kr0spV5-NRI",
-    "title": "How to 100% Progress in Rust",
-    "url": "https://www.youtube.com/watch?v=kr0spV5-NRI",
-    "youtubeId": "kr0spV5-NRI",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "progression-fortschritt-xmfY_V5OA2Y",
-    "title": "Ein vollständiger Leitfaden",
-    "url": "https://www.youtube.com/watch?v=xmfY_V5OA2Y",
-    "youtubeId": "xmfY_V5OA2Y",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "progression-fortschritt-Q_5GK7LV5oo",
     "title": "Veteran's Ultimate Beginner Guide",
     "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
     "youtubeId": "Q_5GK7LV5oo",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "progression-fortschritt-Wc0ZJo06oAw",
-    "title": "Der ultimative Rust-Anfängerguide",
-    "url": "https://www.youtube.com/watch?v=Wc0ZJo06oAw",
-    "youtubeId": "Wc0ZJo06oAw",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "progression-fortschritt-NqaO-wMEwSk",
-    "title": "How to Have a Perfect Start",
-    "url": "https://www.youtube.com/watch?v=NqaO-wMEwSk",
-    "youtubeId": "NqaO-wMEwSk",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "progression-fortschritt-gPa_ZK8JBtw",
-    "title": "Der ultimative RUST-Anfängerleitfaden",
-    "url": "https://www.youtube.com/watch?v=gPa_ZK8JBtw",
-    "youtubeId": "gPa_ZK8JBtw",
     "categorySlug": "progression-fortschritt",
     "stageSlug": "start_here"
   },
@@ -6559,26 +5559,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "progression-fortschritt-trjVKr5PEqo",
-    "title": "So spielt man Rust SOLO",
-    "url": "https://www.youtube.com/watch?v=trjVKr5PEqo",
-    "youtubeId": "trjVKr5PEqo",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "progression-fortschritt-6ScoiF0wPi4",
     "title": "Die besten Strategien für den Start",
     "url": "https://www.youtube.com/watch?v=6ScoiF0wPi4",
     "youtubeId": "6ScoiF0wPi4",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "progression-fortschritt-ENMi9FVyowI",
-    "title": "Wie man 2025 mit RUST beginnt",
-    "url": "https://www.youtube.com/watch?v=ENMi9FVyowI",
-    "youtubeId": "ENMi9FVyowI",
     "categorySlug": "progression-fortschritt",
     "stageSlug": "start_here"
   },
@@ -6595,14 +5579,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "How to Progress as a Solo",
     "url": "https://www.youtube.com/watch?v=IkpkGy6VHzQ",
     "youtubeId": "IkpkGy6VHzQ",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "progression-fortschritt-OHJCcV6gtog",
-    "title": "A Complete Beginner's Guide",
-    "url": "https://www.youtube.com/watch?v=OHJCcV6gtog",
-    "youtubeId": "OHJCcV6gtog",
     "categorySlug": "progression-fortschritt",
     "stageSlug": "start_here"
   },
@@ -6639,14 +5615,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "progression-fortschritt-jw6UFiNMPRI",
-    "title": "I tried Rust as a complete beginner",
-    "url": "https://www.youtube.com/watch?v=jw6UFiNMPRI",
-    "youtubeId": "jw6UFiNMPRI",
-    "categorySlug": "progression-fortschritt",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "progression-fortschritt-Yn_f5XuT9u4",
     "title": "I Tested 4 Secret Solo Methods",
     "url": "https://www.youtube.com/watch?v=Yn_f5XuT9u4",
@@ -6675,14 +5643,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "The New Workbench Tech Tree",
     "url": "https://www.youtube.com/watch?v=qA_Ci1mzWO4",
     "youtubeId": "qA_Ci1mzWO4",
-    "categorySlug": "workbench-tech-tree-blueprints",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "workbench-tech-tree-blueprints-Q_5GK7LV5oo",
-    "title": "Veteran's Ultimate Beginner Guide",
-    "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
-    "youtubeId": "Q_5GK7LV5oo",
     "categorySlug": "workbench-tech-tree-blueprints",
     "stageSlug": "start_here"
   },
@@ -6791,22 +5751,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "solo-survival-trjVKr5PEqo",
-    "title": "So spielt man Rust SOLO",
-    "url": "https://www.youtube.com/watch?v=trjVKr5PEqo",
-    "youtubeId": "trjVKr5PEqo",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-N4QO8boc0Qg",
-    "title": "How a Solo with 11,362 Hours",
-    "url": "https://www.youtube.com/watch?v=N4QO8boc0Qg",
-    "youtubeId": "N4QO8boc0Qg",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "solo-survival-ctLS9PBdt0A",
     "title": "How a solo with 14,782 Hours",
     "url": "https://www.youtube.com/watch?v=ctLS9PBdt0A",
@@ -6815,50 +5759,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "solo-survival-aI3uceNGhyo",
-    "title": "The Solo Strategy Explained",
-    "url": "https://www.youtube.com/watch?v=aI3uceNGhyo",
-    "youtubeId": "aI3uceNGhyo",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-gPa_ZK8JBtw",
-    "title": "Der ultimative RUST-Anfängerleitfaden",
-    "url": "https://www.youtube.com/watch?v=gPa_ZK8JBtw",
-    "youtubeId": "gPa_ZK8JBtw",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-Wc0ZJo06oAw",
-    "title": "Der ultimative Rust-Anfängerguide",
-    "url": "https://www.youtube.com/watch?v=Wc0ZJo06oAw",
-    "youtubeId": "Wc0ZJo06oAw",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-X0nt5S21Aho",
-    "title": "How a Solo with 14,274 hours",
-    "url": "https://www.youtube.com/watch?v=X0nt5S21Aho",
-    "youtubeId": "X0nt5S21Aho",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "solo-survival-zXl4ZrM8Yq4",
     "title": "How a solo builder with 12,487h",
     "url": "https://www.youtube.com/watch?v=zXl4ZrM8Yq4",
     "youtubeId": "zXl4ZrM8Yq4",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-kr0spV5-NRI",
-    "title": "How to 100% Progress in Rust",
-    "url": "https://www.youtube.com/watch?v=kr0spV5-NRI",
-    "youtubeId": "kr0spV5-NRI",
     "categorySlug": "solo-survival",
     "stageSlug": "start_here"
   },
@@ -6895,26 +5799,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "solo-survival-Q_5GK7LV5oo",
-    "title": "Veteran's Ultimate Beginner Guide",
-    "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
-    "youtubeId": "Q_5GK7LV5oo",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "solo-survival-GHbIwk7RnUM",
     "title": "How I took over the Jungle",
     "url": "https://www.youtube.com/watch?v=GHbIwk7RnUM",
     "youtubeId": "GHbIwk7RnUM",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-IkpkGy6VHzQ",
-    "title": "How to Progress as a Solo",
-    "url": "https://www.youtube.com/watch?v=IkpkGy6VHzQ",
-    "youtubeId": "IkpkGy6VHzQ",
     "categorySlug": "solo-survival",
     "stageSlug": "start_here"
   },
@@ -6939,14 +5827,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "I designed a new Solo Strategy",
     "url": "https://www.youtube.com/watch?v=4V-HogxU_OY",
     "youtubeId": "4V-HogxU_OY",
-    "categorySlug": "solo-survival",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "solo-survival-xmfY_V5OA2Y",
-    "title": "Ein vollständiger Leitfaden",
-    "url": "https://www.youtube.com/watch?v=xmfY_V5OA2Y",
-    "youtubeId": "xmfY_V5OA2Y",
     "categorySlug": "solo-survival",
     "stageSlug": "start_here"
   },
@@ -7279,14 +6159,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "economy_resources"
   },
   {
-    "id": "metall-hqm-farm-7s-RaVquK_I",
-    "title": "Knotenpunkte-Leitfaden",
-    "url": "https://www.youtube.com/watch?v=7s-RaVquK_I",
-    "youtubeId": "7s-RaVquK_I",
-    "categorySlug": "metall-hqm-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
     "id": "metall-hqm-farm-aj9pMpehhEI",
     "title": "Best Ways to Farm Scrap",
     "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
@@ -7415,14 +6287,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "economy_resources"
   },
   {
-    "id": "holz-stein-farm-7s-RaVquK_I",
-    "title": "Knotenpunkte-Leitfaden",
-    "url": "https://www.youtube.com/watch?v=7s-RaVquK_I",
-    "youtubeId": "7s-RaVquK_I",
-    "categorySlug": "holz-stein-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
     "id": "holz-stein-farm-q6ZYkzKRt8g",
     "title": "Fastest way to farm stone",
     "url": "https://www.youtube.com/watch?v=q6ZYkzKRt8g",
@@ -7447,26 +6311,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "economy_resources"
   },
   {
-    "id": "holz-stein-farm-aj9pMpehhEI",
-    "title": "Best Ways to Farm Scrap",
-    "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-    "youtubeId": "aj9pMpehhEI",
-    "categorySlug": "holz-stein-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
     "id": "holz-stein-farm-xNSZ4vS8BM4",
     "title": "Console Beginners Guide",
     "url": "https://www.youtube.com/watch?v=xNSZ4vS8BM4",
     "youtubeId": "xNSZ4vS8BM4",
-    "categorySlug": "holz-stein-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "holz-stein-farm-rT1-1mw2Pro",
-    "title": "How To Get Scrap Fast",
-    "url": "https://www.youtube.com/watch?v=rT1-1mw2Pro",
-    "youtubeId": "rT1-1mw2Pro",
     "categorySlug": "holz-stein-farm",
     "stageSlug": "economy_resources"
   },
@@ -7484,30 +6332,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "url": "https://www.youtube.com/watch?v=jKJO7rAa2vU",
     "youtubeId": "jKJO7rAa2vU",
     "categorySlug": "holz-stein-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "scrap-farm-vPVyWbT4hh0",
-    "title": "Kurzanleitung – 9000 Schrott",
-    "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-    "youtubeId": "vPVyWbT4hh0",
-    "categorySlug": "scrap-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "scrap-farm-aj9pMpehhEI",
-    "title": "Best Ways to Farm Scrap",
-    "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-    "youtubeId": "aj9pMpehhEI",
-    "categorySlug": "scrap-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "scrap-farm-rT1-1mw2Pro",
-    "title": "How To Get Scrap Fast",
-    "url": "https://www.youtube.com/watch?v=rT1-1mw2Pro",
-    "youtubeId": "rT1-1mw2Pro",
-    "categorySlug": "scrap-farm",
     "stageSlug": "economy_resources"
   },
   {
@@ -7619,14 +6443,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "How To Get Scrap",
     "url": "https://www.youtube.com/watch?v=WFicKjb6pjU",
     "youtubeId": "WFicKjb6pjU",
-    "categorySlug": "scrap-farm",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "scrap-farm-z5SKkOXL_ms",
-    "title": "Der Arbeiter – Basis",
-    "url": "https://www.youtube.com/watch?v=z5SKkOXL_ms",
-    "youtubeId": "z5SKkOXL_ms",
     "categorySlug": "scrap-farm",
     "stageSlug": "economy_resources"
   },
@@ -7783,54 +6599,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "economy_resources"
   },
   {
-    "id": "components-komponenten-farmen-p3OdpHJNIl4",
-    "title": "Farming & Genetics Guide",
-    "url": "https://www.youtube.com/watch?v=p3OdpHJNIl4",
-    "youtubeId": "p3OdpHJNIl4",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-ln5GcMwrB8I",
-    "title": "Beste Komponenten-Rangliste",
-    "url": "https://www.youtube.com/watch?v=ln5GcMwrB8I",
-    "youtubeId": "ln5GcMwrB8I",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-EeLINRhtBG0",
-    "title": "Farming 3.0 – Ultimativer Leitfaden",
-    "url": "https://www.youtube.com/watch?v=EeLINRhtBG0",
-    "youtubeId": "EeLINRhtBG0",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-aj9pMpehhEI",
-    "title": "Best Ways to Farm Scrap",
-    "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-    "youtubeId": "aj9pMpehhEI",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-vPVyWbT4hh0",
-    "title": "Kurzanleitung – 9000 Schrott",
-    "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-    "youtubeId": "vPVyWbT4hh0",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-eavfD_HCHu4",
-    "title": "10 Farming-Tipps",
-    "url": "https://www.youtube.com/watch?v=eavfD_HCHu4",
-    "youtubeId": "eavfD_HCHu4",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
     "id": "components-komponenten-farmen-dM6QvlF7aAI",
     "title": "Full Underground Tunnel Guide",
     "url": "https://www.youtube.com/watch?v=dM6QvlF7aAI",
@@ -7843,30 +6611,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Ultimate Loot Guide",
     "url": "https://www.youtube.com/watch?v=aO1Br2ysi5U",
     "youtubeId": "aO1Br2ysi5U",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-rT1-1mw2Pro",
-    "title": "How To Get Scrap Fast",
-    "url": "https://www.youtube.com/watch?v=rT1-1mw2Pro",
-    "youtubeId": "rT1-1mw2Pro",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-9qgmClfvlRY",
-    "title": "Neuer Blueprint-Fragment-Guide",
-    "url": "https://www.youtube.com/watch?v=9qgmClfvlRY",
-    "youtubeId": "9qgmClfvlRY",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-7s-RaVquK_I",
-    "title": "Knotenpunkte-Leitfaden",
-    "url": "https://www.youtube.com/watch?v=7s-RaVquK_I",
-    "youtubeId": "7s-RaVquK_I",
     "categorySlug": "components-komponenten-farmen",
     "stageSlug": "economy_resources"
   },
@@ -7887,30 +6631,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "economy_resources"
   },
   {
-    "id": "components-komponenten-farmen-kAOjuWTlxeE",
-    "title": "Best Ways to Farm HQM",
-    "url": "https://www.youtube.com/watch?v=kAOjuWTlxeE",
-    "youtubeId": "kAOjuWTlxeE",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-oWd7t7Cy1fY",
-    "title": "Ultimativer Industrieleitfaden",
-    "url": "https://www.youtube.com/watch?v=oWd7t7Cy1fY",
-    "youtubeId": "oWd7t7Cy1fY",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "components-komponenten-farmen-Q_5GK7LV5oo",
-    "title": "Veteran's Ultimate Beginner Guide",
-    "url": "https://www.youtube.com/watch?v=Q_5GK7LV5oo",
-    "youtubeId": "Q_5GK7LV5oo",
-    "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
     "id": "components-komponenten-farmen-TxPct-Dz4-I",
     "title": "So fertigen Sie Komponenten",
     "url": "https://www.youtube.com/watch?v=TxPct-Dz4-I",
@@ -7924,22 +6644,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "url": "https://www.youtube.com/watch?v=eihAv_MueUQ",
     "youtubeId": "eihAv_MueUQ",
     "categorySlug": "components-komponenten-farmen",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "recycler-recycling-ln5GcMwrB8I",
-    "title": "Beste Komponenten-Rangliste",
-    "url": "https://www.youtube.com/watch?v=ln5GcMwrB8I",
-    "youtubeId": "ln5GcMwrB8I",
-    "categorySlug": "recycler-recycling",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "recycler-recycling-1EhnL6P15VM",
-    "title": "Komponenten – was behalten",
-    "url": "https://www.youtube.com/watch?v=1EhnL6P15VM",
-    "youtubeId": "1EhnL6P15VM",
-    "categorySlug": "recycler-recycling",
     "stageSlug": "economy_resources"
   },
   {
@@ -7963,14 +6667,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "How to use a Recycler",
     "url": "https://www.youtube.com/watch?v=qlUx9QwEBs0",
     "youtubeId": "qlUx9QwEBs0",
-    "categorySlug": "recycler-recycling",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "recycler-recycling-vPVyWbT4hh0",
-    "title": "Kurzanleitung – 9000 Schrott",
-    "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-    "youtubeId": "vPVyWbT4hh0",
     "categorySlug": "recycler-recycling",
     "stageSlug": "economy_resources"
   },
@@ -8003,14 +6699,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Wo befindet sich das Recycling",
     "url": "https://www.youtube.com/watch?v=nEsp0ocdiQE",
     "youtubeId": "nEsp0ocdiQE",
-    "categorySlug": "recycler-recycling",
-    "stageSlug": "economy_resources"
-  },
-  {
-    "id": "recycler-recycling-aj9pMpehhEI",
-    "title": "Best Ways to Farm Scrap",
-    "url": "https://www.youtube.com/watch?v=aj9pMpehhEI",
-    "youtubeId": "aj9pMpehhEI",
     "categorySlug": "recycler-recycling",
     "stageSlug": "economy_resources"
   },
@@ -8079,42 +6767,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "economy_resources"
   },
   {
-    "id": "anpflanzen-planter-genetik-kreuzung-p3OdpHJNIl4",
-    "title": "Farming & Genetics Guide",
-    "url": "https://www.youtube.com/watch?v=p3OdpHJNIl4",
-    "youtubeId": "p3OdpHJNIl4",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "anpflanzen-planter-genetik-kreuzung-EeLINRhtBG0",
-    "title": "Farming 3.0 – Ultimativer Leitfaden",
-    "url": "https://www.youtube.com/watch?v=EeLINRhtBG0",
-    "youtubeId": "EeLINRhtBG0",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "anpflanzen-planter-genetik-kreuzung-Z_rW0QkCags",
     "title": "Lernen Sie Kreuzung in Rust",
     "url": "https://www.youtube.com/watch?v=Z_rW0QkCags",
     "youtubeId": "Z_rW0QkCags",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "anpflanzen-planter-genetik-kreuzung-k6M6Zjozlwk",
-    "title": "Genetics Guide | What They Are",
-    "url": "https://www.youtube.com/watch?v=k6M6Zjozlwk",
-    "youtubeId": "k6M6Zjozlwk",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "anpflanzen-planter-genetik-kreuzung-m9y6ACVQR-M",
-    "title": "Crossbreed a God Clone (lazy)",
-    "url": "https://www.youtube.com/watch?v=m9y6ACVQR-M",
-    "youtubeId": "m9y6ACVQR-M",
     "categorySlug": "anpflanzen-planter-genetik-kreuzung",
     "stageSlug": "start_here"
   },
@@ -8131,22 +6787,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "How To Crossbreed | Guide",
     "url": "https://www.youtube.com/watch?v=pKG1z1p1fFA",
     "youtubeId": "pKG1z1p1fFA",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "anpflanzen-planter-genetik-kreuzung-eavfD_HCHu4",
-    "title": "10 Farming-Tipps",
-    "url": "https://www.youtube.com/watch?v=eavfD_HCHu4",
-    "youtubeId": "eavfD_HCHu4",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "anpflanzen-planter-genetik-kreuzung-4ElucWHyfbM",
-    "title": "How to get perfect clones",
-    "url": "https://www.youtube.com/watch?v=4ElucWHyfbM",
-    "youtubeId": "4ElucWHyfbM",
     "categorySlug": "anpflanzen-planter-genetik-kreuzung",
     "stageSlug": "start_here"
   },
@@ -8171,14 +6811,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Fortgeschrittener Leitfaden",
     "url": "https://www.youtube.com/watch?v=mgTUFN7XjY8",
     "youtubeId": "mgTUFN7XjY8",
-    "categorySlug": "anpflanzen-planter-genetik-kreuzung",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "anpflanzen-planter-genetik-kreuzung-E3EWe2p6I44",
-    "title": "Wie ein Profi-Farmer farmt",
-    "url": "https://www.youtube.com/watch?v=E3EWe2p6I44",
-    "youtubeId": "E3EWe2p6I44",
     "categorySlug": "anpflanzen-planter-genetik-kreuzung",
     "stageSlug": "start_here"
   },
@@ -8211,14 +6843,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "The Ultimate Rust Tea Guide",
     "url": "https://www.youtube.com/watch?v=VeE076brslE",
     "youtubeId": "VeE076brslE",
-    "categorySlug": "tee-mixing-table",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "tee-mixing-table-mgTUFN7XjY8",
-    "title": "Fortgeschrittener Leitfaden",
-    "url": "https://www.youtube.com/watch?v=mgTUFN7XjY8",
-    "youtubeId": "mgTUFN7XjY8",
     "categorySlug": "tee-mixing-table",
     "stageSlug": "start_here"
   },
@@ -8311,14 +6935,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "tee-mixing-table-O5bmJK5wphk",
-    "title": "Farming-Guide: So erreichst du",
-    "url": "https://www.youtube.com/watch?v=O5bmJK5wphk",
-    "youtubeId": "O5bmJK5wphk",
-    "categorySlug": "tee-mixing-table",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "jagd-tiere-hunting-JPDGwVgCgUU",
     "title": "Neuer Dschungelbiom-Leitfaden",
     "url": "https://www.youtube.com/watch?v=JPDGwVgCgUU",
@@ -8347,14 +6963,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "How to Fight New Jungle Animals",
     "url": "https://www.youtube.com/watch?v=_1GVrcPaJD8",
     "youtubeId": "_1GVrcPaJD8",
-    "categorySlug": "jagd-tiere-hunting",
-    "stageSlug": "food_farming_animals"
-  },
-  {
-    "id": "jagd-tiere-hunting-vPVyWbT4hh0",
-    "title": "Kurzanleitung – 9000 Schrott",
-    "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-    "youtubeId": "vPVyWbT4hh0",
     "categorySlug": "jagd-tiere-hunting",
     "stageSlug": "food_farming_animals"
   },
@@ -8615,14 +7223,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "food_farming_animals"
   },
   {
-    "id": "angeln-fishing-xX8rUXQobxA",
-    "title": "Bestes sicheres Scrap",
-    "url": "https://www.youtube.com/watch?v=xX8rUXQobxA",
-    "youtubeId": "xX8rUXQobxA",
-    "categorySlug": "angeln-fishing",
-    "stageSlug": "food_farming_animals"
-  },
-  {
     "id": "angeln-fishing-gNMutNFURFE",
     "title": "How to catch Every Fish",
     "url": "https://www.youtube.com/watch?v=gNMutNFURFE",
@@ -8679,22 +7279,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "food_farming_animals"
   },
   {
-    "id": "angeln-fishing-NjFT0Qa3L20",
-    "title": "Werde reich mit deiner Basis",
-    "url": "https://www.youtube.com/watch?v=NjFT0Qa3L20",
-    "youtubeId": "NjFT0Qa3L20",
-    "categorySlug": "angeln-fishing",
-    "stageSlug": "food_farming_animals"
-  },
-  {
-    "id": "angeln-fishing-vPVyWbT4hh0",
-    "title": "Kurzanleitung – 9000 Schrott",
-    "url": "https://www.youtube.com/watch?v=vPVyWbT4hh0",
-    "youtubeId": "vPVyWbT4hh0",
-    "categorySlug": "angeln-fishing",
-    "stageSlug": "food_farming_animals"
-  },
-  {
     "id": "angeln-fishing-9pYMdwIdNJo",
     "title": "Top 3 Easy Beach Fishing",
     "url": "https://www.youtube.com/watch?v=9pYMdwIdNJo",
@@ -8719,14 +7303,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "food_farming_animals"
   },
   {
-    "id": "nahrung-kochen-h-hner-kompost-ewj1d-hy0ao",
-    "title": "Ultimativer Kuchen-Koch-Leitfaden",
-    "url": "https://www.youtube.com/watch?v=ewj1d-hy0ao",
-    "youtubeId": "ewj1d-hy0ao",
-    "categorySlug": "nahrung-kochen-h-hner-kompost",
-    "stageSlug": "food_farming_animals"
-  },
-  {
     "id": "nahrung-kochen-h-hner-kompost-yTBzyDbHfEs",
     "title": "How To Cook Food",
     "url": "https://www.youtube.com/watch?v=yTBzyDbHfEs",
@@ -8735,26 +7311,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "food_farming_animals"
   },
   {
-    "id": "nahrung-kochen-h-hner-kompost-ZF3qACRDSw8",
-    "title": "Mischtabelle, Tee- und Beeren-Guide",
-    "url": "https://www.youtube.com/watch?v=ZF3qACRDSw8",
-    "youtubeId": "ZF3qACRDSw8",
-    "categorySlug": "nahrung-kochen-h-hner-kompost",
-    "stageSlug": "food_farming_animals"
-  },
-  {
     "id": "nahrung-kochen-h-hner-kompost-9exljSpM4CU",
     "title": "Rust für Anfänger – Nahrung",
     "url": "https://www.youtube.com/watch?v=9exljSpM4CU",
     "youtubeId": "9exljSpM4CU",
-    "categorySlug": "nahrung-kochen-h-hner-kompost",
-    "stageSlug": "food_farming_animals"
-  },
-  {
-    "id": "nahrung-kochen-h-hner-kompost-VCQNoaKTVtc",
-    "title": "How To Get Crafting Quality (Cooking)",
-    "url": "https://www.youtube.com/watch?v=VCQNoaKTVtc",
-    "youtubeId": "VCQNoaKTVtc",
     "categorySlug": "nahrung-kochen-h-hner-kompost",
     "stageSlug": "food_farming_animals"
   },
@@ -8787,14 +7347,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Die 10 wichtigsten Stromkreise",
     "url": "https://www.youtube.com/watch?v=UBiDjyjtSaM",
     "youtubeId": "UBiDjyjtSaM",
-    "categorySlug": "nahrung-kochen-h-hner-kompost",
-    "stageSlug": "food_farming_animals"
-  },
-  {
-    "id": "nahrung-kochen-h-hner-kompost-fvRAZ0rF3Q8",
-    "title": "What Every Electrical Component",
-    "url": "https://www.youtube.com/watch?v=fvRAZ0rF3Q8",
-    "youtubeId": "fvRAZ0rF3Q8",
     "categorySlug": "nahrung-kochen-h-hner-kompost",
     "stageSlug": "food_farming_animals"
   },
@@ -8879,14 +7431,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "food_farming_animals"
   },
   {
-    "id": "nahrung-kochen-h-hner-kompost-fPk-fyP9MFM",
-    "title": "Ultimate Beginner's Guide",
-    "url": "https://www.youtube.com/watch?v=fPk-fyP9MFM",
-    "youtubeId": "fPk-fyP9MFM",
-    "categorySlug": "nahrung-kochen-h-hner-kompost",
-    "stageSlug": "food_farming_animals"
-  },
-  {
     "id": "nahrung-kochen-h-hner-kompost-R4WIXh-c5eI",
     "title": "Stromerzeugung & -speicherung",
     "url": "https://www.youtube.com/watch?v=R4WIXh-c5eI",
@@ -8907,14 +7451,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Rust-Experte: beste Setups",
     "url": "https://www.youtube.com/watch?v=oW9bPJO3CcM",
     "youtubeId": "oW9bPJO3CcM",
-    "categorySlug": "nahrung-kochen-h-hner-kompost",
-    "stageSlug": "food_farming_animals"
-  },
-  {
-    "id": "nahrung-kochen-h-hner-kompost-oWd7t7Cy1fY",
-    "title": "Ultimativer Industrieleitfaden",
-    "url": "https://www.youtube.com/watch?v=oWd7t7Cy1fY",
-    "youtubeId": "oWd7t7Cy1fY",
     "categorySlug": "nahrung-kochen-h-hner-kompost",
     "stageSlug": "food_farming_animals"
   },
@@ -9087,114 +7623,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "food_farming_animals"
   },
   {
-    "id": "elektrik-electricity-SxwIHO4iCa0",
-    "title": "Rust Elektrizitätshandbuch – Vom Anfänger zum Profi",
-    "url": "https://www.youtube.com/watch?v=SxwIHO4iCa0",
-    "youtubeId": "SxwIHO4iCa0",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-5yZWc8VAX9A",
-    "title": "The BEST Rust Electricity Guide for Beginners",
-    "url": "https://www.youtube.com/watch?v=5yZWc8VAX9A",
-    "youtubeId": "5yZWc8VAX9A",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-UBiDjyjtSaM",
-    "title": "Die 10 wichtigsten Stromkreise in Rust",
-    "url": "https://www.youtube.com/watch?v=UBiDjyjtSaM",
-    "youtubeId": "UBiDjyjtSaM",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-ulfq_qr-DvA",
-    "title": "5 essenzielle Stromkreise, die jeder Rust-Spieler kennen muss",
-    "url": "https://www.youtube.com/watch?v=ulfq_qr-DvA",
-    "youtubeId": "ulfq_qr-DvA",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-XCsIUd_UVz8",
-    "title": "Ultimate Electricity Guide – Beginner To Pro",
-    "url": "https://www.youtube.com/watch?v=XCsIUd_UVz8",
-    "youtubeId": "XCsIUd_UVz8",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-dHawUz3q-Oo",
-    "title": "Das EINZIGE Rust-Sortiersystem-Tutorial",
-    "url": "https://www.youtube.com/watch?v=dHawUz3q-Oo",
-    "youtubeId": "dHawUz3q-Oo",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-fvRAZ0rF3Q8",
-    "title": "What Every Electrical Component Does in Rust",
-    "url": "https://www.youtube.com/watch?v=fvRAZ0rF3Q8",
-    "youtubeId": "fvRAZ0rF3Q8",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-eJCmG1M9q_4",
-    "title": "Rust advanced electricity",
-    "url": "https://www.youtube.com/watch?v=eJCmG1M9q_4",
-    "youtubeId": "eJCmG1M9q_4",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-ZjjGlpC-Lf4",
-    "title": "Rust Power Distribution And Logic Flow",
-    "url": "https://www.youtube.com/watch?v=ZjjGlpC-Lf4",
-    "youtubeId": "ZjjGlpC-Lf4",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity--0BR8BN5WGg",
-    "title": "Beginners Guide To Electricity – Understanding Basics",
-    "url": "https://www.youtube.com/watch?v=-0BR8BN5WGg",
-    "youtubeId": "-0BR8BN5WGg",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-p4MyY_FuPMw",
-    "title": "RUST Electrical – How To WIRE LIKE A PRO",
-    "url": "https://www.youtube.com/watch?v=p4MyY_FuPMw",
-    "youtubeId": "p4MyY_FuPMw",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
     "id": "elektrik-electricity-HgpRufq9oJw",
     "title": "Ultimate Guide to Electric Furnace Automation",
     "url": "https://www.youtube.com/watch?v=HgpRufq9oJw",
     "youtubeId": "HgpRufq9oJw",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-ixzQazNVL80",
-    "title": "RUST 101: Electricity Guide – Solar Panels",
-    "url": "https://www.youtube.com/watch?v=ixzQazNVL80",
-    "youtubeId": "ixzQazNVL80",
-    "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "elektrik-electricity-3a2i9bU9WJU",
-    "title": "Pushing Base Limits With Rust Electricity",
-    "url": "https://www.youtube.com/watch?v=3a2i9bU9WJU",
-    "youtubeId": "3a2i9bU9WJU",
     "categorySlug": "elektrik-electricity",
     "stageSlug": "base_systems"
   },
@@ -9212,86 +7644,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "url": "https://www.youtube.com/watch?v=87JewNRuKMs",
     "youtubeId": "87JewNRuKMs",
     "categorySlug": "elektrik-electricity",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-KcTqG_2YD-g",
-    "title": "Rust Modular Sorting System V2 Tutorial",
-    "url": "https://www.youtube.com/watch?v=KcTqG_2YD-g",
-    "youtubeId": "KcTqG_2YD-g",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-Fz_HkoeXH2g",
-    "title": "The Most EFFICIENT Way to Organize Your Loot",
-    "url": "https://www.youtube.com/watch?v=Fz_HkoeXH2g",
-    "youtubeId": "Fz_HkoeXH2g",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-EDvZ21gcNgU",
-    "title": "The best auto-sorter design – Rust Tutorial",
-    "url": "https://www.youtube.com/watch?v=EDvZ21gcNgU",
-    "youtubeId": "EDvZ21gcNgU",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-jWI6dCUm4Jc",
-    "title": "Rust Auto Sorting System – NEVER Mess Up",
-    "url": "https://www.youtube.com/watch?v=jWI6dCUm4Jc",
-    "youtubeId": "jWI6dCUm4Jc",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-oW9bPJO3CcM",
-    "title": "RUST-Experte verrät die besten Geheimnisse",
-    "url": "https://www.youtube.com/watch?v=oW9bPJO3CcM",
-    "youtubeId": "oW9bPJO3CcM",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-oWd7t7Cy1fY",
-    "title": "Ultimativer Industrieleitfaden – So automatisierst du",
-    "url": "https://www.youtube.com/watch?v=oWd7t7Cy1fY",
-    "youtubeId": "oWd7t7Cy1fY",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-uAeHH0INIFI",
-    "title": "Meistern Sie Rust INDUSTRIELLE Kombinierer",
-    "url": "https://www.youtube.com/watch?v=uAeHH0INIFI",
-    "youtubeId": "uAeHH0INIFI",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-80LCDpEFjCE",
-    "title": "Industrieller Handwerker Rust: Automatisierung",
-    "url": "https://www.youtube.com/watch?v=80LCDpEFjCE",
-    "youtubeId": "80LCDpEFjCE",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-uXfRoMIddeQ",
-    "title": "Die einfache Anleitung zur vollautomatischen Basis",
-    "url": "https://www.youtube.com/watch?v=uXfRoMIddeQ",
-    "youtubeId": "uXfRoMIddeQ",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-bv-YJiHAvhc",
-    "title": "The Auto Sorting System of Your Dreams",
-    "url": "https://www.youtube.com/watch?v=bv-YJiHAvhc",
-    "youtubeId": "bv-YJiHAvhc",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
     "stageSlug": "base_systems"
   },
   {
@@ -9327,14 +7679,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "base_systems"
   },
   {
-    "id": "industrie-system-f-rderb-nder-pipes-sorter-dHawUz3q-Oo",
-    "title": "Das EINZIGE Rust-Sortiersystem-Tutorial",
-    "url": "https://www.youtube.com/watch?v=dHawUz3q-Oo",
-    "youtubeId": "dHawUz3q-Oo",
-    "categorySlug": "industrie-system-f-rderb-nder-pipes-sorter",
-    "stageSlug": "base_systems"
-  },
-  {
     "id": "industrie-system-f-rderb-nder-pipes-sorter-T3kgpLryzmI",
     "title": "Sorters and Conveyors Tutorial",
     "url": "https://www.youtube.com/watch?v=T3kgpLryzmI",
@@ -9347,14 +7691,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Traps & Turrets – Defence & Base Guide",
     "url": "https://www.youtube.com/watch?v=kNQljV77PgQ",
     "youtubeId": "kNQljV77PgQ",
-    "categorySlug": "auto-turret-flame-turret-shotgun-trap",
-    "stageSlug": "vehicles"
-  },
-  {
-    "id": "auto-turret-flame-turret-shotgun-trap-WcAOA9PiJwU",
-    "title": "The Auto Turret & Setup Guide – Rust Tutorial",
-    "url": "https://www.youtube.com/watch?v=WcAOA9PiJwU",
-    "youtubeId": "WcAOA9PiJwU",
     "categorySlug": "auto-turret-flame-turret-shotgun-trap",
     "stageSlug": "vehicles"
   },
@@ -9475,14 +7811,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Rust Tips – How To Get Explosives FAST!",
     "url": "https://www.youtube.com/watch?v=cqRTbM7hOfc",
     "youtubeId": "cqRTbM7hOfc",
-    "categorySlug": "sprengstoff-munition-craften",
-    "stageSlug": "combat_raiding"
-  },
-  {
-    "id": "sprengstoff-munition-craften-_T5adqyJdXg",
-    "title": "How to Craft Explosives in Rust (Step-by-Step)",
-    "url": "https://www.youtube.com/watch?v=_T5adqyJdXg",
-    "youtubeId": "_T5adqyJdXg",
     "categorySlug": "sprengstoff-munition-craften",
     "stageSlug": "combat_raiding"
   },
@@ -9639,14 +7967,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "alle-monumente-bersicht-Lb0jzj2QUZk",
-    "title": "Rust Monuments",
-    "url": "https://www.youtube.com/watch?v=Lb0jzj2QUZk",
-    "youtubeId": "Lb0jzj2QUZk",
-    "categorySlug": "alle-monumente-bersicht",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "alle-monumente-bersicht-geW88NvTzPI",
     "title": "Leitfaden zu allen Fundorten der Monumente",
     "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
@@ -9703,14 +8023,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "alle-monumente-bersicht-kr0spV5-NRI",
-    "title": "How to 100% PROGRESS in Rust 2025",
-    "url": "https://www.youtube.com/watch?v=kr0spV5-NRI",
-    "youtubeId": "kr0spV5-NRI",
-    "categorySlug": "alle-monumente-bersicht",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "alle-monumente-bersicht-gOqiN2sHTzY",
     "title": "Big meta changes, BP frags, New monuments",
     "url": "https://www.youtube.com/watch?v=gOqiN2sHTzY",
@@ -9763,14 +8075,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Airfield Monument Loot & Puzzle Guide",
     "url": "https://www.youtube.com/watch?v=Nmv0_y7X6zo",
     "youtubeId": "Nmv0_y7X6zo",
-    "categorySlug": "airfield",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "airfield-Xr7AvpLUnRo",
-    "title": "Airfield Monument – Loot & Puzzle Guide 2025",
-    "url": "https://www.youtube.com/watch?v=Xr7AvpLUnRo",
-    "youtubeId": "Xr7AvpLUnRo",
     "categorySlug": "airfield",
     "stageSlug": "monuments_keycards"
   },
@@ -9871,14 +8175,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "launch-site-Inn345Rwd8I",
-    "title": "The ULTIMATE Tier 3 Monuments Guide",
-    "url": "https://www.youtube.com/watch?v=Inn345Rwd8I",
-    "youtubeId": "Inn345Rwd8I",
-    "categorySlug": "launch-site",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "launch-site-YFCFr2oKCUk",
     "title": "Launch Site Red Card Puzzle Guide",
     "url": "https://www.youtube.com/watch?v=YFCFr2oKCUk",
@@ -9891,14 +8187,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Launch Site Keycard Puzzle Tutorial",
     "url": "https://www.youtube.com/watch?v=tiSYf3mCyzw",
     "youtubeId": "tiSYf3mCyzw",
-    "categorySlug": "launch-site",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "launch-site-geW88NvTzPI",
-    "title": "ALL Monument Keycard Puzzle Locations",
-    "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
-    "youtubeId": "geW88NvTzPI",
     "categorySlug": "launch-site",
     "stageSlug": "monuments_keycards"
   },
@@ -9967,14 +8255,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "military-tunnels-Inn345Rwd8I",
-    "title": "The ULTIMATE Tier 3 Monuments Guide",
-    "url": "https://www.youtube.com/watch?v=Inn345Rwd8I",
-    "youtubeId": "Inn345Rwd8I",
-    "categorySlug": "military-tunnels",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "military-tunnels-OIImYNdnz7w",
     "title": "Military Tunnels Full Puzzle Walkthrough",
     "url": "https://www.youtube.com/watch?v=OIImYNdnz7w",
@@ -10027,14 +8307,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "ULTIMATE Rust Water Treatment Guide 2026",
     "url": "https://www.youtube.com/watch?v=9Qg6Istthxs",
     "youtubeId": "9Qg6Istthxs",
-    "categorySlug": "water-treatment-plant",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "water-treatment-plant-FICzFsiiA5k",
-    "title": "Sewer Branch Monument – Loot & Puzzle Guide",
-    "url": "https://www.youtube.com/watch?v=FICzFsiiA5k",
-    "youtubeId": "FICzFsiiA5k",
     "categorySlug": "water-treatment-plant",
     "stageSlug": "monuments_keycards"
   },
@@ -10183,14 +8455,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "power-plant-geW88NvTzPI",
-    "title": "ALL Monument Keycard Puzzle Locations",
-    "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
-    "youtubeId": "geW88NvTzPI",
-    "categorySlug": "power-plant",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "power-plant-svpV9z-QN_Y",
     "title": "Power Plant Keycard Puzzle in 160 Seconds",
     "url": "https://www.youtube.com/watch?v=svpV9z-QN_Y",
@@ -10247,14 +8511,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "harbor-geW88NvTzPI",
-    "title": "ALL Monument Keycard Puzzle Locations",
-    "url": "https://www.youtube.com/watch?v=geW88NvTzPI",
-    "youtubeId": "geW88NvTzPI",
-    "categorySlug": "harbor",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "harbor-n0W33_8XA0g",
     "title": "Harbor Puzzle Guide in Rust",
     "url": "https://www.youtube.com/watch?v=n0W33_8XA0g",
@@ -10284,14 +8540,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "url": "https://www.youtube.com/watch?v=mn6ypbkuNhQ",
     "youtubeId": "mn6ypbkuNhQ",
     "categorySlug": "harbor",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer-u6zHvXaKQaA",
-    "title": "Small Rust Monuments Guide – Everything You Need",
-    "url": "https://www.youtube.com/watch?v=u6zHvXaKQaA",
-    "youtubeId": "u6zHvXaKQaA",
-    "categorySlug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
     "stageSlug": "monuments_keycards"
   },
   {
@@ -10339,14 +8587,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "Rust Monument Guide – The Junkyard",
     "url": "https://www.youtube.com/watch?v=7NKv6p9P2CI",
     "youtubeId": "7NKv6p9P2CI",
-    "categorySlug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer-FICzFsiiA5k",
-    "title": "Sewer Branch Monument – Loot & Puzzle Guide",
-    "url": "https://www.youtube.com/watch?v=FICzFsiiA5k",
-    "youtubeId": "FICzFsiiA5k",
     "categorySlug": "kleine-monumente-gas-station-supermarket-junkyard-satellite-sewer",
     "stageSlug": "monuments_keycards"
   },
@@ -10471,14 +8711,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "giant-excavator-Inn345Rwd8I",
-    "title": "The ULTIMATE Tier 3 Monuments Guide",
-    "url": "https://www.youtube.com/watch?v=Inn345Rwd8I",
-    "youtubeId": "Inn345Rwd8I",
-    "categorySlug": "giant-excavator",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "giant-excavator-BXLNJgKZles",
     "title": "Rust Monument Guide – The Large Excavator",
     "url": "https://www.youtube.com/watch?v=BXLNJgKZles",
@@ -10491,14 +8723,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "RUST EXCAVATOR PIT MONUMENT GUIDE",
     "url": "https://www.youtube.com/watch?v=5Yu3sbY-_2g",
     "youtubeId": "5Yu3sbY-_2g",
-    "categorySlug": "giant-excavator",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "giant-excavator-AYymth531fk",
-    "title": "How to use The GIANT EXCAVATOR in Rust",
-    "url": "https://www.youtube.com/watch?v=AYymth531fk",
-    "youtubeId": "AYymth531fk",
     "categorySlug": "giant-excavator",
     "stageSlug": "monuments_keycards"
   },
@@ -10767,22 +8991,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "monuments_keycards"
   },
   {
-    "id": "oil-rig-small-large-u6zHvXaKQaA",
-    "title": "Small Rust Monuments Guide – Everything",
-    "url": "https://www.youtube.com/watch?v=u6zHvXaKQaA",
-    "youtubeId": "u6zHvXaKQaA",
-    "categorySlug": "oil-rig-small-large",
-    "stageSlug": "monuments_keycards"
-  },
-  {
-    "id": "oil-rig-small-large-GXHn0NGvfNk",
-    "title": "Harbor Monument Guide – Small and Large",
-    "url": "https://www.youtube.com/watch?v=GXHn0NGvfNk",
-    "youtubeId": "GXHn0NGvfNk",
-    "categorySlug": "oil-rig-small-large",
-    "stageSlug": "monuments_keycards"
-  },
-  {
     "id": "cargo-ship-containerschiff-DHMTfWCnYcs",
     "title": "The Cargo Ship Guide – Rust Tutorial",
     "url": "https://www.youtube.com/watch?v=DHMTfWCnYcs",
@@ -10983,14 +9191,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "events_bosses"
   },
   {
-    "id": "bradley-apc-panzer-besiegen-kWEb_lX1orc",
-    "title": "Taking Bradley with a Drone and C4",
-    "url": "https://www.youtube.com/watch?v=kWEb_lX1orc",
-    "youtubeId": "kWEb_lX1orc",
-    "categorySlug": "bradley-apc-panzer-besiegen",
-    "stageSlug": "events_bosses"
-  },
-  {
     "id": "bradley-apc-panzer-besiegen-pdxfIVdk2iQ",
     "title": "How To Take Bradley – Rust Tutorial",
     "url": "https://www.youtube.com/watch?v=pdxfIVdk2iQ",
@@ -11111,14 +9311,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "events_bosses"
   },
   {
-    "id": "attack-helicopter-B-UbBrHbAh0",
-    "title": "NEW Patrol Helicopter & Tower Guide",
-    "url": "https://www.youtube.com/watch?v=B-UbBrHbAh0",
-    "youtubeId": "B-UbBrHbAh0",
-    "categorySlug": "attack-helicopter",
-    "stageSlug": "events_bosses"
-  },
-  {
     "id": "attack-helicopter-TvID5ytf-nI",
     "title": "How to Use Flares in the Attack Heli",
     "url": "https://www.youtube.com/watch?v=TvID5ytf-nI",
@@ -11219,14 +9411,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "title": "How to Make a Car in Rust Quick Guide",
     "url": "https://www.youtube.com/watch?v=3JHZjZ9NAvs",
     "youtubeId": "3JHZjZ9NAvs",
-    "categorySlug": "modular-cars-autos",
-    "stageSlug": "vehicles"
-  },
-  {
-    "id": "modular-cars-autos-eihAv_MueUQ",
-    "title": "The Best Vehicle Build In Rust 2024",
-    "url": "https://www.youtube.com/watch?v=eihAv_MueUQ",
-    "youtubeId": "eihAv_MueUQ",
     "categorySlug": "modular-cars-autos",
     "stageSlug": "vehicles"
   },
@@ -11335,26 +9519,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "vehicles"
   },
   {
-    "id": "u-boote-submarines-Yj38XRHpD_o",
-    "title": "Underwater Labs Guide – Rust Tutorial",
-    "url": "https://www.youtube.com/watch?v=Yj38XRHpD_o",
-    "youtubeId": "Yj38XRHpD_o",
-    "categorySlug": "u-boote-submarines",
-    "stageSlug": "vehicles"
-  },
-  {
     "id": "u-boote-submarines-5cgKQhsgGHA",
     "title": "How to Use Torpedoes in Rust",
     "url": "https://www.youtube.com/watch?v=5cgKQhsgGHA",
     "youtubeId": "5cgKQhsgGHA",
-    "categorySlug": "u-boote-submarines",
-    "stageSlug": "vehicles"
-  },
-  {
-    "id": "u-boote-submarines-bfxdIUg4FcE",
-    "title": "Rust Underwater Labs Guide – 2 Minute Tutorial",
-    "url": "https://www.youtube.com/watch?v=bfxdIUg4FcE",
-    "youtubeId": "bfxdIUg4FcE",
     "categorySlug": "u-boote-submarines",
     "stageSlug": "vehicles"
   },
@@ -11615,14 +9783,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "z-ge-workcart-above-ground-rail-ntoudT6eZuA",
-    "title": "Train Yard Monument Loot & Puzzle Guide",
-    "url": "https://www.youtube.com/watch?v=ntoudT6eZuA",
-    "youtubeId": "ntoudT6eZuA",
-    "categorySlug": "z-ge-workcart-above-ground-rail",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "z-ge-workcart-above-ground-rail--6mFK1Tb9eA",
     "title": "Freight Transit Line Guide – Rust Tutorial",
     "url": "https://www.youtube.com/watch?v=-6mFK1Tb9eA",
@@ -11639,26 +9799,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "start_here"
   },
   {
-    "id": "z-ge-workcart-above-ground-rail-a30ETOIV4Ss",
-    "title": "NEW Train Event – Train Yard Monument",
-    "url": "https://www.youtube.com/watch?v=a30ETOIV4Ss",
-    "youtubeId": "a30ETOIV4Ss",
-    "categorySlug": "z-ge-workcart-above-ground-rail",
-    "stageSlug": "start_here"
-  },
-  {
     "id": "z-ge-workcart-above-ground-rail-uE_oQy121I8",
     "title": "Rust Train Yard Expansion Overview",
     "url": "https://www.youtube.com/watch?v=uE_oQy121I8",
     "youtubeId": "uE_oQy121I8",
-    "categorySlug": "z-ge-workcart-above-ground-rail",
-    "stageSlug": "start_here"
-  },
-  {
-    "id": "z-ge-workcart-above-ground-rail-dOdFE3FI6l0",
-    "title": "Ultimate Rust TRAINYARD Puzzle Guide",
-    "url": "https://www.youtube.com/watch?v=dOdFE3FI6l0",
-    "youtubeId": "dOdFE3FI6l0",
     "categorySlug": "z-ge-workcart-above-ground-rail",
     "stageSlug": "start_here"
   },
@@ -11671,26 +9815,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "combat_raiding"
   },
   {
-    "id": "raiding-guide-kosten-basics-MoiAyqT6UyA",
-    "title": "Ultimate Raiding Guide – Most Efficient Way",
-    "url": "https://www.youtube.com/watch?v=MoiAyqT6UyA",
-    "youtubeId": "MoiAyqT6UyA",
-    "categorySlug": "raiding-guide-kosten-basics",
-    "stageSlug": "combat_raiding"
-  },
-  {
     "id": "raiding-guide-kosten-basics-Ny7fL1RQPoY",
     "title": "Ultimate Solo Raiding Guide – Best Strategies",
     "url": "https://www.youtube.com/watch?v=Ny7fL1RQPoY",
     "youtubeId": "Ny7fL1RQPoY",
-    "categorySlug": "raiding-guide-kosten-basics",
-    "stageSlug": "combat_raiding"
-  },
-  {
-    "id": "raiding-guide-kosten-basics-XWlNXkitj7o",
-    "title": "NEW Raiding META? – Ultimate Primitive Raiding",
-    "url": "https://www.youtube.com/watch?v=XWlNXkitj7o",
-    "youtubeId": "XWlNXkitj7o",
     "categorySlug": "raiding-guide-kosten-basics",
     "stageSlug": "combat_raiding"
   },
@@ -11735,14 +9863,6 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "combat_raiding"
   },
   {
-    "id": "wie-raiden-sprengstoff-einsetzen-MoiAyqT6UyA",
-    "title": "Ultimate Raiding Guide – Most Efficient Way",
-    "url": "https://www.youtube.com/watch?v=MoiAyqT6UyA",
-    "youtubeId": "MoiAyqT6UyA",
-    "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-    "stageSlug": "combat_raiding"
-  },
-  {
     "id": "wie-raiden-sprengstoff-einsetzen-7VrvVsXeTaQ",
     "title": "Rust How to Raid 2021",
     "url": "https://www.youtube.com/watch?v=7VrvVsXeTaQ",
@@ -11751,50 +9871,10 @@ export const ALL_RUST_GUIDE_VIDEOS: RustGuideVideo[] = [
     "stageSlug": "combat_raiding"
   },
   {
-    "id": "wie-raiden-sprengstoff-einsetzen-Q3sZdKLzSgE",
-    "title": "Raiding Guide – Rust Tutorial",
-    "url": "https://www.youtube.com/watch?v=Q3sZdKLzSgE",
-    "youtubeId": "Q3sZdKLzSgE",
-    "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-    "stageSlug": "combat_raiding"
-  },
-  {
-    "id": "wie-raiden-sprengstoff-einsetzen-Ny7fL1RQPoY",
-    "title": "Ultimate Solo Raiding Guide",
-    "url": "https://www.youtube.com/watch?v=Ny7fL1RQPoY",
-    "youtubeId": "Ny7fL1RQPoY",
-    "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-    "stageSlug": "combat_raiding"
-  },
-  {
     "id": "wie-raiden-sprengstoff-einsetzen-McRM05n6Aig",
     "title": "How To Get And Use Explosives in Rust",
     "url": "https://www.youtube.com/watch?v=McRM05n6Aig",
     "youtubeId": "McRM05n6Aig",
-    "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-    "stageSlug": "combat_raiding"
-  },
-  {
-    "id": "wie-raiden-sprengstoff-einsetzen-sr0J7BZL55Y",
-    "title": "How To Rust: Day 44! – Using C4, Rockets",
-    "url": "https://www.youtube.com/watch?v=sr0J7BZL55Y",
-    "youtubeId": "sr0J7BZL55Y",
-    "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-    "stageSlug": "combat_raiding"
-  },
-  {
-    "id": "wie-raiden-sprengstoff-einsetzen-cqRTbM7hOfc",
-    "title": "Rust Tips – How To Get Explosives FAST!",
-    "url": "https://www.youtube.com/watch?v=cqRTbM7hOfc",
-    "youtubeId": "cqRTbM7hOfc",
-    "categorySlug": "wie-raiden-sprengstoff-einsetzen",
-    "stageSlug": "combat_raiding"
-  },
-  {
-    "id": "wie-raiden-sprengstoff-einsetzen-XWlNXkitj7o",
-    "title": "NEW Raiding META?",
-    "url": "https://www.youtube.com/watch?v=XWlNXkitj7o",
-    "youtubeId": "XWlNXkitj7o",
     "categorySlug": "wie-raiden-sprengstoff-einsetzen",
     "stageSlug": "combat_raiding"
   },

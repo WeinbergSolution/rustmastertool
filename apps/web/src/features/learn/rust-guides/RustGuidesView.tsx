@@ -52,7 +52,8 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
         <h1 className="hero-title">Rust Guides</h1>
         <p className="hero-subtitle">From beach spawn to endgame.</p>
         <div className="hero-stats">
-          <div className="stat-badge"><PlaySquare size={16} /> 713 Videos</div>
+          <div className="stat-badge"><PlaySquare size={16} /> 593 Unique Videos</div>
+          <div className="stat-badge">713 Collected Links</div>
           <div className="stat-badge">54 Categories</div>
           <div className="stat-badge">8 Stages</div>
         </div>

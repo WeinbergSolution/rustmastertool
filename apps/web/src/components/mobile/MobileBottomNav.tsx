@@ -1,6 +1,6 @@
-import { Home, Server, LineChart, BookOpen, Menu } from 'lucide-react';
+import { Home, Server, Crosshair, BookOpen, Menu } from 'lucide-react';
 
-export type MobileTab = 'home' | 'servers' | 'pulse' | 'learn' | 'more';
+export type MobileTab = 'home' | 'servers' | 'live' | 'learn' | 'more';
 
 interface MobileBottomNavProps {
   activeTab: MobileTab;
@@ -10,7 +10,7 @@ interface MobileBottomNavProps {
 const TABS: { key: MobileTab; label: string; icon: typeof Home }[] = [
   { key: 'home', label: 'Home', icon: Home },
   { key: 'servers', label: 'Servers', icon: Server },
-  { key: 'pulse', label: 'Pulse', icon: LineChart },
+  { key: 'live', label: 'Live', icon: Crosshair },
   { key: 'learn', label: 'Learn', icon: BookOpen },
   { key: 'more', label: 'More', icon: Menu },
 ];

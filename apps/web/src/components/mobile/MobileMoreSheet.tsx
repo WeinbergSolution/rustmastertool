@@ -3,7 +3,7 @@ import { useAuth } from '../../lib/auth/useAuth';
 import { BottomSheet } from './BottomSheet';
 import type { ViewState } from '../AppShell';
 import {
-  User, Eye, Settings, Activity, MapPin, Calculator, BookOpen, Filter, Map as MapIcon,
+  User, Eye, Settings, LineChart, MapPin, Calculator, BookOpen, Filter, Map as MapIcon,
   Lock, ChevronRight, LogOut,
 } from 'lucide-react';
 
@@ -27,9 +27,13 @@ const ACCOUNT_ROWS: Row[] = [
   { icon: Settings, label: 'Settings', view: 'settings' },
 ];
 
+// Secondary tools that are live but not primary bottom-nav features.
+const TOOL_ROWS: Row[] = [
+  { icon: LineChart, label: 'Server Pulse', view: 'server_pulse', note: 'Population & analytics' },
+];
+
 // Roadmap rows navigate to honest "coming soon" roadmap views — never dead buttons.
 const ROADMAP_ROWS: Row[] = [
-  { icon: Activity, label: 'Live Companion', view: 'current_connection', gated: true, note: 'Active server live context' },
   { icon: MapPin, label: 'Live Map', view: 'live_map', gated: true, note: 'Requires Rust+ pairing' },
   { icon: Calculator, label: 'Raid Calculator', view: 'raid_calculator', gated: true, note: 'Coming soon' },
   { icon: BookOpen, label: 'Session Battle Log', view: 'session_battle_log', gated: true, note: 'Coming soon' },
@@ -75,6 +79,9 @@ export function MobileMoreSheet({ open, onClose, onViewChange }: MobileMoreSheet
           <span className="mobile-more-row-label">Sign out</span>
         </button>
       )}
+
+      <div className="mobile-more-section-title" style={{ marginTop: '1.25rem' }}>Tools</div>
+      {TOOL_ROWS.map(renderRow)}
 
       <div className="mobile-more-section-title" style={{ marginTop: '1.25rem' }}>Coming soon · Roadmap</div>
       {ROADMAP_ROWS.map(renderRow)}

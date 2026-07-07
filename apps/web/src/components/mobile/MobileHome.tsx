@@ -52,8 +52,8 @@ export function MobileHome({ onViewChange }: MobileHomeProps) {
           <button className="mobile-phase-card" onClick={() => onViewChange('servers')}>
             <div className="mobile-phase-icon"><Server size={22} /></div>
             <div className="mobile-phase-name">Pre-Game</div>
-            <div className="mobile-phase-desc">Browse & analyze servers, maps and wipes.</div>
-            <div className="mobile-phase-cta">Open Servers <ChevronRight size={14} /></div>
+            <div className="mobile-phase-desc">Analyze seed, wipe age, map and monuments before you commit to a wipe.</div>
+            <div className="mobile-phase-cta">Choose a server <ChevronRight size={14} /></div>
           </button>
 
           <button className="mobile-phase-card" onClick={() => onViewChange('current_connection')}>

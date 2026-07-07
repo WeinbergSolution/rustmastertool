@@ -5,6 +5,7 @@ import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 interface ServerCardMobileProps {
   server: BattleMetricsServerSummary;
   onSelect?: () => void;
+  onSelectMap?: () => void;
 }
 
 function formatWipe(server: BattleMetricsServerSummary): string | null {
@@ -27,7 +28,7 @@ function formatWipe(server: BattleMetricsServerSummary): string | null {
  * tappable connect string. Compact rank / modded badges. No "pulse collecting",
  * no faked death curve (reserved for when health scores exist).
  */
-export function ServerCardMobile({ server, onSelect }: ServerCardMobileProps) {
+export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMobileProps) {
   const [copied, setCopied] = useState(false);
   const isOnline = server.status === 'online';
   const players = server.players || 0;
@@ -92,7 +93,15 @@ export function ServerCardMobile({ server, onSelect }: ServerCardMobileProps) {
             <span>{connect}</span>
           </button>
         ) : <span className="srv-connect srv-connect--none">Connect hidden</span>}
-        {hasMapData && <span className="srv-map-ind"><MapIcon size={12} /> Map</span>}
+        {hasMapData && (
+          <button
+            className="srv-map-ind"
+            onClick={(e) => { e.stopPropagation(); (onSelectMap || onSelect)?.(); }}
+            title="Open map preview"
+          >
+            <MapIcon size={12} /> Map
+          </button>
+        )}
       </div>
     </div>
   );

@@ -65,9 +65,10 @@ export function MobileLive({ onViewChange }: MobileLiveProps) {
       ) : (
         <div className="mobile-live-empty">
           <p className="mobile-live-empty-text">
-            {status === 'authenticated'
-              ? 'Choose an active server to start live tracking.'
-              : 'Sign in and choose an active server to start live tracking.'}
+            {status === 'authenticated' ? 'Set an active server first.' : 'Sign in, then set an active server first.'}
+          </p>
+          <p className="mobile-live-empty-sub">
+            Live tracking will use your active server for quick tools during the wipe.
           </p>
           <button className="btn-primary mobile-hero-cta" onClick={() => onViewChange('servers')}>
             <Compass size={18} />

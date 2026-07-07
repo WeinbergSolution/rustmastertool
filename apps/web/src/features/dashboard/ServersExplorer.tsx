@@ -36,6 +36,7 @@ export function ServersExplorer() {
   const cloudRepo = (status === 'authenticated' && import.meta.env.VITE_DATA_MODE === 'supabase') ? watchlistRepository : null;
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
 
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.tab', activeTab); }, [activeTab]);
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.query', searchQuery); }, [searchQuery]);
@@ -240,6 +241,12 @@ export function ServersExplorer() {
                   server={server}
                   onSelect={() => {
                     setSelectedServerId(server.id);
+                    setDetailFocus(null);
+                    window.sessionStorage.removeItem('serverExplorer.pendingAction');
+                  }}
+                  onSelectMap={() => {
+                    setSelectedServerId(server.id);
+                    setDetailFocus('map');
                     window.sessionStorage.removeItem('serverExplorer.pendingAction');
                   }}
                 />
@@ -269,11 +276,12 @@ export function ServersExplorer() {
           <ServerDetailPanel
             serverId={selectedServerId}
             isWatched={watchedServers.some(s => s.id === selectedServerId)}
-            onClose={() => setSelectedServerId(null)}
+            onClose={() => { setSelectedServerId(null); setDetailFocus(null); }}
             onToggleWatch={toggleWatch}
             onSetActiveServer={handleSetActiveServer}
             isActiveServer={servers.find(s => s.id === selectedServerId)?.internal_uuid ? servers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
             isAuthenticated={status === 'authenticated'}
+            initialFocus={detailFocus}
           />
         )}
       </>

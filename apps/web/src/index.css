@@ -691,6 +691,7 @@ html, body {
 }
 .mobile-live-text,
 .mobile-live-empty-text { font-size: 0.9rem; color: var(--text-muted); }
+.mobile-live-empty-sub { font-size: 0.82rem; color: var(--text-disabled); margin-top: -0.35rem; }
 .mobile-live-link {
   align-self: flex-start;
   display: inline-flex;
@@ -979,10 +980,12 @@ html, body {
   gap: 3px;
   font-size: 0.68rem;
   font-weight: 700;
+  font-family: inherit;
   color: var(--status-online);
   background: rgba(34, 197, 94, 0.1);
   border: 1px solid rgba(34, 197, 94, 0.25);
-  padding: 2px 7px;
+  padding: 4px 9px;
   border-radius: 999px;
+  cursor: pointer;
 }
 

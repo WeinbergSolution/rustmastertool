@@ -11,6 +11,7 @@ import { ServerPulseView } from '../features/dashboard/ServerPulseView';
 import { LearnHub } from '../features/learn/LearnHub';
 import { RustGuidesView } from '../features/learn/rust-guides/RustGuidesView';
 import { useIsMobile } from './mobile/useIsMobile';
+import { consumeLayerPop } from './mobile/useInAppBack';
 import { MobileAppShell } from './mobile/MobileAppShell';
 import { MobileHome } from './mobile/MobileHome';
 import { MobileLive } from './mobile/MobileLive';
@@ -68,6 +69,10 @@ export function AppShell() {
   useEffect(() => {
     if (!isMobile) return;
     const onPop = (e: PopStateEvent) => {
+      // If a layer (modal / sheet / detail) already handled this Back, do not
+      // also treat it as a view navigation — otherwise closing an overlay would
+      // wrongly jump back to a previous view.
+      if (consumeLayerPop()) return;
       const st = e.state as { __rmt?: boolean; kind?: string; view?: ViewState } | null;
       if (st?.__rmt && st.kind === 'view' && st.view && st.view !== currentViewRef.current) {
         viewPopRef.current = true;

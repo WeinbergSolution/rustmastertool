@@ -1,5 +1,21 @@
 import { useEffect, useRef } from 'react';
 
+// Set synchronously by a layer's popstate handler whenever it consumes a Back
+// event (closing a layer or absorbing its own synthetic back). Because layer
+// hooks live inside child components, their popstate listeners run BEFORE the
+// AppShell view-history listener; the view handler reads and clears this flag
+// to avoid mistaking a layer-close Back for a view navigation.
+let layerConsumedPop = false;
+
+/** True (and resets) if the most recent popstate was handled by a layer. */
+export function consumeLayerPop(): boolean {
+  if (layerConsumedPop) {
+    layerConsumedPop = false;
+    return true;
+  }
+  return false;
+}
+
 interface UseInAppBackOptions {
   /** Whether the layer (modal / sheet / detail) is currently open. */
   open: boolean;
@@ -74,6 +90,9 @@ export function useInAppBack({ open, onClose, enabled = true }: UseInAppBackOpti
     const onPop = (e: PopStateEvent) => {
       if (ignoreNextPopRef.current) {
         ignoreNextPopRef.current = false;
+        // Our own synthetic back (programmatic close) — mark it consumed so the
+        // view-history handler does not also react to it.
+        layerConsumedPop = true;
         return;
       }
       const state = e.state as { layerId?: string } | null;
@@ -81,6 +100,8 @@ export function useInAppBack({ open, onClose, enabled = true }: UseInAppBackOpti
       // popped (the new top state is no longer ours).
       if (openRef.current && isPushedRef.current && state?.layerId !== layerId) {
         isPushedRef.current = false;
+        // A layer close must never also be treated as a view navigation.
+        layerConsumedPop = true;
         onCloseRef.current();
       }
     };

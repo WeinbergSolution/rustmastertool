@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Topbar } from './Topbar';
 import { Sidebar } from './Sidebar';
 import { Dashboard } from '../features/dashboard/Dashboard';
@@ -42,6 +42,41 @@ export function AppShell() {
   useEffect(() => {
     window.sessionStorage.setItem('serverExplorer.view', currentView);
   }, [currentView]);
+
+  // --- Thin mobile view history so the browser Back button walks tab history
+  // instead of leaving the app. Desktop and sessionStorage are unaffected. ---
+  const currentViewRef = useRef(currentView);
+  currentViewRef.current = currentView;
+  const viewPopRef = useRef(false);   // true while a view change originates from popstate
+  const viewInitRef = useRef(false);
+
+  // Seed the current view as the base history entry (once, on mobile).
+  useEffect(() => {
+    if (!isMobile || viewInitRef.current) return;
+    window.history.replaceState({ __rmt: true, kind: 'view', view: currentViewRef.current }, '');
+    viewInitRef.current = true;
+  }, [isMobile]);
+
+  // Push a history entry on each mobile view change (unless it came from Back).
+  useEffect(() => {
+    if (!isMobile || !viewInitRef.current) return;
+    if (viewPopRef.current) { viewPopRef.current = false; return; }
+    window.history.pushState({ __rmt: true, kind: 'view', view: currentView }, '');
+  }, [currentView, isMobile]);
+
+  // Restore the view on Back when a 'view' history entry surfaces.
+  useEffect(() => {
+    if (!isMobile) return;
+    const onPop = (e: PopStateEvent) => {
+      const st = e.state as { __rmt?: boolean; kind?: string; view?: ViewState } | null;
+      if (st?.__rmt && st.kind === 'view' && st.view && st.view !== currentViewRef.current) {
+        viewPopRef.current = true;
+        setCurrentView(st.view);
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [isMobile]);
 
   // Shared view content used by BOTH the desktop and mobile shells.
   // Always-mounted views use display toggling to preserve internal state

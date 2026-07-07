@@ -10,6 +10,8 @@ import type {
   RustGuideCategory 
 } from './rustGuidesData';
 import type { ViewState } from '../../../components/AppShell';
+import { useIsMobile } from '../../../components/mobile/useIsMobile';
+import { useInAppBack } from '../../../components/mobile/useInAppBack';
 import './RustGuidesView.css';
 
 interface RustGuidesViewProps {
@@ -20,6 +22,10 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeStage, setActiveStage] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+
+  // Mobile browser Back closes the video modal first (stays inside Rust Guides).
+  useInAppBack({ open: activeVideoId !== null, onClose: () => setActiveVideoId(null), enabled: isMobile });
 
   // Memoized search filtering
   const filteredVideos = useMemo(() => {

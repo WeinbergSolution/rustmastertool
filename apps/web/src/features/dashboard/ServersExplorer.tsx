@@ -7,6 +7,7 @@ import { useAuth } from '../../lib/auth/useAuth';
 import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import { supabase } from '../../lib/supabaseClient';
 import { useIsMobile } from '../../components/mobile/useIsMobile';
+import { useInAppBack } from '../../components/mobile/useInAppBack';
 import { ServerCardMobile } from '../../components/mobile/ServerCardMobile';
 import { BottomSheet } from '../../components/mobile/BottomSheet';
 
@@ -37,6 +38,14 @@ export function ServersExplorer() {
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
+
+  // Mobile browser Back closes the filter sheet / server detail before leaving.
+  useInAppBack({ open: filtersOpen, onClose: () => setFiltersOpen(false), enabled: isMobile });
+  useInAppBack({
+    open: selectedServerId !== null,
+    onClose: () => { setSelectedServerId(null); setDetailFocus(null); },
+    enabled: isMobile,
+  });
 
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.tab', activeTab); }, [activeTab]);
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.query', searchQuery); }, [searchQuery]);

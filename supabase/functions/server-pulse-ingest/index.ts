@@ -14,6 +14,31 @@ interface IngestOptions {
   dryRun?: boolean;
 }
 
+function extractBattleMetricsNextUrl(payload: any): string | null {
+  if (!payload || !payload.links || typeof payload.links.next !== 'string') {
+    return null;
+  }
+  
+  const nextLink = payload.links.next.trim();
+  if (!nextLink) return null;
+
+  try {
+    if (nextLink.startsWith('http')) {
+      const url = new URL(nextLink);
+      if (url.hostname === 'api.battlemetrics.com') {
+        return url.toString();
+      }
+      return null;
+    } else {
+      const url = new URL(nextLink, 'https://api.battlemetrics.com');
+      return url.toString();
+    }
+  } catch (err) {
+    console.error('Failed to parse next URL', err);
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -276,13 +301,21 @@ Deno.serve(async (req) => {
         }
       }
 
-      endNextPageUrl = json.links?.next || null;
+      endNextPageUrl = extractBattleMetricsNextUrl(json);
       currentUrl = endNextPageUrl;
     }
 
     const finishedAt = new Date();
     const finalStatus = errors.length > 0 ? (serverUpsertAttempts > 0 ? 'partial_success' : 'failed') : 'success';
-    const noteStr = dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.";
+    let noteStr = dryRun ? "Dry run complete. No database writes occurred." : "Actual persisted rows may be lower due to database deduplication constraints.";
+    
+    if (!dryRun) {
+      if (endNextPageUrl) {
+        noteStr += " Pagination next link captured.";
+      } else {
+        noteStr += " No next link returned; resetting category window.";
+      }
+    }
     
     const endPage = startPage + Math.max(0, pagesProcessed - 1);
 

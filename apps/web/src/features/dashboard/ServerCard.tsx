@@ -1,4 +1,7 @@
-import { Map as MapIcon, Globe, Clock, ChevronRight } from 'lucide-react';
+import { Clock, Globe, Map as MapIcon, Image as ImageIcon, ChevronRight } from 'lucide-react';
+import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
+import { getServerTypeBadge } from './serverCardUtils';
+import './serverCards.css';
 
 export type ServerCardData = {
   id: string;
@@ -25,6 +28,8 @@ export type ServerCardData = {
 
 export function ServerCard({ server, onSelect }: { server: ServerCardData, onSelect?: () => void }) {
   const isOnline = server.status === 'online';
+  const badge = getServerTypeBadge(server as unknown as BattleMetricsServerSummary);
+  const mapThumbnailUrl = server.mapThumbnailUrl || server.mapImageUrl;
   const players = server.players || 0;
   const maxPlayers = server.maxPlayers || 1; // avoid div by 0
   const fillPercentage = Math.min(100, (players / maxPlayers) * 100);
@@ -54,14 +59,33 @@ export function ServerCard({ server, onSelect }: { server: ServerCardData, onSel
         {(server.queue ?? 0) > 0 && <span style={{ color: 'var(--status-warning)', fontSize: '0.75rem', fontWeight: 'bold' }}>Queue: {server.queue}</span>}
       </div>
 
+      {/* Center: Thumbnail */}
+      <div style={{ flexShrink: 0, width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {mapThumbnailUrl ? (
+          <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
+        ) : (
+          <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
+        )}
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', textAlign: 'center' }}>
+          {server.mapIdentitySeed ?? server.seed ?? 'Unknown'}<br/>{server.mapIdentitySize ?? server.mapSize ?? '?'}
+        </div>
+      </div>
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-        <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
           <span style={{ 
-            width: '10px', height: '10px', borderRadius: '50%', 
-            backgroundColor: isOnline ? 'var(--status-online)' : 'var(--status-offline)' 
-          }}></span>
-          {server.name}
-        </h4>
+            display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', 
+            backgroundColor: isOnline ? 'var(--status-success)' : 'var(--status-error)',
+            boxShadow: isOnline ? '0 0 8px rgba(74, 222, 128, 0.4)' : 'none'
+          }} title={isOnline ? 'Online' : 'Offline'} />
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{server.name}</h3>
+          {typeof server.rank === 'number' && (
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', backgroundColor: 'var(--bg-hover)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+              #{server.rank}
+            </span>
+          )}
+          <span className={`srv-type-badge srv-type-${badge.type}`} style={{ marginLeft: 'auto' }} title="Server Type">{badge.label}</span>
+        </div>
         
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -104,4 +128,3 @@ export function ServerCard({ server, onSelect }: { server: ServerCardData, onSel
     </div>
   );
 }
-

@@ -19,6 +19,12 @@ export interface BattleMetricsServerSummary {
   lastWipe?: string
   rustType?: string
   queue?: number
+  mapThumbnailUrl?: string | null
+  mapImageUrl?: string | null
+  mapIdentitySeed?: number | null
+  mapIdentitySize?: number | null
+  mapType?: string | null
+  isCustomMap?: boolean | null
 }
 
 export interface BattleMetricsServerDetail extends BattleMetricsServerSummary {

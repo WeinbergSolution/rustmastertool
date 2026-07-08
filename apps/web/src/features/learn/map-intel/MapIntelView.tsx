@@ -1,22 +1,88 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, Map, ShieldAlert, Box, X, Lightbulb } from 'lucide-react';
+import { ChevronLeft, Map, ShieldAlert, Box, X, Lightbulb, AlertTriangle } from 'lucide-react';
 import { MAP_MONUMENTS, MONUMENT_CATEGORIES } from './mapIntelData';
+import { DEEP_MONUMENT_DATA } from './mapIntelDeepData';
+import type { DeepMonumentData } from './mapIntelDeepData';
 import type { MapMonument } from './mapIntelData';
 import type { ViewState } from '../../../components/AppShell';
+import { MapIntelDetailModal } from './MapIntelDetailModal';
 import './MapIntelView.css';
 
 interface MapIntelViewProps {
   onViewChange: (view: ViewState) => void;
 }
 
+export type MergedMonument = {
+  id: string;
+  isDeep: boolean;
+  base?: MapMonument;
+  deep?: DeepMonumentData;
+  name: string;
+  categoryId: string;
+  needsReview: boolean;
+};
+
 export function MapIntelView({ onViewChange }: MapIntelViewProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedMonument, setSelectedMonument] = useState<MapMonument | null>(null);
+  const [selectedMonument, setSelectedMonument] = useState<MergedMonument | null>(null);
+
+  // Merge datasets
+  const allMergedMonuments = useMemo(() => {
+    const merged: MergedMonument[] = [];
+    const seenIds = new Set<string>();
+
+    // 1. Add all Deep Data
+    Object.values(DEEP_MONUMENT_DATA).forEach(deepItem => {
+      seenIds.add(deepItem.id);
+      const baseItem = MAP_MONUMENTS.find(m => m.id === deepItem.id);
+      merged.push({
+        id: deepItem.id,
+        isDeep: true,
+        deep: deepItem,
+        base: baseItem,
+        name: deepItem.name,
+        categoryId: deepItem.categoryId,
+        needsReview: deepItem.contentQuality.needsOwnerReview
+      });
+    });
+
+    // 2. Add remaining Base Data
+    MAP_MONUMENTS.forEach(baseItem => {
+      if (!seenIds.has(baseItem.id)) {
+        merged.push({
+          id: baseItem.id,
+          isDeep: false,
+          base: baseItem,
+          name: baseItem.name,
+          categoryId: baseItem.categoryId,
+          needsReview: !!baseItem.needsOwnerReview
+        });
+      }
+    });
+
+    return merged;
+  }, []);
 
   const filteredMonuments = useMemo(() => {
-    if (activeCategory === 'all') return MAP_MONUMENTS;
-    return MAP_MONUMENTS.filter(m => m.categoryId === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === 'all') return allMergedMonuments;
+    return allMergedMonuments.filter(m => m.categoryId === activeCategory);
+  }, [activeCategory, allMergedMonuments]);
+
+  // Asset Tile puzzle dots
+  const getPuzzleDots = (m: MergedMonument) => {
+    const dots: { color: string, label: string }[] = [];
+    if (m.isDeep && m.deep) {
+      if (m.deep.puzzle.requiredItems?.includes('Green Keycard')) dots.push({ color: '#5a9e5a', label: 'Green Card' });
+      if (m.deep.puzzle.requiredItems?.includes('Blue Keycard')) dots.push({ color: '#3d7ea6', label: 'Blue Card' });
+      if (m.deep.puzzle.requiredItems?.includes('Red Keycard')) dots.push({ color: '#c44545', label: 'Red Card' });
+      if (m.deep.puzzle.requiredItems?.some(i => i.includes('Fuse'))) dots.push({ color: '#d29922', label: 'Fuse' });
+    } else if (m.base) {
+      if (m.base.keycardsRequired.includes('green')) dots.push({ color: '#5a9e5a', label: 'Green Card' });
+      if (m.base.keycardsRequired.includes('blue')) dots.push({ color: '#3d7ea6', label: 'Blue Card' });
+      if (m.base.keycardsRequired.includes('red')) dots.push({ color: '#c44545', label: 'Red Card' });
+    }
+    return dots;
+  };
 
   return (
     <div className="map-intel-container">
@@ -33,8 +99,8 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
         <h1 className="hero-title">Map Intel</h1>
         <p className="hero-subtitle">Encyclopedia of Rust Monuments</p>
         <div className="hero-stats">
-          <div className="stat-badge"><Map size={16} /> {MAP_MONUMENTS.length} Monuments</div>
-          <div className="stat-badge"><ShieldAlert size={16} /> Knowledge Base</div>
+          <div className="stat-badge"><Map size={16} /> {allMergedMonuments.length} Locations</div>
+          <div className="stat-badge"><ShieldAlert size={16} /> {Object.keys(DEEP_MONUMENT_DATA).length} Deep Intel</div>
         </div>
       </header>
 
@@ -59,39 +125,45 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
       </div>
 
       {/* Grid */}
-      <div className="monument-grid">
+      <div className="monument-asset-grid">
         {filteredMonuments.map(monument => {
           const categoryName = MONUMENT_CATEGORIES.find(c => c.id === monument.categoryId)?.name || 'Unknown';
+          const dots = getPuzzleDots(monument);
+          const iconSrc = monument.isDeep && monument.deep?.imageUrl ? `/map-intel/${monument.deep.imageUrl}` : null;
           
           return (
             <div 
               key={monument.id} 
-              className="monument-card"
+              className="asset-tile"
+              data-category={monument.categoryId}
               onClick={() => setSelectedMonument(monument)}
             >
-              <div className="monument-image-placeholder">
-                <Map size={48} opacity={0.2} />
-              </div>
-              <div className="monument-card-content">
-                <div className="monument-card-header">
-                  <h3 className="monument-card-title">{monument.name}</h3>
-                </div>
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-                  <span className="monument-card-category">{categoryName}</span>
-                  {monument.confidence !== 'verified' && (
-                    <span className="monument-card-category" style={{ color: '#d29922' }}>{monument.confidence}</span>
+              {/* Top Bar: Category Badge + Puzzle Dots */}
+              <div className="asset-tile-top">
+                <div className="asset-category-badge">{categoryName.toUpperCase()}</div>
+                <div className="asset-dots">
+                  {monument.needsReview && (
+                    <div className="asset-dot review-dot" title="Needs Owner Review">?</div>
                   )}
-                  {monument.needsOwnerReview && (
-                    <span className="monument-card-category" style={{ color: '#d29922' }}>needs review</span>
-                  )}
-                </div>
-                <p className="monument-card-desc">{monument.explanation}</p>
-                
-                <div className="monument-card-meta">
-                  {monument.keycardsRequired.map(kc => (
-                    <div key={kc} className={`keycard-badge ${kc}`} title={`${kc} keycard required`} />
+                  {dots.map((d, i) => (
+                    <div key={i} className="asset-dot" style={{ backgroundColor: d.color }} title={d.label} />
                   ))}
                 </div>
+              </div>
+              
+              {/* Central Icon */}
+              <div className="asset-icon-wrapper">
+                {iconSrc ? (
+                  <img src={iconSrc} alt="" className="asset-svg-icon" />
+                ) : (
+                  <Map size={48} className="asset-fallback-icon" />
+                )}
+              </div>
+
+              {/* Bottom Bar: Title & Watermark */}
+              <div className="asset-tile-bottom">
+                <h3 className="asset-title">{monument.name}</h3>
+                <span className="asset-watermark">RustMasterTool · Map Intel</span>
               </div>
             </div>
           );
@@ -100,83 +172,12 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
 
       {/* Detail Modal */}
       {selectedMonument && (
-        <MonumentModal 
-          monument={selectedMonument} 
+        <MapIntelDetailModal 
+          deep={selectedMonument.deep}
+          base={selectedMonument.base}
           onClose={() => setSelectedMonument(null)} 
         />
       )}
-    </div>
-  );
-}
-
-function MonumentModal({ monument, onClose }: { monument: MapMonument, onClose: () => void }) {
-  const categoryName = MONUMENT_CATEGORIES.find(c => c.id === monument.categoryId)?.name || 'Unknown';
-
-  return (
-    <div className="monument-modal-overlay" onClick={onClose}>
-      <div className="monument-modal" onClick={e => e.stopPropagation()}>
-        <button className="monument-modal-close" onClick={onClose}>
-          <X size={20} />
-        </button>
-        
-        <div className="monument-modal-hero">
-          <Map size={64} opacity={0.1} />
-          {/* Note: Placeholder image used here. Real imagery requires backend parsing or external hosting. */}
-        </div>
-
-        <div className="monument-modal-body">
-          <h2>{monument.name}</h2>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span className="cat-badge">{categoryName}</span>
-            <span className="cat-badge" style={monument.confidence === 'verified' ? { color: '#3fb950' } : { color: '#d29922' }}>{monument.confidence}</span>
-            {monument.needsOwnerReview && (
-              <span className="cat-badge" style={{ color: '#d29922' }}>needs owner review</span>
-            )}
-          </div>
-          
-          <div className="monument-modal-section">
-            <p>{monument.explanation}</p>
-          </div>
-
-          <div className="monument-modal-section">
-            <h4><Box size={16} /> Loot & Progression</h4>
-            <p>{monument.lootRelevance}</p>
-          </div>
-
-          <div className="monument-modal-section">
-            <h4><ShieldAlert size={16} /> Radiation & Access</h4>
-            <p>{monument.radiationInfo}</p>
-            {monument.keycardsRequired.length > 0 && (
-              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <span style={{ fontSize: '14px', color: '#a0a0a0' }}>Keycards:</span>
-                {monument.keycardsRequired.map(kc => (
-                  <div key={kc} className={`keycard-badge ${kc}`} title={`${kc} keycard required`} />
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="monument-modal-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
-            <div>
-              <h4 style={{ color: '#5a9e5a' }}>Advantages</h4>
-              <ul>
-                {monument.advantages.map((adv, i) => <li key={i}>{adv}</li>)}
-              </ul>
-            </div>
-            <div>
-              <h4 style={{ color: '#ce422b' }}>Disadvantages</h4>
-              <ul>
-                {monument.disadvantages.map((dis, i) => <li key={i}>{dis}</li>)}
-              </ul>
-            </div>
-          </div>
-
-          <div className="tip-box">
-            <h4><Lightbulb size={16} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'text-bottom' }} /> Quick Tip</h4>
-            <p>{monument.quickTip}</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export type ServerCardData = {
   [key: string]: any;
 };
 
-export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onOpenMap }: { server: ServerCardData, isWatched?: boolean, isAuthenticated?: boolean, onToggleWatch?: () => void, onSelect?: () => void, onOpenMap?: () => void }) {
+export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onOpenMap }: { server: ServerCardData, isWatched?: boolean, isAuthenticated?: boolean, onToggleWatch?: () => void, onSelect?: () => void, onOpenMap?: (server: ServerCardData) => void }) {
   const isOnline = server.status === 'online';
   const badge = getServerTypeBadge(server as unknown as BattleMetricsServerSummary);
   const mapThumbnailUrl = server.mapThumbnailUrl || server.mapImageUrl;
@@ -52,10 +52,10 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
     if (onToggleWatch) onToggleWatch();
   };
 
-  const handleOpenMap = (event: React.MouseEvent | React.PointerEvent | React.TouchEvent) => {
+  const handleOpenMap = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    if (onOpenMap) onOpenMap();
+    if (onOpenMap) onOpenMap(server);
   };
   
   return (
@@ -169,10 +169,6 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
               title="Open parsed server map"
               aria-label="Open parsed server map"
               onClick={handleOpenMap}
-              onClickCapture={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
             >
               <MapIcon size={20} />
             </button>

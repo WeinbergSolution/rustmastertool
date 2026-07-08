@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
 import { ServerMapViewer } from '../map/ServerMapViewer';
@@ -46,6 +46,10 @@ export function ServersExplorer() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
   const [selectedMapServer, setSelectedMapServer] = useState<BattleMetricsServerSummary | null>(null);
+
+  const handleOpenMap = useCallback((server: any) => {
+    setSelectedMapServer(server);
+  }, []);
 
   const TARGET_VISIBLE_RESULTS = 50;
   const MAX_FILTER_SCAN_PAGES = 10;
@@ -356,7 +360,7 @@ export function ServersExplorer() {
                     setDetailFocus('map');
                     window.sessionStorage.removeItem('serverExplorer.pendingAction');
                   }}
-                  onOpenMap={() => setSelectedMapServer(server)}
+                  onOpenMap={handleOpenMap}
                 />
               ))}
               {nextPageUrl && (
@@ -951,7 +955,7 @@ export function ServersExplorer() {
                   setSelectedServerId(server.id);
                   window.sessionStorage.removeItem('serverExplorer.pendingAction');
                 }}
-                onOpenMap={() => setSelectedMapServer(server)}
+                onOpenMap={handleOpenMap}
               />
             ))}
             

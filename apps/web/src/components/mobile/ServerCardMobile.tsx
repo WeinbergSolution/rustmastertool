@@ -12,7 +12,7 @@ interface ServerCardMobileProps {
   onToggleWatch?: () => void;
   onSelect?: () => void;
   onSelectMap?: () => void;
-  onOpenMap?: () => void;
+  onOpenMap?: (server: any) => void;
 }
 
 function formatWipe(server: BattleMetricsServerSummary): string | null {
@@ -66,10 +66,10 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
     if (onToggleWatch) onToggleWatch();
   };
 
-  const handleOpenMap = (event: React.MouseEvent | React.PointerEvent | React.TouchEvent) => {
+  const handleOpenMap = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    if (onOpenMap) onOpenMap();
+    if (onOpenMap) onOpenMap(server);
     else if (onSelectMap) onSelectMap();
   };
 
@@ -151,10 +151,6 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
             className="srv-map-action"
             data-map-action="open-server-map"
             onClick={handleOpenMap}
-            onClickCapture={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
             title="Open parsed server map"
             aria-label="Open parsed server map"
           >

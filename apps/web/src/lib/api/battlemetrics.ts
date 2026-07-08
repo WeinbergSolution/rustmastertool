@@ -26,9 +26,6 @@ export interface BattleMetricsServerSummary {
   mapType?: string | null
   isCustomMap?: boolean | null
   monumentNames?: string[] | null
-  pve?: boolean
-  secure?: boolean
-  tags?: string[]
 }
 
 export interface BattleMetricsServerDetail extends BattleMetricsServerSummary {
@@ -100,10 +97,7 @@ export async function searchServers(options: SearchOptions | string): Promise<Ba
     queue: item.attributes.details?.rust_queued_players,
     mapSize: item.attributes.details?.rust_world_size,
     seed: item.attributes.details?.rust_world_seed,
-    lastWipe: item.attributes.details?.rust_last_wipe,
-    pve: item.attributes.details?.pve,
-    secure: item.attributes.details?.rust_secure,
-    tags: item.attributes.details?.tags
+    lastWipe: item.attributes.details?.rust_last_wipe
   })) || []
 
   return {

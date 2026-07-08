@@ -12,6 +12,7 @@ interface ServerCardMobileProps {
   onToggleWatch?: () => void;
   onSelect?: () => void;
   onSelectMap?: () => void;
+  onOpenMap?: (server: any) => void;
 }
 
 function formatWipe(server: BattleMetricsServerSummary): string | null {
@@ -28,7 +29,7 @@ function formatWipe(server: BattleMetricsServerSummary): string | null {
   return null;
 }
 
-export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onSelectMap }: ServerCardMobileProps) {
+export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onSelectMap, onOpenMap }: ServerCardMobileProps) {
   const [copied, setCopied] = useState(false);
   const isOnline = server.status === 'online';
   const players = server.players || 0;
@@ -65,8 +66,18 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
     if (onToggleWatch) onToggleWatch();
   };
 
+  const handleOpenMap = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (onOpenMap) onOpenMap(server);
+    else if (onSelectMap) onSelectMap();
+  };
+
   return (
-    <div className="srv-card" onClick={onSelect}>
+    <div className="srv-card" onClick={(e) => {
+      if ((e.target as HTMLElement).closest('[data-map-action="open-server-map"]')) return;
+      onSelect?.();
+    }}>
       <div className="srv-card-layout">
         <div className="srv-card-content">
           {/* Header */}
@@ -106,11 +117,15 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
         </div>
 
         {/* Thumbnail side */}
-        <div className="srv-card-thumb">
+        <div className="srv-card-thumb" style={{ position: 'relative' }}>
           {mapThumbnailUrl ? (
-            <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
+            <div style={{ position: 'relative' }}>
+              <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
+            </div>
           ) : (
-            <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
+            <div className="srv-card-image-placeholder" style={{ position: 'relative' }}>
+              <ImageIcon size={24} />
+            </div>
           )}
         </div>
       </div>
@@ -132,11 +147,14 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
         ) : <span className="srv-connect srv-connect--none">Connect hidden</span>}
         {hasMapData && (
           <button
-            className="srv-map-ind"
-            onClick={(e) => { e.stopPropagation(); (onSelectMap || onSelect)?.(); }}
-            title="Open map preview"
+            type="button"
+            className="srv-map-action"
+            data-map-action="open-server-map"
+            onClick={handleOpenMap}
+            title="Open parsed server map"
+            aria-label="Open parsed server map"
           >
-            <MapIcon size={12} /> Map
+            <MapIcon size={16} /> <span>Map</span>
           </button>
         )}
       </div>

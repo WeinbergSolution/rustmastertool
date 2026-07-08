@@ -27,7 +27,7 @@ export type ServerCardData = {
   [key: string]: any;
 };
 
-export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, onSelect }: { server: ServerCardData, isWatched?: boolean, isAuthenticated?: boolean, onToggleWatch?: () => void, onSelect?: () => void }) {
+export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onOpenMap }: { server: ServerCardData, isWatched?: boolean, isAuthenticated?: boolean, onToggleWatch?: () => void, onSelect?: () => void, onOpenMap?: (server: ServerCardData) => void }) {
   const isOnline = server.status === 'online';
   const badge = getServerTypeBadge(server as unknown as BattleMetricsServerSummary);
   const mapThumbnailUrl = server.mapThumbnailUrl || server.mapImageUrl;
@@ -51,9 +51,18 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
     }
     if (onToggleWatch) onToggleWatch();
   };
+
+  const handleOpenMap = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (onOpenMap) onOpenMap(server);
+  };
   
   return (
-    <div className="server-item" onClick={onSelect} style={{ 
+    <div className="server-item" onClick={(e) => {
+      if ((e.target as HTMLElement).closest('[data-map-action="open-server-map"]')) return;
+      onSelect?.();
+    }} style={{ 
       cursor: onSelect ? 'pointer' : 'default',
       backgroundColor: 'var(--bg-panel)',
       border: '1px solid var(--border-color)',
@@ -78,9 +87,9 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
       </div>
 
       {/* Center: Thumbnail */}
-      <div style={{ flexShrink: 0, width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ flexShrink: 0, width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
         {mapThumbnailUrl ? (
-          <>
+          <div style={{ position: 'relative' }}>
             <img 
               src={mapThumbnailUrl} 
               alt="Map" 
@@ -97,9 +106,11 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                 <img src={mapThumbnailUrl} alt="Map Enlarged" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
               </div>
             )}
-          </>
+          </div>
         ) : (
-          <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
+          <div className="srv-card-image-placeholder" style={{ position: 'relative' }}>
+            <ImageIcon size={24} />
+          </div>
         )}
         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', textAlign: 'center' }}>
           {server.mapIdentitySize || server.mapSize ? `Map Size: ${server.mapIdentitySize || server.mapSize}` : ''}
@@ -150,6 +161,18 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {onOpenMap && (server.mapThumbnailUrl || server.mapIdentitySeed || server.seed || server.mapIdentitySize || server.mapSize || server.map) && (
+            <button
+              type="button"
+              className="server-card-map-action"
+              data-map-action="open-server-map"
+              title="Open parsed server map"
+              aria-label="Open parsed server map"
+              onClick={handleOpenMap}
+            >
+              <MapIcon size={20} />
+            </button>
+          )}
           <button 
             onClick={handleSave}
             style={{ 

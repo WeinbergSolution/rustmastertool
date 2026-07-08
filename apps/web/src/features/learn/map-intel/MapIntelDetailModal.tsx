@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, PlayCircle, Map, AlertTriangle, Lightbulb, ExternalLink, Skull, Gem, ShieldAlert, Crosshair, Layers, Package } from 'lucide-react';
 import type { DeepMonumentData } from './mapIntelDeepData';
 import type { MapMonument } from './mapIntelData';
@@ -18,6 +18,16 @@ export function MapIntelDetailModal({ deep, base, onClose }: MapIntelDetailModal
   const confidence = deep?.confidence || base?.confidence || 'uncertain';
   const needsReview = deep ? deep.contentQuality.needsOwnerReview : base?.needsOwnerReview;
   const categoryName = MONUMENT_CATEGORIES.find(c => c.id === categoryId)?.name || 'Unknown';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const extractYoutubeId = (url: string) => {
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);

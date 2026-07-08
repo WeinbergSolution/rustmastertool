@@ -7,6 +7,7 @@ import { LineChart as LineChartIcon } from 'lucide-react';
 import { useIsMobile } from '../../components/mobile/useIsMobile';
 import { classifyMonument, type MonumentClassification } from '../learn/map-intel/monumentClassification';
 import { MAP_MONUMENTS, MONUMENT_CATEGORIES, type MonumentCategoryId } from '../learn/map-intel/mapIntelData';
+import { detectTeamLimit } from './serverFilters';
 
 interface ServerDetailPanelProps {
   serverId: string;
@@ -393,6 +394,76 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 </div>
               </div>
             </div>
+          </div>
+
+          <div style={{ marginTop: '2rem' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--accent-rust)' }}>
+               <AlertTriangle size={16} />
+               <span style={{ fontWeight: 'bold' }}>Server Intelligence</span>
+             </div>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.875rem', backgroundColor: 'var(--bg-panel)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+               {(() => {
+                 const nameLow = server.name.toLowerCase();
+                 const tagsStr = (server.details?.tags || []).join(' ').toLowerCase();
+                 const searchableText = `${nameLow} ${tagsStr}`;
+                 
+                 let detectedLoot = 'unknown';
+                 if (/\b(100x|1000x|10000x|10x\+|100x\+|millionx)\b/.test(searchableText)) detectedLoot = '10x+';
+                 else if (/\b(10x|x10)\b/.test(searchableText)) detectedLoot = '10x';
+                 else if (/\b(5x|x5)\b/.test(searchableText)) detectedLoot = '5x';
+                 else if (/\b(3x|x3)\b/.test(searchableText)) detectedLoot = '3x';
+                 else if (/\b(2x|x2)\b/.test(searchableText)) detectedLoot = '2x';
+                 else if (/\b(1x|x1|vanilla)\b/.test(searchableText)) detectedLoot = 'likely 1x / Vanilla';
+                 
+                 const tl = detectTeamLimit(searchableText);
+                 const teamStr = tl === 'unknown' ? 'unknown' : tl === 1 ? 'Solo' : tl === 2 ? 'Solo/Duo' : tl === 3 ? 'Solo/Duo/Trio' : tl === 4 ? 'Quad' : `${tl} max`;
+                 
+                 const raidRules = /\b(raid window|weekend raid|offline protection|orp|no offline)\b/.test(searchableText) ? 'ORP / Weekend Raid' : 'unknown';
+                 const restarts = /\b(daily restart|restart \d|reboot)\b/.test(searchableText) ? 'detected' : 'unknown';
+                 
+                 const now = Date.now();
+                 const wipeAgeMs = server.details?.rust_last_wipe ? now - new Date(server.details.rust_last_wipe).getTime() : null;
+                 const wipeAgeStr = wipeAgeMs ? `${Math.floor(wipeAgeMs / (1000*60*60*24))}d ${Math.floor((wipeAgeMs / (1000*60*60)) % 24)}h ago` : 'unknown';
+                 const wipeDay = server.details?.rust_last_wipe ? new Date(server.details.rust_last_wipe).toLocaleDateString('en-US', { weekday: 'long' }) : 'unknown';
+
+                 return (
+                   <>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>Wipe Age</span>
+                       <span className="value-highlight">{wipeAgeStr}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>Wipe Day</span>
+                       <span className="value-highlight">{wipeDay}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>Region / Country</span>
+                       <span className="value-highlight">{server.country || 'unknown'}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--text-muted)' }}>Secure / EAC</span>
+                       <span className="value-highlight" style={{ color: server.details?.rust_secure ? 'var(--status-success)' : 'inherit' }}>{server.details?.rust_secure ? 'Yes' : 'Unknown'}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--status-warning)' }}>Detected Farm/Loot</span>
+                       <span className="value-highlight">{detectedLoot}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--status-warning)' }}>Detected Team Limit</span>
+                       <span className="value-highlight">{teamStr}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--status-warning)' }}>Detected Raid Rules</span>
+                       <span className="value-highlight">{raidRules}</span>
+                     </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                       <span style={{ color: 'var(--status-warning)' }}>Scheduled Restart</span>
+                       <span className="value-highlight">{restarts}</span>
+                     </div>
+                   </>
+                 );
+               })()}
+             </div>
           </div>
 
           <div style={{ marginTop: '2rem' }}>

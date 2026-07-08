@@ -71,13 +71,18 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
     };
   }, [serverId]);
 
+  const [pulseError, setPulseError] = useState<string | null>(null);
+
   useEffect(() => {
     let mounted = true;
     if (!server?.id) return;
     
     setIsSnapshotsLoading(true);
+    setPulseError(null);
     getServerSnapshots(server.id).then(data => {
       if (mounted) setSnapshots(data);
+    }).catch(e => {
+      if (mounted) setPulseError(e.message || 'Pulse data could not be loaded');
     }).finally(() => {
       if (mounted) setIsSnapshotsLoading(false);
     });
@@ -226,6 +231,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 // Priority 2: BM embedded details.rust_maps.thumbnailUrl
                 // Priority 3: Enriched serverSummary.mapThumbnailUrl
                 const thumbnailUrl = mapIdentity?.rustmaps_thumbnail_url || (hasRustMaps ? details.rust_maps?.thumbnailUrl : null) || serverSummary?.mapThumbnailUrl || serverSummary?.mapImageUrl;
+                const fullImageUrl = mapIdentity?.rustmaps_map_url || (hasRustMaps ? details.rust_maps?.url : null) || serverSummary?.mapImageUrl || thumbnailUrl;
                 const isCustomMap = mapIdentity?.is_custom_map || mapType === 'custom';
                 const mapSeed = mapIdentity?.seed || details.rust_world_seed || serverSummary?.seed || serverSummary?.mapIdentitySeed;
                 const mapSize = mapIdentity?.world_size || details.rust_world_size || serverSummary?.mapSize || serverSummary?.mapIdentitySize;
@@ -260,7 +266,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                             style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
                             onClick={() => setIsMapEnlarged(false)}
                           >
-                            <img src={thumbnailUrl} alt="Map Enlarged" style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+                            <img src={fullImageUrl} alt="Map Enlarged" style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
                           </div>
                        )}
                        {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
@@ -349,8 +355,8 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', gridColumn: '1 / -1' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Address</span>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <span className="value-highlight" style={{ flex: 1, fontFamily: 'monospace', backgroundColor: 'var(--bg-hover)', padding: '0.5rem', borderRadius: '4px', userSelect: 'all', display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span className="value-highlight" style={{ flex: '1 1 auto', fontFamily: 'monospace', backgroundColor: 'var(--bg-hover)', padding: '0.5rem', borderRadius: '4px', userSelect: 'all', display: 'flex', alignItems: 'center', wordBreak: 'break-all' }}>
                     client.connect {server.ip}:{server.port}
                   </span>
                   <button 
@@ -380,6 +386,9 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                {(() => {
                  if (isSnapshotsLoading) {
                    return <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Loading historical data...</div>;
+                 }
+                 if (pulseError) {
+                   return <div style={{ color: 'var(--status-error)', fontSize: '0.875rem', padding: '1rem', textAlign: 'center' }}>{pulseError}</div>;
                  }
                  if (snapshots.length === 0) {
                    return (

@@ -27,7 +27,7 @@ export async function getServerSnapshots(providerServerId: string): Promise<Serv
   const { data, error } = await supabase
     .from('server_population_snapshots')
     .select('*')
-    .eq('provider_server_id', providerServerId)
+    .eq('provider_id', providerServerId)
     .order('observed_at', { ascending: false })
     .limit(50); // Get last 50 snapshots
     
@@ -36,8 +36,8 @@ export async function getServerSnapshots(providerServerId: string): Promise<Serv
     if (error.code === '42P01') {
       return [];
     }
-    console.error('Failed to fetch server snapshots:', error);
-    return [];
+    console.error(`Failed to fetch server snapshots for provider_id ${providerServerId}:`, error);
+    throw new Error('Pulse data could not be loaded');
   }
   
   return data || [];

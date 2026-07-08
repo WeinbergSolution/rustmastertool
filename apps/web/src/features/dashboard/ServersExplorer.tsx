@@ -326,8 +326,9 @@ export function ServersExplorer() {
             onClose={() => { setSelectedServerId(null); setDetailFocus(null); }}
             onToggleWatch={toggleWatch}
             onSetActiveServer={handleSetActiveServer}
-            isActiveServer={servers.find(s => s.id === selectedServerId)?.internal_uuid ? servers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
+            isActiveServer={rawServers.find(s => s.id === selectedServerId)?.internal_uuid ? rawServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
             isAuthenticated={status === 'authenticated'}
+            serverSummary={rawServers.find(s => s.id === selectedServerId)}
             initialFocus={detailFocus}
           />
         )}

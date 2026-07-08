@@ -80,16 +80,16 @@ export function ServerPulseView() {
         </p>
 
         {/* Top Stats */}
-        <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem' }}>
-          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', flex: 1 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem' }}>
+          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', flex: '1 1 200px' }}>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Servers Tracked</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{isLoading ? '-' : serverCount.toLocaleString()}</div>
           </div>
-          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', flex: 1 }}>
+          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', flex: '1 1 200px' }}>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Total Snapshots</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--accent-rust)' }}>{isLoading ? '-' : snapshotCount.toLocaleString()}</div>
           </div>
-          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', flex: 1 }}>
+          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)', flex: '1 1 200px' }}>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Scheduler Status</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', fontWeight: 'bold', color: hasAnyActive ? 'var(--status-success)' : 'var(--text-muted)' }}>
               {isLoading ? '-' : hasAnyActive ? <><PlayCircle size={20}/> Active</> : isSchedulerPrepared ? <><Clock size={20}/> Prepared (Inactive)</> : <><AlertCircle size={20}/> Not deployed</>}
@@ -101,7 +101,7 @@ export function ServerPulseView() {
         {isSchedulerPrepared && (
           <div style={{ marginBottom: '2.5rem' }}>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Scheduler Configuration</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
               {schedulerStates.map(state => (
                 <div key={state.id} style={{ padding: '1rem', backgroundColor: 'var(--bg-panel)', border: `1px solid ${state.enabled ? 'var(--status-success)' : 'var(--border-color)'}`, borderRadius: '6px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>

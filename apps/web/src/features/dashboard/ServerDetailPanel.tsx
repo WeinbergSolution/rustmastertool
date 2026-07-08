@@ -240,11 +240,11 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div 
-                      style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111', cursor: fullImageUrl ? 'zoom-in' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }} 
+                      style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111', cursor: fullImageUrl ? 'zoom-in' : 'default', overflow: 'hidden' }} 
                       onClick={() => fullImageUrl && setIsMapEnlarged(true)}
                     >
                       {displayUrl ? (
-                        <img src={displayUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={displayUrl} alt="Map Thumbnail" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
                         // Radar/Blueprint Placeholder
                         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '20px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>

@@ -376,83 +376,10 @@ export function ServersExplorer() {
 
         <BottomSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters (Loaded Results)">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem 0' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <input type="checkbox" checked={filters.hideEmpty} onChange={e => setFilters({ ...filters, hideEmpty: e.target.checked })} />
-              Hide Empty Servers
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <input type="checkbox" checked={filters.hideFull} onChange={e => setFilters({ ...filters, hideFull: e.target.checked })} />
-              Hide Full Servers
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <input type="checkbox" checked={filters.hasQueue} onChange={e => setFilters({ ...filters, hasQueue: e.target.checked })} />
-              Has Queue
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <input type="checkbox" checked={filters.hasMapThumbnail} onChange={e => setFilters({ ...filters, hasMapThumbnail: e.target.checked })} />
-              Has Map Thumbnail
-            </label>
-            
-            <div style={{ marginTop: '0.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Sort By</label>
-              <select className="rm-select mobile" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
-                <option value="players_desc">Players: High to Low</option>
-                <option value="players_asc">Players: Low to High</option>
-                <option value="fill_desc">Fill Rate: High to Low</option>
-                <option value="rank_asc">Rank: Best First</option>
-                <option value="queue_desc">Queue: High to Low</option>
-                <option value="updated_desc">Recently Updated</option>
-              </select>
-            </div>
+          <details style={{ marginBottom: '1.5rem', backgroundColor: 'var(--bg-hover)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+             <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem', padding: '0 1rem', minHeight: '44px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>⚙️ Advanced Filters</summary>
+             <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px dashed var(--border-color)', marginTop: '0.5rem', paddingTop: '1rem' }}>
 
-            <div style={{ marginTop: '0.5rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Minimum Players</label>
-              <select className="rm-select mobile" value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
-                <option value="any">Any</option>
-                <option value="100">100+</option>
-                <option value="200">200+</option>
-                <option value="300">300+</option>
-                <option value="400">400+</option>
-                <option value="500">500+</option>
-                <option value="600">600+</option>
-                <option value="700">700+</option>
-                <option value="800">800+</option>
-                <option value="900">900+</option>
-                <option value="1000">1000+</option>
-              </select>
-            </div>
-          </div>
-          
-          <div style={{ padding: '0 0 1rem 0' }}>
-            <div style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={14} /> Monuments Filter</div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Applies to loaded servers with known map intel.</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {MONUMENTS.filter(m => ['launch_site', 'power_plant', 'military_tunnels', 'train_yard', 'airfield', 'water_treatment', 'large_oil_rig', 'small_oil_rig', 'excavator', 'outpost'].includes(m.id)).map(mon => {
-                const isActive = filters.monuments?.includes(mon.id);
-                return (
-                  <button
-                    key={mon.id}
-                    onClick={() => toggleMonumentFilter(mon.id)}
-                    style={{
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '16px',
-                      fontSize: '0.75rem',
-                      border: `1px solid ${isActive ? 'var(--accent-rust)' : 'var(--border-color)'}`,
-                      backgroundColor: isActive ? 'rgba(205, 65, 43, 0.1)' : 'transparent',
-                      color: isActive ? 'var(--accent-rust)' : 'var(--text-primary)',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {mon.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <details style={{ marginBottom: '1rem' }}>
-             <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem', padding: '0.5rem 0' }}>Advanced Filters</summary>
-             <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input type="checkbox" checked={filters.secure} onChange={e => setFilters({ ...filters, secure: e.target.checked })} />
                   Secure only (EAC)
@@ -604,6 +531,80 @@ export function ServersExplorer() {
                 </div>
              </div>
           </details>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hideEmpty} onChange={e => setFilters({ ...filters, hideEmpty: e.target.checked })} />
+              Hide Empty Servers
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hideFull} onChange={e => setFilters({ ...filters, hideFull: e.target.checked })} />
+              Hide Full Servers
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hasQueue} onChange={e => setFilters({ ...filters, hasQueue: e.target.checked })} />
+              Has Queue
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hasMapThumbnail} onChange={e => setFilters({ ...filters, hasMapThumbnail: e.target.checked })} />
+              Has Map Thumbnail
+            </label>
+            
+            <div style={{ marginTop: '0.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Sort By</label>
+              <select className="rm-select mobile" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+                <option value="players_desc">Players: High to Low</option>
+                <option value="players_asc">Players: Low to High</option>
+                <option value="fill_desc">Fill Rate: High to Low</option>
+                <option value="rank_asc">Rank: Best First</option>
+                <option value="queue_desc">Queue: High to Low</option>
+                <option value="updated_desc">Recently Updated</option>
+              </select>
+            </div>
+
+            <div style={{ marginTop: '0.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Minimum Players</label>
+              <select className="rm-select mobile" value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+                <option value="any">Any</option>
+                <option value="100">100+</option>
+                <option value="200">200+</option>
+                <option value="300">300+</option>
+                <option value="400">400+</option>
+                <option value="500">500+</option>
+                <option value="600">600+</option>
+                <option value="700">700+</option>
+                <option value="800">800+</option>
+                <option value="900">900+</option>
+                <option value="1000">1000+</option>
+              </select>
+            </div>
+          </div>
+          
+          <div style={{ padding: '0 0 1rem 0' }}>
+            <div style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={14} /> Monuments Filter</div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Applies to loaded servers with known map intel.</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {MONUMENTS.filter(m => ['launch_site', 'power_plant', 'military_tunnels', 'train_yard', 'airfield', 'water_treatment', 'large_oil_rig', 'small_oil_rig', 'excavator', 'outpost'].includes(m.id)).map(mon => {
+                const isActive = filters.monuments?.includes(mon.id);
+                return (
+                  <button
+                    key={mon.id}
+                    onClick={() => toggleMonumentFilter(mon.id)}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '16px',
+                      fontSize: '0.75rem',
+                      border: `1px solid ${isActive ? 'var(--accent-rust)' : 'var(--border-color)'}`,
+                      backgroundColor: isActive ? 'rgba(205, 65, 43, 0.1)' : 'transparent',
+                      color: isActive ? 'var(--accent-rust)' : 'var(--text-primary)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {mon.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
         </BottomSheet>
 
         {selectedServerId && (

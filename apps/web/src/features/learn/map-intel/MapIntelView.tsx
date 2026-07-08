@@ -1,42 +1,147 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, Map, ShieldAlert, Box, X, Lightbulb } from 'lucide-react';
+import { ChevronLeft, Map, PlayCircle } from 'lucide-react';
 import { MAP_MONUMENTS, MONUMENT_CATEGORIES } from './mapIntelData';
+import { DEEP_MONUMENT_DATA } from './mapIntelDeepData';
+import type { DeepMonumentData } from './mapIntelDeepData';
 import type { MapMonument } from './mapIntelData';
 import type { ViewState } from '../../../components/AppShell';
+import { MapIntelDetailModal } from './MapIntelDetailModal';
 import './MapIntelView.css';
 
 interface MapIntelViewProps {
   onViewChange: (view: ViewState) => void;
 }
 
+export type MergedMonument = {
+  id: string;
+  isDeep: boolean;
+  base?: MapMonument;
+  deep?: DeepMonumentData;
+  name: string;
+  categoryId: string;
+  needsReview: boolean;
+};
+
 export function MapIntelView({ onViewChange }: MapIntelViewProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedMonument, setSelectedMonument] = useState<MapMonument | null>(null);
+  const [selectedMonument, setSelectedMonument] = useState<MergedMonument | null>(null);
+
+  // Merge datasets
+  const allMergedMonuments = useMemo(() => {
+    const merged: MergedMonument[] = [];
+    const seenIds = new Set<string>();
+
+    const VIDEO_OVERRIDES: Record<string, string[]> = {
+      bandit_camp: ['https://www.youtube.com/watch?v=IP_JtslXipY', 'https://www.youtube.com/watch?v=7bKCXef5wZk'],
+      abandoned_military_base: ['https://www.youtube.com/watch?v=CBZ16qttIO4', 'https://www.youtube.com/watch?v=4Rh3A-62CuA'],
+      military_base: ['https://www.youtube.com/watch?v=CBZ16qttIO4', 'https://www.youtube.com/watch?v=4Rh3A-62CuA'],
+      cave: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_small_easy: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_small_medium: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_small_hard: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_medium_easy: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_medium_medium: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_large_medium: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_large_hard: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_large_sewers_hard: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      rock_formation: ['https://www.youtube.com/watch?v=LrBPkQzTZIA', 'https://www.youtube.com/watch?v=zc0T6PAAaLM'],
+      rock_formation_tiny_god: ['https://www.youtube.com/watch?v=LrBPkQzTZIA', 'https://www.youtube.com/watch?v=zc0T6PAAaLM'],
+      rock_formation_anvil: ['https://www.youtube.com/watch?v=LrBPkQzTZIA'],
+      rock_formation_medium_god: ['https://www.youtube.com/watch?v=LrBPkQzTZIA'],
+      rock_formation_three_wall: ['https://www.youtube.com/watch?v=zc0T6PAAaLM', 'https://www.youtube.com/watch?v=LrBPkQzTZIA'],
+      rock_formation_large_god: ['https://www.youtube.com/watch?v=LrBPkQzTZIA', 'https://www.youtube.com/watch?v=zc0T6PAAaLM'],
+      power_substation: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q'],
+      power_substation_small: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q'],
+      power_substation_big: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q']
+    };
+
+    const HIDDEN_GENERICS = ['military_base', 'cave', 'rock_formation', 'power_substation'];
+
+    // Helper to dedupe and merge videos
+    const getVideos = (id: string, existingVideos?: string[]) => {
+      const overrides = VIDEO_OVERRIDES[id] || [];
+      const baseVids = existingVideos || [];
+      return Array.from(new Set([...baseVids, ...overrides]));
+    };
+
+    // 1. Add all Deep Data
+    Object.values(DEEP_MONUMENT_DATA).forEach(deepItem => {
+      seenIds.add(deepItem.id);
+      const baseItem = MAP_MONUMENTS.find(m => m.id === deepItem.id);
+      
+      const vids = getVideos(deepItem.id, deepItem.relatedVideos);
+      const updatedDeepItem = { ...deepItem, relatedVideos: vids };
+
+      merged.push({
+        id: deepItem.id,
+        isDeep: true,
+        deep: updatedDeepItem,
+        base: baseItem,
+        name: deepItem.name,
+        categoryId: deepItem.categoryId,
+        needsReview: deepItem.contentQuality?.needsOwnerReview === true
+      });
+    });
+
+    // 2. Add remaining Base Data
+    MAP_MONUMENTS.forEach(baseItem => {
+      if (!seenIds.has(baseItem.id) && !HIDDEN_GENERICS.includes(baseItem.id)) {
+        // Fallback videos for base items
+        const videos = getVideos(baseItem.id);
+        
+        merged.push({
+          id: baseItem.id,
+          isDeep: false,
+          base: baseItem,
+          deep: videos.length > 0 ? { ...baseItem, relatedVideos: videos } as unknown as DeepMonumentData : undefined, 
+          // (Hack to pass videos to detail modal without a real DeepMonumentData object)
+          name: baseItem.name,
+          categoryId: baseItem.categoryId,
+          needsReview: baseItem.needsOwnerReview === true
+        });
+      }
+    });
+
+    return merged;
+  }, []);
 
   const filteredMonuments = useMemo(() => {
-    if (activeCategory === 'all') return MAP_MONUMENTS;
-    return MAP_MONUMENTS.filter(m => m.categoryId === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === 'all') return allMergedMonuments;
+    return allMergedMonuments.filter(m => m.categoryId === activeCategory);
+  }, [activeCategory, allMergedMonuments]);
+
+  // Asset Tile puzzle dots
+  const getPuzzleDots = (m: MergedMonument) => {
+    const dots: { color: string, label: string }[] = [];
+    if (m.isDeep && m.deep) {
+      if (m.deep.puzzle.requiredItems?.includes('Green Keycard')) dots.push({ color: '#5a9e5a', label: 'Green Card' });
+      if (m.deep.puzzle.requiredItems?.includes('Blue Keycard')) dots.push({ color: '#3d7ea6', label: 'Blue Card' });
+      if (m.deep.puzzle.requiredItems?.includes('Red Keycard')) dots.push({ color: '#c44545', label: 'Red Card' });
+      if (m.deep.puzzle.requiredItems?.some(i => i.includes('Fuse'))) dots.push({ color: '#d29922', label: 'Fuse' });
+    } else if (m.base) {
+      if (m.base.keycardsRequired.includes('green')) dots.push({ color: '#5a9e5a', label: 'Green Card' });
+      if (m.base.keycardsRequired.includes('blue')) dots.push({ color: '#3d7ea6', label: 'Blue Card' });
+      if (m.base.keycardsRequired.includes('red')) dots.push({ color: '#c44545', label: 'Red Card' });
+    }
+    return dots;
+  };
+
+  const extractYoutubeId = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    return match ? match[1] : null;
+  };
 
   return (
-    <div className="map-intel-container">
-      {/* Navigation */}
-      <div className="map-intel-nav">
-        <button className="back-btn" onClick={() => onViewChange('learn')}>
-          <ChevronLeft size={20} />
-          <span>Back to Learn</span>
+    <div className="map-intel-view">
+      <div className="intel-header">
+        <button className="back-btn" onClick={() => onViewChange('dashboard')}>
+          <ChevronLeft size={20} /> Dashboard
         </button>
-      </div>
-
-      {/* Hero */}
-      <header className="map-intel-hero">
-        <h1 className="hero-title">Map Intel</h1>
-        <p className="hero-subtitle">Encyclopedia of Rust Monuments</p>
-        <div className="hero-stats">
-          <div className="stat-badge"><Map size={16} /> {MAP_MONUMENTS.length} Monuments</div>
-          <div className="stat-badge"><ShieldAlert size={16} /> Knowledge Base</div>
+        <div className="intel-header-info">
+          <h2>Map Intel</h2>
+          <p>Detailed guides, puzzles, and strategies for {allMergedMonuments.length} locations.</p>
         </div>
-      </header>
+      </div>
 
       {/* Category Filters */}
       <div className="category-filters">
@@ -59,38 +164,54 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
       </div>
 
       {/* Grid */}
-      <div className="monument-grid">
+      <div className="monument-asset-grid">
         {filteredMonuments.map(monument => {
           const categoryName = MONUMENT_CATEGORIES.find(c => c.id === monument.categoryId)?.name || 'Unknown';
+          const dots = getPuzzleDots(monument);
+          const iconSrc = monument.isDeep && monument.deep?.imageUrl ? `/map-intel/${monument.deep.imageUrl}` : null;
+          const videos = monument.deep?.relatedVideos || [];
+          const firstVideoId = videos.length > 0 ? extractYoutubeId(videos[0]) : null;
           
           return (
             <div 
               key={monument.id} 
-              className="monument-card"
+              className="asset-tile"
+              data-category={monument.categoryId}
               onClick={() => setSelectedMonument(monument)}
             >
-              <div className="monument-image-placeholder">
-                <Map size={48} opacity={0.2} />
-              </div>
-              <div className="monument-card-content">
-                <div className="monument-card-header">
-                  <h3 className="monument-card-title">{monument.name}</h3>
+              {firstVideoId ? (
+                <img src={`https://img.youtube.com/vi/${firstVideoId}/hqdefault.jpg`} alt="Video Thumbnail" className="asset-tile-bg-thumb" />
+              ) : iconSrc ? (
+                <img src={iconSrc} alt="" className="asset-tile-bg-svg-center" />
+              ) : (
+                <div className="asset-tile-bg-fallback"><Map size={120} /></div>
+              )}
+              
+              <div className="asset-tile-content">
+                {/* Top Bar: Category Badge + Puzzle Dots */}
+                <div className="asset-tile-top">
+                  <div className="asset-category-badge">{categoryName.toUpperCase()}</div>
+                  <div className="asset-dots">
+                    {monument.needsReview && (
+                      <div className="asset-dot review-dot" title="Needs Owner Review">?</div>
+                    )}
+                    {dots.map((d, i) => (
+                      <div key={i} className="asset-dot" style={{ backgroundColor: d.color }} title={d.label} />
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-                  <span className="monument-card-category">{categoryName}</span>
-                  {monument.confidence !== 'verified' && (
-                    <span className="monument-card-category" style={{ color: '#d29922' }}>{monument.confidence}</span>
-                  )}
-                  {monument.needsOwnerReview && (
-                    <span className="monument-card-category" style={{ color: '#d29922' }}>needs review</span>
-                  )}
-                </div>
-                <p className="monument-card-desc">{monument.explanation}</p>
-                
-                <div className="monument-card-meta">
-                  {monument.keycardsRequired.map(kc => (
-                    <div key={kc} className={`keycard-badge ${kc}`} title={`${kc} keycard required`} />
-                  ))}
+
+                {/* Bottom Bar: Title & Watermark */}
+                <div className="asset-tile-bottom">
+                  <h3 className="asset-title">{monument.name}</h3>
+                  <div className="asset-bottom-meta">
+                    <span className="asset-watermark">RustMasterTool</span>
+                    {videos.length > 0 && (
+                      <span className="asset-video-pill">
+                        <PlayCircle size={14} /> {videos.length} Guide{videos.length !== 1 && 's'}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,83 +221,12 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
 
       {/* Detail Modal */}
       {selectedMonument && (
-        <MonumentModal 
-          monument={selectedMonument} 
+        <MapIntelDetailModal 
+          deep={selectedMonument.deep}
+          base={selectedMonument.base}
           onClose={() => setSelectedMonument(null)} 
         />
       )}
-    </div>
-  );
-}
-
-function MonumentModal({ monument, onClose }: { monument: MapMonument, onClose: () => void }) {
-  const categoryName = MONUMENT_CATEGORIES.find(c => c.id === monument.categoryId)?.name || 'Unknown';
-
-  return (
-    <div className="monument-modal-overlay" onClick={onClose}>
-      <div className="monument-modal" onClick={e => e.stopPropagation()}>
-        <button className="monument-modal-close" onClick={onClose}>
-          <X size={20} />
-        </button>
-        
-        <div className="monument-modal-hero">
-          <Map size={64} opacity={0.1} />
-          {/* Note: Placeholder image used here. Real imagery requires backend parsing or external hosting. */}
-        </div>
-
-        <div className="monument-modal-body">
-          <h2>{monument.name}</h2>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span className="cat-badge">{categoryName}</span>
-            <span className="cat-badge" style={monument.confidence === 'verified' ? { color: '#3fb950' } : { color: '#d29922' }}>{monument.confidence}</span>
-            {monument.needsOwnerReview && (
-              <span className="cat-badge" style={{ color: '#d29922' }}>needs owner review</span>
-            )}
-          </div>
-          
-          <div className="monument-modal-section">
-            <p>{monument.explanation}</p>
-          </div>
-
-          <div className="monument-modal-section">
-            <h4><Box size={16} /> Loot & Progression</h4>
-            <p>{monument.lootRelevance}</p>
-          </div>
-
-          <div className="monument-modal-section">
-            <h4><ShieldAlert size={16} /> Radiation & Access</h4>
-            <p>{monument.radiationInfo}</p>
-            {monument.keycardsRequired.length > 0 && (
-              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <span style={{ fontSize: '14px', color: '#a0a0a0' }}>Keycards:</span>
-                {monument.keycardsRequired.map(kc => (
-                  <div key={kc} className={`keycard-badge ${kc}`} title={`${kc} keycard required`} />
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="monument-modal-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
-            <div>
-              <h4 style={{ color: '#5a9e5a' }}>Advantages</h4>
-              <ul>
-                {monument.advantages.map((adv, i) => <li key={i}>{adv}</li>)}
-              </ul>
-            </div>
-            <div>
-              <h4 style={{ color: '#ce422b' }}>Disadvantages</h4>
-              <ul>
-                {monument.disadvantages.map((dis, i) => <li key={i}>{dis}</li>)}
-              </ul>
-            </div>
-          </div>
-
-          <div className="tip-box">
-            <h4><Lightbulb size={16} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'text-bottom' }} /> Quick Tip</h4>
-            <p>{monument.quickTip}</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

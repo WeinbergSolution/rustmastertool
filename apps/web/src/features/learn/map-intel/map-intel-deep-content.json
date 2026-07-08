@@ -1,0 +1,3438 @@
+[
+  {
+    "id": "outpost",
+    "name": "Outpost",
+    "categoryId": "safe_zone",
+    "confidence": "verified",
+    "overview": "Zentraler, turret-geschützter Handels- und Recycling-Hub. Kein PvP innerhalb der Zone möglich, keine feindlichen NPCs. Wichtigster Ort für Tier-1/2-Werkbankzugang, Recycling und Blueprint-Kauf über Scrap.",
+    "whyRunIt": "Von Früh- bis Lategame relevant. Solo/Duo/Gruppe gleichermaßen: recyceln, forschen, Vending-Deals, sichere Zwischenlagerung. Kein Loot im klassischen Sinn – der Wert ist Infrastruktur.",
+    "access": "Meist zentral/neutral. Zu Fuß, Bike oder Auto. Minicopter-Landung direkt in der Zone ist der sicherste Approach; die Zufahrtsstraßen werden gern gecampt.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Reine Safe Zone – kein Rätsel, keine Karten."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Kisten-Loot. Cluster aus 2-4 Recyclern, Research Table, Werkbank 1 & 2, Refinery, Repair Bench, Vending Machines, teils Blackmarket-Vendor.",
+      "recyclerLocation": "Meist mehrere Recycler am zentralen Platz."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Safe-Zone-Turrets greifen jeden an, der in der Zone schießt – auch dich.",
+      "pvpHotspots": "Direkt außerhalb der Zonengrenze wird gecampt (Exit-Camping)."
+    },
+    "strategy": {
+      "soloTips": "Beim Verlassen die Grenze nicht auf direktem, vorhersehbarem Weg überqueren.",
+      "groupTips": "Einer recycelt, einer sichert den Ausgang."
+    },
+    "beginnerMistakes": [
+      "In der Zone eine Waffe abfeuern (Turrets töten sofort)",
+      "Direkt an der Zonengrenze aus dem Recycler laufen ins offene Feld"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=yRMLnHqZE3o",
+      "https://www.youtube.com/watch?v=djkTqITluyo"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Stabiles Kernwissen."
+    },
+    "imageUrl": "assets/outpost.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "fishing_village",
+    "name": "Fishing Village",
+    "categoryId": "safe_zone",
+    "confidence": "verified",
+    "overview": "Küsten-Safe-Zone mit Boot-Vendor. Turret-geschützt, kein PvP. Zentraler Ausgangspunkt für alles Offshore (Oil Rigs, Underwater Labs) – hier kauft man Boote und Tauchausrüstung.",
+    "whyRunIt": "Wichtig für den Sprung ins Wasser-Endgame. Boot/RHIB, bei Large auch Solo-Sub, Angel- und Tauchgear.",
+    "access": "Immer an der Küste. Boot entlang der Küstenlinie oder zu Fuß über den Strand.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Safe Zone – kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kaum natürlicher Loot (ein paar Fässer am Rand, außerhalb Turret-Schutz beachten). Boot-/Scuba-Vendor.",
+      "recyclerLocation": "Teils kleiner Recycler vorhanden."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Turrets.",
+      "pvpHotspots": "Camping direkt außerhalb der Zone am Wasser."
+    },
+    "strategy": {
+      "soloTips": "Boot kaufen und sofort wegfahren, nicht am Steg trödeln."
+    },
+    "beginnerMistakes": [
+      "Loot außerhalb der Turret-Reichweite einsammeln und dabei exponiert stehen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=eUs4ddtVQYE",
+      "https://www.youtube.com/watch?v=kGOQdp3prWU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Small/Large teilen sich diesen Eintrag; Large hat zusätzlich Sub-Vendor."
+    },
+    "imageUrl": "assets/fishing_village.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "apartments_complex",
+    "name": "Apartments Complex",
+    "categoryId": "safe_zone",
+    "confidence": "verified",
+    "overview": "Neues Safe-Zone-Stadtblock-Monument (Common-Ground-Update, 2. Juli 2026). Mietbare Apartments, spielerbetriebene Shops, Aufzüge, Mailboxen, Zugstation, Spielplatz, Turrets. Kein klassischer Loot-Run – sozialer/Handels-Hub.",
+    "whyRunIt": "Sichere Miet-/Lager-/Handelsoption mit Bahnanbindung. Master-Key-Einbrüche als Risiko-Loop.",
+    "access": "Safe Zone mit Turrets. Zugstation oder zu Fuß. Shops NICHT per Drohne.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Safe Zone – kein Rätsel. 'Mechanik' = Mieten/Shops/Master-Keys."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Kisten-Loot. Mietzimmer (small 25 Scrap+10/Tag · medium 150+50 · large 350+100) mit Storage, Bett/Bag, Phone, Tier-1-Werkbank, Ofen, CCTV. Shops mit Shopkeeper-NPC. Master-Key (~1000 Scrap, Einmal) aus Basement-NPC (Apartment-Einbruch 5 min). Basement-Computer-Station (Scrap) zum Scouten.",
+      "cardSpawns": "—"
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Safe-Zone-Turrets + Shopkeeper-NPCs.",
+      "pvpHotspots": "Gemietete Räume = KAMPFZONEN; Exit-Camping außerhalb."
+    },
+    "strategy": {
+      "soloTips": "Sicheres Lager/Trading; Räume nicht als 100% sicher behandeln (Master-Keys).",
+      "groupTips": "Shop für Scrap; Basement-Station zum Scouten."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten",
+      "Wertsachen als 'völlig sicher' lagern"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Lb0jzj2QUZk",
+      "https://www.youtube.com/watch?v=yDK5uuqhf64"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "VERIFIZIERT via Rustafied Common-Ground-Update (2026-07-02)."
+    },
+    "advancedTips": [
+      "Shop-Takeover nach 6 h (doppelte Gebühr); Items nach Verlust 24 h abholbar"
+    ],
+    "imageUrl": "assets/apartments_complex.svg",
+    "sources": [
+      "https://www.rustafied.com/updates/2026/7/2/common-ground-update",
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "gas_station",
+    "name": "Oxum's Gas Station",
+    "categoryId": "tier_1",
+    "confidence": "verified",
+    "overview": "Klassisches Tier-1-Straßenmonument mit Recycler. Keine NPCs, keine Karte nötig. Häufiger Green-Card-Spawn – dein Ticket zu Water Treatment/Harbor/Sewer.",
+    "whyRunIt": "Frühwipe Pflicht: Recycler + Komponenten + Green-Card-Chance. Solo-freundlich.",
+    "access": "An Hauptstraßen – dadurch PvP-Magnet. Frühgame zu Fuß unauffälliger als mit Auto.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Kartenrätsel. Green Card kann als Loot spawnen."
+    },
+    "lootGuide": {
+      "expectedLoot": "Fässer, Food-/Werkzeugkisten, Diesel.",
+      "cardSpawns": "Green Card möglich (Zufall).",
+      "recyclerLocation": "Recycler am Gebäude."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Dach + Zufahrt; frühwipe stark frequentiert."
+    },
+    "strategy": {
+      "soloTips": "Schnell recyceln, Dach checken, weiter."
+    },
+    "beginnerMistakes": [
+      "Zu lange bleiben – hohe Durchgangsfrequenz"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=SEpKbmaeH3I",
+      "https://www.youtube.com/watch?v=d3Dbf55rwxQ"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/gas_station.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "supermarket",
+    "name": "Abandoned Supermarket",
+    "categoryId": "tier_1",
+    "confidence": "verified",
+    "overview": "Tier-1-Straßenmonument mit Recycler, Food- und Werkzeugkisten. Keine NPCs. Häufiger Green-Card-Spawn.",
+    "whyRunIt": "Frühwipe-Standard für Komponenten + Green Card. Solo-freundlich.",
+    "access": "Stadtrand/Straßen. Zu Fuß oder Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Rätsel. Green Card als Loot möglich."
+    },
+    "lootGuide": {
+      "expectedLoot": "Food-/Basic-Kisten, Fässer, selten Militärkiste.",
+      "cardSpawns": "Green Card möglich.",
+      "recyclerLocation": "Recycler vorhanden."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Hohe Frühwipe-Frequenz."
+    },
+    "strategy": {
+      "soloTips": "Kombiniere mit Gas Station auf einer Straßenroute."
+    },
+    "beginnerMistakes": [
+      "Green Card wegwerfen/recyceln statt behalten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=GnzBB77IiYI",
+      "https://www.youtube.com/watch?v=XWbumy63ePw"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/supermarket.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "lighthouse",
+    "name": "Lighthouse",
+    "categoryId": "tier_1",
+    "confidence": "verified",
+    "overview": "Küsten-Turm mit Recycler und 2 Kisten oben. Keine NPCs, aber beliebter Sniper-Spot. Green-Card-Spawn möglich.",
+    "whyRunIt": "Früher Recycler + Green Card an der Küste. Vorsicht: exponierte Höhe.",
+    "access": "Küste/Landzunge. Boot oder zu Fuß. Beim Aufstieg exponiert.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "2 Kisten oben, Fässer, Recycler.",
+      "cardSpawns": "Green Card möglich."
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Keine.",
+      "pvpHotspots": "Sniper von/auf den Turm – hoch sichtbar."
+    },
+    "strategy": {
+      "soloTips": "Kurz aufhalten, oben nicht stehen bleiben."
+    },
+    "beginnerMistakes": [
+      "Oben im Turm ruhig stehen bleiben (Sniper-Ziel)"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=91o2RKEyLBg",
+      "https://www.youtube.com/watch?v=rtNuiMrvkOE"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/lighthouse.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "warehouse",
+    "name": "Warehouse",
+    "categoryId": "tier_1",
+    "confidence": "likely",
+    "overview": "Kleine Lagerhalle mit Recycler und Fässern/Kisten – schneller Roam-Stopp. Status als eigenständiges Monument unsicher.",
+    "whyRunIt": "Bequemer Recycler-Stopp unterwegs, wenig Loot.",
+    "access": "Zu Fuß/Bike, meist an Straßen.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Fässer, Werkzeugkisten, Recycler."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Gering."
+    },
+    "strategy": {
+      "soloTips": "Nur mitnehmen, wenn ohnehin auf der Route."
+    },
+    "beginnerMistakes": [
+      "Umweg dafür fahren – lohnt nicht"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=u6zHvXaKQaA"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": true,
+      "notes": "sourceNeeded: Existenz/Status als eigenständiges Monument gegen rustlabs/frisches Server-Sample prüfen (dein Audit: likely)."
+    },
+    "imageUrl": "assets/warehouse.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "ranch",
+    "name": "Ranch",
+    "categoryId": "roadside",
+    "confidence": "verified",
+    "overview": "Straßenrand-Monument mit Pferdekoppel und ein paar Kisten. Keine NPCs, kein Rätsel. Guter Ort, um ein Pferd zu bekommen.",
+    "whyRunIt": "Transport (Pferd) + minimaler Loot. Freshie-Spawn-Nähe.",
+    "access": "An Straßen. Bike/Auto/zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Werkzeugkisten in Scheunen, Hitching-Posts."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Freshie-Spawn-Gebiet, mittlere Frequenz."
+    },
+    "strategy": {
+      "soloTips": "Pferd zähmen für schnelle Roam-Routen."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=MZMgYOLrTwc"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/ranch.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "large_barn",
+    "name": "Large Barn",
+    "categoryId": "roadside",
+    "confidence": "verified",
+    "overview": "Große Straßenrand-Scheune mit mehreren Werkzeugkisten. Keine NPCs, kein Rätsel.",
+    "whyRunIt": "Kleiner Loot-Stopp auf Straßenrouten.",
+    "access": "An Straßen. Bike/Auto/zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Werkzeugkisten in mehreren Boxen."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Mittel."
+    },
+    "strategy": {
+      "soloTips": "Mit Ranch/Water Well auf einer Straßenroute bündeln."
+    },
+    "beginnerMistakes": [
+      "Umweg für wenig Loot"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=u6zHvXaKQaA"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/large_barn.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "water_well",
+    "name": "Water Well",
+    "categoryId": "roadside",
+    "confidence": "verified",
+    "overview": "Kleiner Brunnen an Straßen/Feldern. Frischwasserquelle, kaum Loot, keine NPCs.",
+    "whyRunIt": "Wasser auffüllen unterwegs. Kein Loot-Ziel.",
+    "access": "Zu Fuß, überall verstreut.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Reines Feature – kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Kisten-Loot. Wasserpumpe."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Gering."
+    },
+    "strategy": {
+      "soloTips": "Als Wasserstopp auf Farm-Routen."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=u6zHvXaKQaA"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/water_well.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "dome",
+    "name": "The Dome (Sphere Tank)",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Kugeltank mit Kletter-Route nach oben. KEIN Kartenrätsel – ein Parkour über Innenrohre zu Militärkisten an der Spitze. Fässer + Kisten unten, Refinery.",
+    "whyRunIt": "Mid-Game-Loot ohne Karte/NPC. Solo-freundlich, wenn man den Klettersprung kann.",
+    "access": "Zentral, oft auf Hügel. Auto/Bike bis zum Fuß, dann Kletterparkour innen. Vorsicht Fallschaden.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "climbing",
+      "requiredItems": [],
+      "optionalItems": [
+        "Hazmat (leichte Strahlung oben)"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Einstieg",
+          "instruction": "Ins Innere der Kugel, zu den umlaufenden Rohren/Leitungen."
+        },
+        {
+          "order": 2,
+          "title": "Parkour hoch",
+          "instruction": "Über die Rohrleitungen spiralförmig nach oben klettern.",
+          "warning": "Fallschaden – nicht hetzen."
+        },
+        {
+          "order": 3,
+          "title": "Loot oben",
+          "instruction": "Militärkisten an der Spitze looten.",
+          "result": "Militär-Loot ohne Karte."
+        }
+      ],
+      "commonMistakes": [
+        "Sprünge zu hastig – Sturz",
+        "Oben stehenbleiben (campbar)"
+      ],
+      "exitTips": [
+        "Nicht denselben Weg vorhersehbar zurück – ggf. kontrolliert abspringen wenn HP reicht"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militärkisten oben, Basic-Kisten + viele Fässer unten.",
+      "recyclerLocation": "Refinery vorhanden; Recycler je nach Version uneinheitlich (sourceNeeded)."
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Keine.",
+      "pvpHotspots": "Spitze ist campbar; Locked-Crate-Events ziehen Spieler an."
+    },
+    "strategy": {
+      "soloTips": "Übe den Parkour einmal ohne Loot-Druck.",
+      "groupTips": "Einer sichert unten, einer klettert."
+    },
+    "beginnerMistakes": [
+      "Kartenrätsel suchen (gibt es nicht)",
+      "Fallschaden unterschätzen"
+    ],
+    "advancedTips": [
+      "Bei Locked-Crate-Event am Dome mit Deckung rechnen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=81X1T1mbJxc",
+      "https://www.youtube.com/watch?v=UZy0VuL4BwI"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Als Climbing-Route geführt, kein Fake-Keycard."
+    },
+    "imageUrl": "assets/dome.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "water_treatment",
+    "name": "Water Treatment Plant",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Weitläufiges, offenes Tier-2-Monument mit Fuse+Blue-Card-Raum. Militär-/Basic-Kisten, Recycler, Refinery. Sehr PvP-exponiert wegen offenem Layout.",
+    "whyRunIt": "Zuverlässiger Mid-Game-Run für Scrap/Komponenten und Blue-Card-Loot. Solo machbar, Gruppe sicherer.",
+    "access": "Meist an Fluss/Küste. Auto/Bike bis zum Rand; sehr offen – Deckung nutzen.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "blue",
+      "requiredItems": [
+        "Blue Keycard",
+        "1 Fuse"
+      ],
+      "optionalItems": [
+        "Green Card (Außenräume)"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Fuse finden/mitbringen",
+          "instruction": "Fuse-Box am gesicherten Gebäude lokalisieren.",
+          "warning": "Ohne Fuse öffnet die Tür nicht."
+        },
+        {
+          "order": 2,
+          "title": "Fuse setzen",
+          "instruction": "Electrical Fuse in die Fuse-Box einsetzen, Strom aktiv.",
+          "result": "Türsteuerung/Turret-Kontext aktiv."
+        },
+        {
+          "order": 3,
+          "title": "Blue-Card-Swipe",
+          "instruction": "An der blauen Kartenleser-Tür die Blue Card swipen.",
+          "result": "Hauptloot-Raum offen."
+        },
+        {
+          "order": 4,
+          "title": "Looten & raus",
+          "instruction": "Militär-/Basic-Kisten leeren, kontrolliert zurückziehen."
+        }
+      ],
+      "commonMistakes": [
+        "Ohne Fuse anreisen",
+        "Offen über den Innenhof laufen (Sniper)"
+      ],
+      "resetOrTimingNotes": "Türen schließen nach kurzer Zeit wieder – zügig durch.",
+      "exitTips": [
+        "Nicht über die offene Mitte rausrennen"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militär- + Basic-Kisten.",
+      "recyclerLocation": "Recycler + Refinery vor Ort.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "medium",
+      "npcs": "Wenige Scientists (versionsabhängig).",
+      "pvpHotspots": "Offener Innenhof = Sniper-Falle."
+    },
+    "strategy": {
+      "soloTips": "Am Rand entlang, nie mittig.",
+      "groupTips": "Einer hält die Höhe/Sichtlinien, Rest lootet."
+    },
+    "beginnerMistakes": [
+      "Fuse vergessen",
+      "Green/Blue verwechseln"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=GLZaepYwJdo",
+      "https://www.youtube.com/watch?v=9Qg6Istthxs"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Exakte NPC-Zahl versionsabhängig."
+    },
+    "imageUrl": "assets/water_treatment.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "sewer_branch",
+    "name": "Sewer Branch",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Kompaktes unterirdisches Tier-2-Monument mit Green-Card-Puzzle und Fuse. Gute Loot-Dichte, Recycler + Refinery. Enge Gänge = Chokepoints.",
+    "whyRunIt": "Einer der besten früh/mittleren Loot-Runs pro Zeit. Solo top.",
+    "access": "Unterirdischer Zugang, meist stadtnah/an Water Treatment gekoppelt. Zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "green",
+      "requiredItems": [
+        "Green Keycard",
+        "1 Fuse"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Fuse setzen",
+          "instruction": "Fuse-Box im Eingangsbereich mit Electrical Fuse aktivieren."
+        },
+        {
+          "order": 2,
+          "title": "Green-Card-Swipe",
+          "instruction": "An der grünen Kartentür swipen.",
+          "result": "Loot-Abschnitt offen."
+        },
+        {
+          "order": 3,
+          "title": "Loot",
+          "instruction": "Militär-/Basic-Kisten in den Tunnelabschnitten leeren."
+        }
+      ],
+      "commonMistakes": [
+        "Fuse vergessen",
+        "In engem Gang von NPC/Spieler überrascht"
+      ],
+      "exitTips": [
+        "Einen Ausgang vorher merken"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militär- + Basic-Kisten.",
+      "recyclerLocation": "Recycler + Refinery.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Wenige Scientists.",
+      "chokePoints": "Enge Gänge – SMG/Schrot ideal."
+    },
+    "strategy": {
+      "soloTips": "Schnell rein/raus, ein Ausgang gemerkt.",
+      "groupTips": "Nacheinander durch Chokes, Ecken clearen."
+    },
+    "beginnerMistakes": [
+      "Fuse vergessen",
+      "Mit Langwaffe im Nahkampf-Gang steckenbleiben"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=FICzFsiiA5k",
+      "https://www.youtube.com/watch?v=37uy9AjzzaY"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/sewer_branch.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "satellite_dish",
+    "name": "Satellite Dish",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Kompaktes Tier-2 mit Fuse+Blue-Card-Kontrollraum. Eher niedrige Loot-Dichte, aber schneller Blue-Card-Stop. Recycler.",
+    "whyRunIt": "Früher, planbarer Blue-Card-Loot. Solo machbar.",
+    "access": "Auf Hügeln/erhöht. Auto/Bike bis zum Fuß, dann hoch.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "blue",
+      "requiredItems": [
+        "Blue Keycard",
+        "1 Fuse"
+      ],
+      "optionalItems": [
+        "Green Card (Vorräume)"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Fuse setzen",
+          "instruction": "Fuse-Box aktivieren."
+        },
+        {
+          "order": 2,
+          "title": "Blue-Swipe",
+          "instruction": "Blue Card am Kontrollraum swipen.",
+          "result": "Loot-Raum offen."
+        },
+        {
+          "order": 3,
+          "title": "Loot & raus",
+          "instruction": "Kisten leeren, zurückziehen."
+        }
+      ],
+      "commonMistakes": [
+        "Fuse vergessen"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Werkzeug-/Militärkisten (moderat).",
+      "recyclerLocation": "Recycler vorhanden.",
+      "crateTypes": [
+        "Basic Crate",
+        "Military Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Wenige/keine.",
+      "pvpHotspots": "Erhöhte Lage, gut einsehbar."
+    },
+    "strategy": {
+      "soloTips": "Als reinen Card-Farm nutzen."
+    },
+    "beginnerMistakes": [
+      "Zu viel Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=H_bKSAOgujc",
+      "https://www.youtube.com/watch?v=kYaHqiU_uRc"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Exakte Card-Kombi versionsabhängig – Green/Blue je Layout."
+    },
+    "imageUrl": "assets/satellite_dish.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "harbor_large",
+    "name": "Large Harbor",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Großes Küsten-Tier-2-Monument, das über mehrere durch Wasser getrennte Abschnitte (per rostiger Fähren begehbar) reicht. Recycler, viele Kisten, Kran. Zentrales Feature: einfaches Blue-Card-Puzzle im großen Pavilion – hier BEKOMMT man eine Blue Card.",
+    "whyRunIt": "Guter Mid-Game-Loot + kostenlose Blue Card. Linke Seite lohnt (rechts kaum Loot, gefährlich offen). Duo/Gruppe.",
+    "access": "Küste. Boot (leiser Approach) oder Auto. Über die Fähren zwischen den Abschnitten zirkulieren; rechte Seite meiden.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "green",
+      "requiredItems": [
+        "Green Keycard",
+        "1 Fuse"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Fuse setzen",
+          "instruction": "Fuse-Box außen am großen Pavilion (direkt über der Brown-Crate-Position) mit 1 Fuse aktivieren."
+        },
+        {
+          "order": 2,
+          "title": "Green-Swipe",
+          "instruction": "In den Pavilion, im kleinen Raum die Green Card swipen.",
+          "result": "Raum offen."
+        },
+        {
+          "order": 3,
+          "title": "Blue Card einsammeln",
+          "instruction": "Im Raum liegen eine Blue Card + 2 Brown Crates.",
+          "result": "Blue Card als Belohnung – dein Ticket für andere Blue-Türen."
+        }
+      ],
+      "commonMistakes": [
+        "Denken, man braucht schon eine Blue Card (man BEKOMMT sie hier)",
+        "Fuse vergessen",
+        "Rechte Seite ablaufen (kaum Loot, offen)"
+      ],
+      "exitTips": [
+        "Über Boot/Fähre raus, nicht über offene Zufahrt"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Viele Brown/Basic-Kisten entlang der linken Seite, Militärkisten möglich.",
+      "recyclerLocation": "Recycler-Gebäude auf der Karte.",
+      "cardSpawns": "Blue Card im Pavilion-Raum (Belohnung).",
+      "crateTypes": [
+        "Brown Crate",
+        "Military Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Wenige/keine (versionsabhängig).",
+      "pvpHotspots": "Rechte Seite offen; Cargo dockt hier."
+    },
+    "strategy": {
+      "soloTips": "Linke Seite hoch/runter, Pavilion für Blue Card.",
+      "groupTips": "Fähren-Routen für Flanken."
+    },
+    "beginnerMistakes": [
+      "Blue Card fälschlich als Voraussetzung annehmen",
+      "Rechte Seite ablaufen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=FYJ0qACjgrY",
+      "https://www.youtube.com/watch?v=StzPqP_5csQ"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "VERIFIZIERT via EIP Gaming (2026-07-08). Nur Green Card + 1 Fuse NÖTIG; Blue Card ist die Belohnung. Roh-JSON (green+fuse) war korrekt."
+    },
+    "imageUrl": "assets/harbor_large.svg",
+    "sources": [
+      "https://eip.gg/rust/guides/large-harbor-monument/",
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "harbor_small",
+    "name": "Small Harbor",
+    "categoryId": "tier_2",
+    "confidence": "likely",
+    "overview": "Kompaktere Harbor-Variante an der Küste. Recycler, Kran, kleinerer Loot-Pool. Ebenfalls ein Blue-Card-Puzzle-Standort (Green Card + Fuse → Blue Card als Belohnung), analog zum Large Harbor.",
+    "whyRunIt": "Guter Einstieg, wenn erst eine Blue Card gebraucht wird. Solo/Duo.",
+    "access": "Küste. Boot oder Auto.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "green",
+      "requiredItems": [
+        "Green Keycard",
+        "1 Fuse"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Fuse + Green",
+          "instruction": "Fuse setzen, Green Card am Kartenraum swipen.",
+          "result": "Raum offen – Blue Card + Kisten (analog Large Harbor)."
+        }
+      ],
+      "commonMistakes": [
+        "Blue Card als Voraussetzung annehmen",
+        "Fuse vergessen"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Brown/Basic-Kisten (weniger als Large).",
+      "recyclerLocation": "Recycler + Refinery.",
+      "cardSpawns": "Blue Card (Belohnung, analog).",
+      "crateTypes": [
+        "Brown Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Wenige.",
+      "pvpHotspots": "Leicht campbar."
+    },
+    "strategy": {
+      "soloTips": "Als Blue-Card-Quelle vor dem Large Harbor."
+    },
+    "beginnerMistakes": [
+      "Card-Rolle verwechseln"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Bsrb9L-QDJ8",
+      "https://www.youtube.com/watch?v=etNkDxNEOns"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": false,
+      "needsOwnerReview": true,
+      "notes": "ANALOG zu Large Harbor (Green+Fuse→Blue), aber Small Harbor nicht einzeln web-bestätigt. sourceNeeded: eigenständigen Small-Harbor-Guide prüfen."
+    },
+    "imageUrl": "assets/harbor_small.svg",
+    "sources": [
+      "https://eip.gg/rust/guides/large-harbor-monument/",
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "junkyard",
+    "name": "Junkyard",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Schrottplatz mit Magnetkran + Car-Crusher-Event. Kein Kartenrätsel, keine NPCs. Green-Card-Spawn möglich. Bauteil-Kisten + Component-Farm.",
+    "whyRunIt": "Component-Farming via Crusher + Green Card. Solo/Duo.",
+    "access": "Industriegebiet/Straßen. Auto/Bike (Diesel für Crusher).",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Kartenrätsel. Crusher = Nutzung, kein Puzzle. Green Card kann spawnen."
+    },
+    "lootGuide": {
+      "expectedLoot": "Bauteil-Kisten, Fässer.",
+      "cardSpawns": "Green Card möglich.",
+      "recyclerLocation": "Recycler vorhanden.",
+      "diesel": "Car-Crusher braucht Auto-Wracks; Magnetkran bewegt sie."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Crusher ist laut – zieht Aufmerksamkeit."
+    },
+    "strategy": {
+      "soloTips": "Wracks in den Crusher, Loot einsammeln."
+    },
+    "beginnerMistakes": [
+      "Kartenrätsel suchen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Wmkm5LwZ2rU",
+      "https://www.youtube.com/watch?v=qJvTHUystVY"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/junkyard.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "ferry_terminal",
+    "name": "Ferry Terminal",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Küsten-Monument mit Militärkisten und Recycler. Cargo-/Transit-Kontext. Offenes Layout.",
+    "whyRunIt": "Solider Küsten-Zwischenstopp, kombinierbar mit Harbor/Fishing Village.",
+    "access": "Küste. Boot oder Auto.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "In der Roh-JSON kein Card/Fuse gesetzt. Falls aktuelle Version doch Card-Räume hat: sourceNeeded."
+    },
+    "lootGuide": {
+      "expectedLoot": "Militär-/Basic-Kisten, Fässer.",
+      "recyclerLocation": "Recycler vorhanden.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Wenige/keine.",
+      "pvpHotspots": "Offenes Layout."
+    },
+    "strategy": {
+      "soloTips": "Schnell durch, offene Flächen meiden."
+    },
+    "beginnerMistakes": [
+      "Offen stehen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=HEPmyzdqyR8",
+      "https://www.youtube.com/watch?v=jADqX5lz-Lc"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": false,
+      "needsOwnerReview": true,
+      "notes": "sourceNeeded: aktuelles Puzzle/Card-Layout bestätigen."
+    },
+    "imageUrl": "assets/ferry_terminal.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "airfield",
+    "name": "Airfield",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Großes Tier-2 mit ZWEI getrennten Green→Blue-Progressionen (je Hangar) und 2 Fuses. Viele Militärkisten, Recycler. Sehr offen – hohes PvP-/Sniper-Risiko.",
+    "whyRunIt": "Guter Militär-Loot + 2 Blue-Räume. Duo/Gruppe klar besser als Solo.",
+    "access": "Zentral, große offene Fläche. Minicopter am Rand landen, zu Fuß rein (nicht mittig).",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "multi_card",
+      "requiredItems": [
+        "Green Keycard",
+        "Blue Keycard",
+        "2 Fuses"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Hangar A – Fuse",
+          "instruction": "Fuse-Box am ersten Hangar setzen."
+        },
+        {
+          "order": 2,
+          "title": "Hangar A – Green→Blue",
+          "instruction": "Green swipen, dann Blue am Kartenraum.",
+          "result": "Hangar-A-Loot offen."
+        },
+        {
+          "order": 3,
+          "title": "Hangar B – Fuse",
+          "instruction": "Zweite Fuse-Box am anderen Hangar setzen."
+        },
+        {
+          "order": 4,
+          "title": "Hangar B – Green→Blue",
+          "instruction": "Green→Blue wiederholen.",
+          "result": "Hangar-B-Loot offen."
+        }
+      ],
+      "commonMistakes": [
+        "Nur 1 Fuse mitnehmen (man braucht 2)",
+        "Über das offene Rollfeld laufen (Sniper)"
+      ],
+      "exitTips": [
+        "Am Rand/hinter Hangars entlang, nie über die Piste"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Viele Militärkisten, selten Elite im gesicherten Bereich.",
+      "recyclerLocation": "Recycler vorhanden.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate",
+        "Barrels"
+      ]
+    },
+    "threats": {
+      "radiation": "medium",
+      "npcs": "Einige Scientists (versionsabhängig, verteilt).",
+      "pvpHotspots": "Offenes Rollfeld, Airdrop-/Heli-Nähe."
+    },
+    "strategy": {
+      "soloTips": "Nur einen Hangar nehmen, Rest meiden.",
+      "groupTips": "Aufteilen: je Team ein Hangar, einer overwatch."
+    },
+    "beginnerMistakes": [
+      "Nur 1 Fuse dabei",
+      "Mitten über die Piste"
+    ],
+    "advancedTips": [
+      "Airdrops landen hier oft – im Blick behalten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Xr7AvpLUnRo",
+      "https://www.youtube.com/watch?v=XvVQiGATjaM"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "2 Fuses bestätigt in Roh-JSON; NPC-Zahl versionsabhängig."
+    },
+    "imageUrl": "assets/airfield.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "radtown",
+    "name": "Radtown",
+    "categoryId": "tier_2",
+    "confidence": "verified",
+    "overview": "Reworktes verstrahltes Schrott-Monument (World-2, Okt 2024). KEIN NPC, KEIN Kartenrätsel – reiner Loot-Run gegen die Strahlung. Recycler, Default/Militär-/teils Elite-Kisten, radioaktive Wasser-Pools.",
+    "whyRunIt": "High-Value ohne NPC-Kampf – nur Strahlungsmanagement. Anfänger-freundlich mit Hazmat.",
+    "access": "Offenes Gelände, meist inland. Auto/Bike bis zum Rand, dann zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Rätsel, keine Karte, keine NPCs – Strahlung ist das 'Hindernis'."
+    },
+    "lootGuide": {
+      "expectedLoot": "Default-/Militärkisten, Elite MÖGLICH (nicht garantiert), Recycler.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate",
+        "Elite Crate (möglich)"
+      ]
+    },
+    "threats": {
+      "radiation": "medium",
+      "npcs": "Keine.",
+      "pvpHotspots": "High-Value zieht Spieler; radioaktive Pools zehren HP."
+    },
+    "strategy": {
+      "soloTips": "Hazmat + Bandagen, zügig looten, Pools kurz halten.",
+      "groupTips": "Rotieren, damit niemand zu lange in der Strahlung steht."
+    },
+    "beginnerMistakes": [
+      "Ohne Strahlenschutz rein",
+      "Zu lange in Radioactive Water"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=QRQBytskSUU",
+      "https://www.youtube.com/watch?v=RHBqyDmHZXQ"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "lootValue in Roh-JSON war 5/Elite-Standard – auf Richtwert 3-4 entschärft, Elite als 'möglich'."
+    },
+    "imageUrl": "assets/radtown.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "launch_site",
+    "name": "Launch Site",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Größtes Oberflächenmonument. Bradley-APC patrouilliert, dazu Scientists. Green→Red-Progression + Fuses. Elite-Kisten (u.a. Dach), extreme Strahlung im Hauptgebäude. Endgame.",
+    "whyRunIt": "Bester Blueprint-Pool + Bradley-Crate. Gruppe klar bevorzugt; Solo nur sehr erfahren.",
+    "access": "Kartenrand. Minicopter anfliegen, außerhalb der Bradley-Route landen. Zu Fuß > Auto (Bradley schießt Fahrzeuge).",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "multi_card",
+      "requiredItems": [
+        "Green Keycard",
+        "Red Keycard",
+        "2 Fuses"
+      ],
+      "optionalItems": [
+        "4-6 HV-Rockets ODER 6-8 C4 für Bradley"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Bradley (optional zuerst)",
+          "instruction": "APC mit HV-Rockets/C4 zerstören, wenn ihr die Crate wollt.",
+          "warning": "Bradley tötet unvorbereitete Spieler schnell – aus Deckung."
+        },
+        {
+          "order": 2,
+          "title": "Green + Fuse",
+          "instruction": "Green Card + Fuse für die Vorräume/erste Sektion."
+        },
+        {
+          "order": 3,
+          "title": "Red-Swipe",
+          "instruction": "Zweite Fuse setzen, Red Card am Elite-Raum swipen.",
+          "result": "Elite-Loot offen."
+        },
+        {
+          "order": 4,
+          "title": "Dach/Elite + raus",
+          "instruction": "Elite-Kisten (u.a. Dach) leeren, kontrolliert raus.",
+          "warning": "Extreme Strahlung im Hauptgebäude – Hazmat + Wasser/Meds."
+        }
+      ],
+      "commonMistakes": [
+        "Mit Auto reinfahren (Bradley)",
+        "Nur 1 Fuse",
+        "Ohne Strahlenschutz ins Hauptgebäude"
+      ],
+      "exitTips": [
+        "Über Minicopter am Rand raus, Bradley-Route meiden"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Mehrere Elite-Kisten, Militärkisten überall, Bradley-Crate.",
+      "recyclerLocation": "Recycler vorhanden.",
+      "crateTypes": [
+        "Elite Crate",
+        "Military Crate",
+        "APC/Bradley Crate"
+      ],
+      "lockedCrate": "Gelegentlich CH47-Chinook-Locked-Crate-Drop hier."
+    },
+    "threats": {
+      "radiation": "extreme",
+      "npcs": "Bradley-APC + Scientists.",
+      "pvpHotspots": "Top-PvP-Magnet, Chinook-Nähe."
+    },
+    "strategy": {
+      "soloTips": "Nur Randbereiche/Bradley-Crate, Hauptgebäude riskant solo.",
+      "groupTips": "Rollen: Bradley-Team + Loot-Team + Overwatch."
+    },
+    "beginnerMistakes": [
+      "Bradley unterschätzen",
+      "Fuse-/Card-Menge falsch",
+      "Strahlung ignorieren"
+    ],
+    "advancedTips": [
+      "Bradley an fester Ecke aus Deckung kiten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=sF303IOnDDc",
+      "https://www.youtube.com/watch?v=mtSeT73Ktjc"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Green+Red+2 Fuses bestätigt in Roh-JSON."
+    },
+    "imageUrl": "assets/launch_site.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "military_tunnels",
+    "name": "Military Tunnels",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Unterirdischer Endgame-Komplex, eines der schwersten Monumente. 29 Scientists mit fortgeschrittener KI (aggro auf Sicht+Geräusch, F1-Granaten, heilen, rufen Verstärkung). Mehrstufiges Green→Blue→Red-Puzzle mit Fuses/Timern, punktuell hohe Strahlung. Militär-/Elite-Kisten.",
+    "whyRunIt": "Massig Elite-/Militär-Loot (roter Waggon bis 4 Elite, ~25 min Respawn) – härtester NPC-Run. Gruppe empfohlen.",
+    "access": "Immer Hauptinsel. 4 Zugänge (Armory-Haupteingang, Shelter-4-Mine, Silo, Sekundär-Mine). Zu Fuß/Pferd/Heli. 26+ Strahlenschutz für die Tiefe.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "multi_card",
+      "requiredItems": [
+        "Green Keycard",
+        "Blue Keycard",
+        "Red Keycard",
+        "2 Fuses"
+      ],
+      "optionalItems": [
+        "Weapon Flashlight",
+        "200+ Ammo",
+        "8+ Syringes"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Eintritt Armory",
+          "instruction": "Haupteingang (keine Karte). Sentry-Scientist zuerst töten. Ab hier 11+ Strahlenschutz.",
+          "warning": "NPCs alarmieren einander bei Lärm."
+        },
+        {
+          "order": 2,
+          "title": "Fuse #1 + Timer (Armory)",
+          "instruction": "Fuse-Box: 1 Fuse (hält ~3 min), dann Timer aktivieren – Green-Tür für ~2 min frei.",
+          "warning": "Nur ~2 min – zügig."
+        },
+        {
+          "order": 3,
+          "title": "Green-Tür (Shelter 4)",
+          "instruction": "An der grünen Tür bei grünem Licht Green Card swipen (öffnet ~1:45 min).",
+          "result": "Shelter-4 offen."
+        },
+        {
+          "order": 4,
+          "title": "Labor-Schalter",
+          "instruction": "'Laboratory'-Schalter an – aktiviert Blue-Reader für ~4:20 min.",
+          "warning": "Timer abgelaufen = ab Armory neu."
+        },
+        {
+          "order": 5,
+          "title": "Elite-Waggon (optional, kartenfrei)",
+          "instruction": "Roter Waggon: bis 4 Elite-Kisten (~25 min Respawn).",
+          "result": "Elite-Loot."
+        },
+        {
+          "order": 6,
+          "title": "Blue-Tür",
+          "instruction": "Blue Card am Labor-Reader (bis 30 min offen, Not-Schließknopf innen)."
+        },
+        {
+          "order": 7,
+          "title": "Red-Tür + Loot",
+          "instruction": "Innen Red-Timer aktivieren, Red Card swipen (~10 s; Timer bis 10 min). Loot-Raum mit Militär-/Elite-Kisten.",
+          "result": "Hauptloot."
+        },
+        {
+          "order": 8,
+          "title": "Exfil",
+          "instruction": "Silo-Treppe oder Mine (Chance auf Zusatzloot)."
+        }
+      ],
+      "commonMistakes": [
+        "Nur 1 Fuse (man braucht 2)",
+        "Timer-Fenster verpassen",
+        "Ohne 26+ Strahlenschutz",
+        "Langwaffe im engen Gang"
+      ],
+      "resetOrTimingNotes": "Fuse ~3 min; Green-Timer ~2 min; Blue-Reader ~4:20 min; Green-Tür ~1:45 min.",
+      "exitTips": [
+        "Silo-Treppe oder Mine"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militär- + Elite-Kisten (roter Waggon bis 4 Elite, ~25 min), + 20+ Barrels/Food außen.",
+      "recyclerLocation": "Recycler außen.",
+      "cardSpawns": "Scientists droppen oft Green Cards.",
+      "crateTypes": [
+        "Elite Crate",
+        "Military Crate",
+        "Basic Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "high",
+      "npcs": "29 Scientists mit adv. KI (F1-Granaten, heilen, Verstärkung).",
+      "chokePoints": "Dunkle enge Gänge; punktuell hohe Strahlung.",
+      "campingSpots": "Außen + Silo."
+    },
+    "strategy": {
+      "soloTips": "Scientists zwischen Green/Blue vorher clearen; solo brutal.",
+      "groupTips": "Timer-Läufer + Kampf-Team; Elite-Waggon als Schnellrun."
+    },
+    "beginnerMistakes": [
+      "Nur 1 Fuse",
+      "Timing unterschätzen",
+      "Kein Strahlenschutz/Licht"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=OIImYNdnz7w",
+      "https://www.youtube.com/watch?v=E3wZOGM3RS4"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "VERIFIZIERT via CorrosionHour (2026-07-08). Green+Blue+Red + 2 Fuses (Roh-JSON '1 Fuse' falsch). 29 Scientists."
+    },
+    "advancedTips": [
+      "Elite-Waggon kartenfrei; Scientist-Flares zum Ausleuchten"
+    ],
+    "imageUrl": "assets/military_tunnels.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "power_plant",
+    "name": "Power Plant",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Vertikales Endgame-Monument mit Green→Blue + Fuse. Militärkisten, Recycler, Pumpjack. Hohe Strahlung in oberen Etagen. Gut verschanzbar.",
+    "whyRunIt": "Solider Militär-/Komponenten-Loot + vertikale Deckung. Solo mit Rückzugsvorteil machbar.",
+    "access": "Inland. Auto/Bike bis Eingang, dann durchs Gebäude nach oben.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "multi_card",
+      "requiredItems": [
+        "Green Keycard",
+        "Blue Keycard",
+        "1 Fuse"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Green",
+          "instruction": "Green Card für Vorräume swipen."
+        },
+        {
+          "order": 2,
+          "title": "Fuse + Blue",
+          "instruction": "Fuse setzen, Blue Card am oberen Elite-/Loot-Raum swipen.",
+          "result": "Oberer Loot offen.",
+          "warning": "Obere Etagen strahlen – Hazmat."
+        },
+        {
+          "order": 3,
+          "title": "Loot & raus",
+          "instruction": "Kisten leeren, kontrolliert absteigen."
+        }
+      ],
+      "commonMistakes": [
+        "Fuse vergessen",
+        "Strahlung oben ignorieren"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militär- + Basic-Kisten, Fässer.",
+      "recyclerLocation": "Recycler + Pumpjack.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate",
+        "Barrels"
+      ]
+    },
+    "threats": {
+      "radiation": "high",
+      "npcs": "Einige Scientists.",
+      "pvpHotspots": "Vertikal – gut zu halten, aber auch zu campen."
+    },
+    "strategy": {
+      "soloTips": "Verschanzen in einer Etage, Rückzug offen halten.",
+      "groupTips": "Etagenweise hochclearen."
+    },
+    "beginnerMistakes": [
+      "Fuse vergessen",
+      "Ohne Hazmat oben"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=5Y9gRkWe-F8",
+      "https://www.youtube.com/watch?v=J2taQaFLciM"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/power_plant.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "train_yard",
+    "name": "Train Yard",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Bahn-Monument mit Green→Blue + Fuse, Pumpjack, Recycler, Refinery. Militärkisten in Waggons. Viele Verstecke für Hinterhalte. Anbindung ans Zugnetz.",
+    "whyRunIt": "Guter High-Tier-Loot + Fuel + Zug-Fast-Travel. Duo/Gruppe.",
+    "access": "An Gleisen. Auto/Bike über die Trasse; per Workcart aus dem Tunnelnetz.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "multi_card",
+      "requiredItems": [
+        "Green Keycard",
+        "Blue Keycard",
+        "1-2 Fuses"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Green",
+          "instruction": "Green Card für Außen-/Vorräume swipen."
+        },
+        {
+          "order": 2,
+          "title": "Fuse + Blue",
+          "instruction": "Fuse setzen, Blue Card an der Haupt-Loot-Halle swipen.",
+          "result": "Hauptloot offen."
+        },
+        {
+          "order": 3,
+          "title": "Loot",
+          "instruction": "Militärkisten in Waggons/Halle leeren, Refinery/Diesel checken."
+        }
+      ],
+      "commonMistakes": [
+        "Fuse vergessen",
+        "In den vielen Verstecken überrascht werden"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militär- + Basic-Kisten.",
+      "recyclerLocation": "Recycler + Refinery + Pumpjack.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "medium",
+      "npcs": "Einige Scientists.",
+      "campingSpots": "Waggons/Türme = Ambush-Nester."
+    },
+    "strategy": {
+      "soloTips": "Ecken/Waggons vor dem Loot clearen.",
+      "groupTips": "Overwatch auf die Türme."
+    },
+    "beginnerMistakes": [
+      "Fuse vergessen",
+      "Sichtlinien der Türme ignorieren"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=myn-B-5xq9E",
+      "https://www.youtube.com/watch?v=zRGJ5Co1q1g"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "1-2 Fuses versionsabhängig."
+    },
+    "imageUrl": "assets/train_yard.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "excavator",
+    "name": "Giant Excavator Pit",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Riesiger Bagger als Diesel-EVENT (kein Kartenrätsel). Wenige/keine NPCs. Diesel einfüllen → Bagger farmt ~2 h automatisch eine gewählte Ressource, danach große Schrott-/Loot-Belohnung. Sichtbar & laut = PvP-Magnet.",
+    "whyRunIt": "Bestes Schrott-/Ressourcen-Farm-Event. Gruppe zum Verteidigen.",
+    "access": "Große sichtbare Grube, inland. Auto/Bike; Diesel mitbringen.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "vehicle",
+      "requiredItems": [
+        "Diesel Fuel"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Ressource wählen",
+          "instruction": "Am Steuerstand Ressource (Stone/Metal/Sulfur/HQM) einstellen."
+        },
+        {
+          "order": 2,
+          "title": "Diesel einfüllen",
+          "instruction": "Diesel in den Tank – Bagger startet.",
+          "warning": "Laut & sichtbar – zieht Spieler an."
+        },
+        {
+          "order": 3,
+          "title": "Laufen lassen & sichern",
+          "instruction": "Warten/verteidigen, bis Output ausgeworfen wird.",
+          "result": "Große Ressourcen-/Schrott-Ausbeute."
+        }
+      ],
+      "commonMistakes": [
+        "Ohne Diesel anreisen",
+        "Allein ohne Verteidigungsplan starten"
+      ],
+      "resetOrTimingNotes": "Läuft ~2 h; plant Verteidigung ein."
+    },
+    "lootGuide": {
+      "expectedLoot": "Massive Ressourcen (gewählt) + Schrott/Kisten am Output.",
+      "diesel": "Betrieb ausschließlich über Diesel.",
+      "crateTypes": [
+        "Basic Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Wenige/keine.",
+      "pvpHotspots": "Sichtbares laufendes Event = Spieler-Magnet."
+    },
+    "strategy": {
+      "soloTips": "Riskant solo – ihr müsst währenddessen präsent bleiben.",
+      "groupTips": "Team hält Sichtlinien/Zufahrt, während der Bagger läuft."
+    },
+    "beginnerMistakes": [
+      "Denken es sei ein Karten-Puzzle",
+      "Diesel vergessen",
+      "Unverteidigt starten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=H7eMgAUkR-U",
+      "https://www.youtube.com/watch?v=UuIXnQHFFXY"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "KORRIGIERT: Roh-JSON sagte 'Heavy Scientists 15-20' – falsch. Excavator hat wenige/keine NPCs (deckt sich mit deinem Masterplan)."
+    },
+    "imageUrl": "assets/excavator.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "arctic_base",
+    "name": "Arctic Research Base",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Kleines, schneebedecktes Monument am Kartenrand. Sehr großzügige Low-Grade-Fuel- + Food-Spawns, viele Kisten. Selbstheilende Winter-Scientists. Einziges Science-Monument mit Recycler und einziger Snowmobile-Spawn.",
+    "whyRunIt": "High-Tier-Loot + reichlich Fuel im Schnee, dazu Snowmobile UND eine kostenlose Red Card. Duo/Gruppe; solo machbar.",
+    "access": "Nur Schnee-Biom, am Kartenrand. Auto/Bike; warme Kleidung schon auf dem Weg Pflicht. Train-Tunnel-Anbindung möglich.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "blue",
+      "requiredItems": [
+        "Blue Keycard"
+      ],
+      "optionalItems": [
+        "Warme Kleidung"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Blue-Swipe (Card-Rooms)",
+          "instruction": "Blue Card an den zwei Card-Rooms swipen.",
+          "result": "Beide Räume offen."
+        },
+        {
+          "order": 2,
+          "title": "Belohnungen sichern",
+          "instruction": "Ein Raum enthält das Snowmobile, der andere eine RED CARD – beides mitnehmen.",
+          "result": "Snowmobile + Red Card."
+        }
+      ],
+      "commonMistakes": [
+        "Fuse suchen (für die Card-Rooms nicht nötig)",
+        "Red Card im zweiten Raum vergessen",
+        "Zögerlich kämpfen (Scientists heilen sich)"
+      ],
+      "exitTips": [
+        "Snowmobile für schnellen Abzug (auch im Wüstenbiom nutzbar)"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Viele Kisten, Tech-Trash, sehr großzügige Low-Grade-Fuel- + Food-Spawns.",
+      "recyclerLocation": "Recycler vorhanden (einziges Science-Monument mit Recycler).",
+      "cardSpawns": "RED CARD im zweiten Card-Room (Belohnung).",
+      "crateTypes": [
+        "Military Crate",
+        "Food Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Winter-Scientists, die sich selbst HEILEN – schnell fokussieren.",
+      "pvpHotspots": "Beliebtes Monument; Türen als Deckung nutzen.",
+      "campingSpots": "Türen/Card-Rooms."
+    },
+    "strategy": {
+      "soloTips": "Nicht zu vorsichtig – sonst heilen die Scientists. Nach je 2 Kills rotieren.",
+      "groupTips": "NPCs schnell splitten/fokussieren."
+    },
+    "beginnerMistakes": [
+      "Kälte unterschätzen",
+      "Zu zaghaft (Heilung)",
+      "Red Card/Snowmobile vergessen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=JeZNxXn6KQg",
+      "https://www.youtube.com/watch?v=lTaUsyKT1BE"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "VERIFIZIERT via EIP Gaming (2026-07-08). Blue Card öffnet Card-Rooms → Snowmobile + Red Card. Kein Fuse für Card-Rooms. Recycler ja, selbstheilende Scientists."
+    },
+    "advancedTips": [
+      "Snowmobile: 20 Fuel Start, 12 Slots, 300 HP, 2 Sitze, ~9 Fuel/min; auch in Sand nutzbar"
+    ],
+    "imageUrl": "assets/arctic_base.svg",
+    "sources": [
+      "https://eip.gg/rust/guides/arctic-research-base-monument/",
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "abandoned_military_base",
+    "name": "Abandoned/Desert Military Base",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Wüsten-Gegenstück zur Arctic Base (MLRS & Desert Base Update, Nov 2021). Mid-Tier: ~8 Blue Scientists, KEINE Strahlung, KEIN Kartenrätsel, KEIN Recycler, KEIN Bradley vor Ort. Prozedurale Layouts A-D. Hauptattraktion: MLRS-Fahrzeug.",
+    "whyRunIt": "Komponenten- + Low-Grade-Fuel-Farm ohne Strahlung; MLRS zum Basen-Bombardieren (mit Bradley-Rockets). Gut zum Abpassen von MLRS-Nutzern.",
+    "access": "Nur Wüstenbiom, wenig Deckung. 2-3 Eingänge je Layout; teils Underground-Tunnel-Anbindung. Vorher auf Schüsse lauschen.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "vehicle",
+      "requiredItems": [
+        "MLRS Aiming Module",
+        "MLRS Rockets (aus Bradley-Event)"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Monument clearen",
+          "instruction": "~8 Blue Scientists ausschalten (verteilt, aggro & verfolgen).",
+          "warning": "Keine Strahlung, aber offenes Gelände + PvP."
+        },
+        {
+          "order": 2,
+          "title": "MLRS beladen",
+          "instruction": "Hinten am MLRS per E Rockets laden, Aiming Module einsetzen.",
+          "result": "MLRS bereit."
+        },
+        {
+          "order": 3,
+          "title": "Ziel bombardieren",
+          "instruction": "Über Aiming Module Map-Ziel markieren und feuern."
+        }
+      ],
+      "commonMistakes": [
+        "Kartenrätsel/Strahlung erwarten",
+        "MLRS ungesichert nutzen (Kabine verwundbar)"
+      ],
+      "exitTips": [
+        "Egress-Pfade merken (offenes Wüstengelände)"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "~10 Kisten + ~10 Barrels; Komponenten-, Fuel-, Food-, Medical-Crates. Moderate Low-Grade/Crude.",
+      "recyclerLocation": "KEIN Recycler.",
+      "crateTypes": [
+        "Basic Crate",
+        "Component Crate",
+        "Fuel Crate",
+        "Food Crate",
+        "Medical Crate"
+      ],
+      "diesel": "Moderate Fuel an Refineries."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "~8 Blue Scientists (Standard, nicht Heavy) + Wüsten-Wildtiere.",
+      "pvpHotspots": "Concrete Ruins/Hangars als Ambush.",
+      "campingSpots": "Befestigte Concrete Ruins."
+    },
+    "strategy": {
+      "soloTips": "Klein & schnell (~2 min).",
+      "groupTips": "MLRS-Nutzer abpassen."
+    },
+    "beginnerMistakes": [
+      "Kartenrätsel/Radiation annehmen",
+      "Heavy Scientists erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=CBZ16qttIO4",
+      "https://www.youtube.com/watch?v=4Rh3A-62CuA"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "VERIFIZIERT via CorrosionHour (2026-07-08). Kein Card/Radiation/Recycler/Bradley; ~8 Blue Scientists; MLRS-Mechanik korrekt."
+    },
+    "advancedTips": [
+      "Comms-Tent CCTV-Station; Underground-Tunnel je Seed"
+    ],
+    "imageUrl": "assets/abandoned_military_base.svg",
+    "sources": [
+      "https://www.corrosionhour.com/rust-abandoned-military-base-monument-guide/",
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "missile_silo",
+    "name": "Nuclear Missile Silo",
+    "categoryId": "tier_3",
+    "confidence": "verified",
+    "overview": "Großer unterirdischer Endgame-Komplex mit Card+Fuse-Schleusen. Elite-/Militärkisten, Diesel. NVG-Scientists in Dunkelheit + Strahlung. Sehr großer Loot-Pool, leicht zu verlaufen.",
+    "whyRunIt": "Einer der größten Loot-Pools. Gruppe empfohlen; Solo möglich mit viel Meds.",
+    "access": "Bunkerluke im Gelände. Zu Fuß ins Innere.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "multi_card",
+      "requiredItems": [
+        "Blue Keycard",
+        "Fuse"
+      ],
+      "optionalItems": [
+        "Taschenlampe/Waffenlaser (Dunkelheit)"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Luke öffnen",
+          "instruction": "Zugangsluke/Schleuse betreten."
+        },
+        {
+          "order": 2,
+          "title": "Fuse + Blue",
+          "instruction": "Fuse setzen, Blue Card an der Schleusentür swipen.",
+          "result": "Innerer Komplex offen.",
+          "warning": "Dunkel + strahlend – Licht + Hazmat."
+        },
+        {
+          "order": 3,
+          "title": "Loot mehrstufig",
+          "instruction": "Elite-/Militärkisten über die Ebenen leeren.",
+          "result": "Top-Loot."
+        },
+        {
+          "order": 4,
+          "title": "Exit-Button",
+          "instruction": "Über die Exit-Steuerung/denselben Weg wieder raus."
+        }
+      ],
+      "commonMistakes": [
+        "Ohne Licht rein (verlaufen)",
+        "Fuse vergessen",
+        "Strahlung ignorieren"
+      ],
+      "exitTips": [
+        "Weg merken – der Komplex ist groß"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Elite- + Militärkisten über mehrere Ebenen, Diesel.",
+      "recyclerLocation": "Recycler vorhanden.",
+      "crateTypes": [
+        "Elite Crate",
+        "Military Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "high",
+      "npcs": "NVG-Scientists.",
+      "chokePoints": "Verwinkelte Ebenen, dunkel."
+    },
+    "strategy": {
+      "soloTips": "Viel Meds, Licht, Weg merken.",
+      "groupTips": "Ebenen aufteilen, Rückweg sichern."
+    },
+    "beginnerMistakes": [
+      "Kein Licht",
+      "Sich verlaufen",
+      "Fuse/Card vergessen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=lUPephY1j8U",
+      "https://www.youtube.com/watch?v=81kkuY1Pv0A"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": false,
+      "needsOwnerReview": true,
+      "notes": "sourceNeeded: exakte Blue/Fuse-Sequenz + ob Green nötig, je aktueller Version."
+    },
+    "imageUrl": "assets/missile_silo.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "large_oil_rig",
+    "name": "Large Oil Rig",
+    "categoryId": "offshore",
+    "confidence": "verified",
+    "overview": "Großes Offshore-Endgame. Viele Blue-Scientists + Heavy Scientists (via Locked Crate). Locked-Crate-Event über Hack-Terminal + Timer, mit Red Card. Elite-/Militärkisten. Höchste BP-Chance.",
+    "whyRunIt": "Bester Blueprint-Pool im Spiel + Elite-Loot. Gruppe stark bevorzugt.",
+    "access": "Weit draußen. RHIB/Boot oder Minicopter/Heli; leiser Approach von windabgewandter Seite.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "event",
+      "requiredItems": [
+        "Red Keycard (für Locked Crate)"
+      ],
+      "optionalItems": [
+        "Green/Blue je interne Räume"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Rig entern & NPCs",
+          "instruction": "Deck/Ebenen clearen (Blue + Heavy Scientists).",
+          "warning": "Heavy Scientists sind stark – Deckung & Meds."
+        },
+        {
+          "order": 2,
+          "title": "Hack-Terminal starten",
+          "instruction": "Locked Crate anhacken – Timer (~15 min) läuft.",
+          "warning": "Timer spawnt Heavy Scientists & meldet das Rig."
+        },
+        {
+          "order": 3,
+          "title": "Verteidigen",
+          "instruction": "Bis der Timer abläuft halten."
+        },
+        {
+          "order": 4,
+          "title": "Red-Swipe & Loot",
+          "instruction": "Locked Crate mit Red Card öffnen + restliche Kisten.",
+          "result": "Endgame-Loot + BP-Chance."
+        }
+      ],
+      "commonMistakes": [
+        "Ohne Red Card den Timer starten",
+        "Heavy Scientists unterschätzen",
+        "Fluchtboot ungesichert lassen"
+      ],
+      "exitTips": [
+        "Boot/Heli gesichert parken für schnellen Abzug"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Elite- + Militärkisten + Locked Crate.",
+      "crateTypes": [
+        "Elite Crate",
+        "Military Crate",
+        "Locked Crate"
+      ],
+      "lockedCrate": "Hack-Terminal + ~15-min-Timer, dann Red Card."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Viele Blue + mehrere Heavy Scientists.",
+      "pvpHotspots": "Höchstes Clan-Counter-Risiko."
+    },
+    "strategy": {
+      "soloTips": "Sehr schwer solo – nur top-erfahren.",
+      "groupTips": "Rollen: Entern, Terminal, Verteidigung, Boot-Wache."
+    },
+    "beginnerMistakes": [
+      "Red Card fehlt",
+      "Timer ohne Plan starten"
+    ],
+    "advancedTips": [
+      "Vor dem Hack alle Ebenen clearen, dann Timer"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=GN4khDsR6z4",
+      "https://www.youtube.com/watch?v=sSbM0onf0AM"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Zugang kartenfrei (Boot); Red Card = Locked Crate. Interne Räume ggf. Green/Blue."
+    },
+    "imageUrl": "assets/large_oil_rig.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "small_oil_rig",
+    "name": "Small Oil Rig",
+    "categoryId": "offshore",
+    "confidence": "verified",
+    "overview": "Kompaktere Offshore-Variante mit Locked-Crate-Event. Blue-Scientists + einige Heavy (via Crate). Kleinerer Loot-Pool, weniger Counter-Druck als Large.",
+    "whyRunIt": "Guter Offshore-Einstieg mit weniger PvP-Konkurrenz. Duo/Gruppe.",
+    "access": "Näher an der Küste. RHIB/Boot oder Heli.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "event",
+      "requiredItems": [
+        "Red Keycard (Locked Crate)"
+      ],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Entern & clearen",
+          "instruction": "NPCs auf den Ebenen ausschalten."
+        },
+        {
+          "order": 2,
+          "title": "Terminal + Verteidigen",
+          "instruction": "Locked Crate anhacken, Timer halten."
+        },
+        {
+          "order": 3,
+          "title": "Red-Swipe & Loot",
+          "instruction": "Crate mit Red Card öffnen + Kisten."
+        }
+      ],
+      "commonMistakes": [
+        "Red Card fehlt",
+        "Heli/Boot ungesichert"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "Militärkisten + Locked Crate.",
+      "crateTypes": [
+        "Military Crate",
+        "Locked Crate"
+      ],
+      "lockedCrate": "Hack + Timer, dann Red Card."
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Blue + einige Heavy Scientists.",
+      "pvpHotspots": "Counter per Boot/Heli."
+    },
+    "strategy": {
+      "soloTips": "Machbarer als Large, aber Meds mitnehmen.",
+      "groupTips": "Einer bewacht das Boot."
+    },
+    "beginnerMistakes": [
+      "Red Card fehlt",
+      "Timer ohne Vorbereitung"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=2lzGW8X5NcY",
+      "https://www.youtube.com/watch?v=NBignVjTNzQ"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/small_oil_rig.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "underwater_labs",
+    "name": "Underwater Labs",
+    "categoryId": "offshore",
+    "confidence": "verified",
+    "overview": "Prozedural generierte Unterwasser-Module. Zugang per U-Boot oder Tauchgang. Card-Puzzle INTERN (Green/Blue/Red je Layout), Kartenleser & Card-Spawns in den Modulen. Scientists patrouillieren.",
+    "whyRunIt": "Guter, vom Land abgeschirmter Loot-Grind. Duo/Gruppe; Solo mit Sub möglich.",
+    "access": "Per Solo/Duo-Sub (Fishing Village/Marina) oder Tauchen mit O2 von einer Einstiegsboje.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "procedural",
+      "requiredItems": [
+        "Karten je nach Layout (Green/Blue/Red)"
+      ],
+      "optionalItems": [
+        "Tauchgear, O2-Tanks"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Einstieg",
+          "instruction": "Per Sub andocken oder über Einstiegsboje eintauchen."
+        },
+        {
+          "order": 2,
+          "title": "Module durchqueren",
+          "instruction": "Kartenleser suchen; passende Cards spawnen in Modulen.",
+          "warning": "Prozedural – kein fester Weg pro Server."
+        },
+        {
+          "order": 3,
+          "title": "Card-Türen",
+          "instruction": "Räume via Green/Blue/Red (layoutabhängig) öffnen.",
+          "result": "Modul-Loot + BP-Chance."
+        },
+        {
+          "order": 4,
+          "title": "Ausstieg",
+          "instruction": "O2 im Blick behalten, rechtzeitig raus/zum Sub."
+        }
+      ],
+      "commonMistakes": [
+        "O2 falsch managen",
+        "Sich in prozeduralen Gängen verlieren",
+        "Bei Counter im Modul gefangen"
+      ],
+      "resetOrTimingNotes": "Layout prozedural – nicht auswendig lernbar."
+    },
+    "lootGuide": {
+      "expectedLoot": "Modul-Kisten, Fuel, Blueprint-Chancen, selten Elite.",
+      "crateTypes": [
+        "Military Crate",
+        "Basic Crate",
+        "Elite (selten)"
+      ],
+      "cardSpawns": "Cards spawnen intern in Modulen."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Lab-Scientists.",
+      "chokePoints": "Enge Module; bei Counter Falle."
+    },
+    "strategy": {
+      "soloTips": "O2-Management üben, Ausstieg immer im Kopf.",
+      "groupTips": "Module aufteilen, Sub bewachen."
+    },
+    "beginnerMistakes": [
+      "Feste Route erwarten",
+      "O2 vergessen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Yj38XRHpD_o",
+      "https://www.youtube.com/watch?v=bfxdIUg4FcE"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Prozedural korrekt beschrieben – keine feste Schrittfolge behauptet."
+    },
+    "imageUrl": "assets/underwater_labs.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "sulfur_quarry",
+    "name": "Sulfur Quarry",
+    "categoryId": "quarry",
+    "confidence": "verified",
+    "overview": "Statischer Schwefel-Steinbruch. Kein Loot, keine NPCs, kein Rätsel. Mit Diesel/Low-Grade betreiben für passives Sulfur-Erz.",
+    "whyRunIt": "Feste Sulfur-Quelle für Sprengstoff. Lategame-Asset.",
+    "access": "Berghänge. Auto/Bike bis zum Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Nutzung, kein Rätsel: mit Treibstoff betreiben."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Kisten-Loot. Sulfur-Erz-Output.",
+      "diesel": "Betrieb mit Diesel/Low-Grade."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Beim Betrieb verteidigen."
+    },
+    "strategy": {
+      "soloTips": "Nur betreiben, wenn ihr in der Nähe seid."
+    },
+    "beginnerMistakes": [
+      "Unbeaufsichtigt laufen lassen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Y3wM_Ag9WGQ",
+      "https://www.youtube.com/watch?v=EI8vWyRB6fQ"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/sulfur_quarry.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "stone_quarry",
+    "name": "Stone Quarry",
+    "categoryId": "quarry",
+    "confidence": "verified",
+    "overview": "Statischer Stein-/Metall-Steinbruch. Kein Loot/NPC/Rätsel. Mit Treibstoff betreiben.",
+    "whyRunIt": "Feste Stein-/Metallquelle für große Builds.",
+    "access": "Steinbruch-Gelände. Auto/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Nutzung, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Stein-/Metall-Output.",
+      "diesel": "Betrieb mit Diesel."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Laut beim Betrieb."
+    },
+    "strategy": {
+      "soloTips": "Betrieb absichern."
+    },
+    "beginnerMistakes": [
+      "Unbeaufsichtigt laufen lassen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Y3wM_Ag9WGQ"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/stone_quarry.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "hqm_quarry",
+    "name": "HQM Quarry",
+    "categoryId": "quarry",
+    "confidence": "verified",
+    "overview": "Statischer HQM-Steinbruch. Kein Loot/NPC/Rätsel. Wichtigste feste HQM-Quelle.",
+    "whyRunIt": "HQM für Tier-2/3-Werkbank + gepanzerte Bauten.",
+    "access": "Wie andere Quarries. Auto/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Nutzung, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "HQM-Erz-Output.",
+      "diesel": "Betrieb mit Diesel."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Beim Betrieb verteidigen."
+    },
+    "strategy": {
+      "soloTips": "Nur betreiben, wenn präsent."
+    },
+    "beginnerMistakes": [
+      "Unbeaufsichtigt laufen lassen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=Y3wM_Ag9WGQ"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/hqm_quarry.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "tunnel_entrance",
+    "name": "Tunnel Entrance / Train Tunnels",
+    "categoryId": "tunnel",
+    "confidence": "verified",
+    "overview": "Einstieg ins unterirdische Zugnetz. Tunnel-Dweller-NPCs an Stationen; einzelne Loot-Räume. Wichtigstes Fast-Travel-Netz der Karte (Workcarts).",
+    "whyRunIt": "Sichere Map-Rotation unter Tage + etwas Loot. Solo/Gruppe.",
+    "access": "Rampen/Öffnungen im Gelände. Zu Fuß; Workcarts fahren auf Schienen.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein zentrales Rätsel. Einzelne Stationen können Card-/Loot-Räume haben (versionsabhängig)."
+    },
+    "lootGuide": {
+      "expectedLoot": "Loot-Räume in Stationen, kleine Kisten an Workcarts.",
+      "crateTypes": [
+        "Basic Crate",
+        "Military Crate (Station)"
+      ]
+    },
+    "threats": {
+      "radiation": "low",
+      "npcs": "Tunnel Dweller (aggressiv).",
+      "chokePoints": "Enge Stationen."
+    },
+    "strategy": {
+      "soloTips": "Als Reisenetz nutzen, um Oberflächen-PvP zu umgehen.",
+      "groupTips": "Workcart als schnelle Truppenverlegung."
+    },
+    "beginnerMistakes": [
+      "Tunnel Dweller unterschätzen",
+      "Kein Licht"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=-6mFK1Tb9eA",
+      "https://www.youtube.com/watch?v=Sz4wGJoigpo"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Deckt 'tunnel_entrance' + 'tunnel_entrance_transition' ab."
+    },
+    "imageUrl": "assets/tunnel_entrance.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "tunnel_entrance_transition",
+    "name": "Tunnel Entrance (Transition)",
+    "categoryId": "infrastructure",
+    "confidence": "likely",
+    "overview": "Übergangs-Prefab des Tunnel-Entrance. Reiner Netz-Verbindungspunkt, kein Bauen direkt darauf, kein Loot.",
+    "whyRunIt": "Nur als Zugangs-/Routing-Punkt relevant.",
+    "access": "Zu Fuß, führt ins Tunnelnetz.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Reines Infrastruktur-Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine (am Prefab selbst).",
+      "pvpHotspots": "Gering."
+    },
+    "strategy": {
+      "soloTips": "Als Einstiegspunkt merken."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=-6mFK1Tb9eA"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/tunnel_entrance_transition.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "power_substation_small",
+    "name": "Power Substation (Small)",
+    "categoryId": "infrastructure",
+    "confidence": "verified",
+    "overview": "Kleine E-Substation an Stromtrassen. Kaum Loot (ggf. ein Fass), keine NPCs. Flaches Umland teils als Bauplatz.",
+    "whyRunIt": "Nur Mini-Loot/Routing-Feature.",
+    "access": "Zu Fuß/Bike entlang Trassen.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Reines Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Gelegentlich Fass."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Exponiert an Straßen."
+    },
+    "strategy": {
+      "soloTips": "Nur im Vorbeigehen."
+    },
+    "beginnerMistakes": [
+      "Umweg dafür"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=ZqK2gTdJL9Q"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/power_substation_small.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "power_substation_big",
+    "name": "Power Substation (Big)",
+    "categoryId": "infrastructure",
+    "confidence": "verified",
+    "overview": "Größere E-Substation mit mehr Deckung, aber ebenfalls kaum Loot, keine NPCs.",
+    "whyRunIt": "Routing-/Orientierungspunkt.",
+    "access": "Zu Fuß/Bike entlang Trassen.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Reines Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Gelegentlich Fass."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "An Straßen exponiert."
+    },
+    "strategy": {
+      "soloTips": "Als Deckungspunkt entlang Trassen."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=ZqK2gTdJL9Q"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/power_substation_big.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "powerline",
+    "name": "Powerline",
+    "categoryId": "infrastructure",
+    "confidence": "verified",
+    "overview": "Stromtrassen als Navigations-/Routen-Feature. Kein Loot, keine NPCs. Ziplines ermöglichen schnelle Traversierung; Trassen führen zu Monumenten.",
+    "whyRunIt": "Navigation + schnelle Reise via Ziplines.",
+    "access": "Entlang der Masten; nicht direkt darauf baubar.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Reines Routen-Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Offen einsehbar."
+    },
+    "strategy": {
+      "soloTips": "Trassen als Wegweiser zu Monumenten nutzen."
+    },
+    "beginnerMistakes": [
+      "Direkt auf Masten bauen wollen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=2YIdtSlSzpQ",
+      "https://www.youtube.com/watch?v=CWBF5rWLUK8"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/powerline.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "rock_formation_tiny_god",
+    "name": "Tiny God Rock",
+    "categoryId": "rock_formation",
+    "confidence": "verified",
+    "overview": "Kleine 'Revamped Rock Formation' (World 2.0). Kein Loot/NPC. Defensiver, erhöhter Base-Spot für kleine, schwer angreifbare Solo-Basen.",
+    "whyRunIt": "Günstiger, verteidigbarer High-Ground-Base-Spot (Solo).",
+    "access": "Verstreut; zu Fuß/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Base-Spot, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Wipe-Day contested."
+    },
+    "strategy": {
+      "soloTips": "Erhöhte Lage für kleine Base nutzen."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=LrBPkQzTZIA",
+      "https://www.youtube.com/watch?v=zc0T6PAAaLM"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Teil der Rock-Formation-Varianten."
+    },
+    "imageUrl": "assets/rock_formation_tiny_god.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "rock_formation_anvil",
+    "name": "Anvil Rock",
+    "categoryId": "rock_formation",
+    "confidence": "verified",
+    "overview": "Amboss-förmige Rock Formation mit Überhang. Kein Loot/NPC. Bau darunter (Dachschutz) oder oben (Sniper-Turm).",
+    "whyRunIt": "Markanter Base-Spot mit natürlichem Überhang.",
+    "access": "Verstreut; zu Fuß/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Base-Spot, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Contested."
+    },
+    "strategy": {
+      "soloTips": "Überhang als Dachschutz nutzen."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=LrBPkQzTZIA"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/rock_formation_anvil.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "rock_formation_medium_god",
+    "name": "Medium God Rock",
+    "categoryId": "rock_formation",
+    "confidence": "verified",
+    "overview": "Mittlere Rock Formation mit guter Verticality. Kein Loot/NPC. Für fortifizierte Turm-Base einer kleinen Gruppe.",
+    "whyRunIt": "Verteidigbarer Turm-Base-Spot mit Aussicht.",
+    "access": "Verstreut; zu Fuß/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Base-Spot, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Contested."
+    },
+    "strategy": {
+      "groupTips": "Verticality für Peeks nutzen."
+    },
+    "beginnerMistakes": [
+      "Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=LrBPkQzTZIA"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/rock_formation_medium_god.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "rock_formation_three_wall",
+    "name": "3 Wall Rock",
+    "categoryId": "rock_formation",
+    "confidence": "verified",
+    "overview": "U-förmige Formation mit 3 unzerstörbaren 'Wänden'. Kein Loot/NPC. Exzellenter Defensiv-Spot – nur eine Seite muss gesichert werden.",
+    "whyRunIt": "Bester natürlicher Base-Schutz der Rock-Formationen. Wipe-Day heiß begehrt.",
+    "access": "Verstreut; zu Fuß/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Base-Spot, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Wipe-Start stark umkämpft."
+    },
+    "strategy": {
+      "soloTips": "Nur die offene Seite befestigen."
+    },
+    "beginnerMistakes": [
+      "Passt nur zu bestimmten Base-Footprints"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=zc0T6PAAaLM",
+      "https://www.youtube.com/watch?v=LrBPkQzTZIA"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/rock_formation_three_wall.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "rock_formation_large_god",
+    "name": "Large God Rock",
+    "categoryId": "rock_formation",
+    "confidence": "verified",
+    "overview": "Große Rock Formation für Clan-Basen mit massiver Verticality/Multi-Level-Peeks. Kein Loot/NPC. Weithin sichtbar = Aufmerksamkeit.",
+    "whyRunIt": "Clan-Base-Spot mit vertikaler Überlegenheit.",
+    "access": "Verstreut; zu Fuß/Bike.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Base-Spot, kein Rätsel."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Landmarke – zieht Gegner an."
+    },
+    "strategy": {
+      "groupTips": "Multi-Level-Peeks für Clan-Verteidigung."
+    },
+    "beginnerMistakes": [
+      "Hohe Sichtbarkeit unterschätzen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=LrBPkQzTZIA",
+      "https://www.youtube.com/watch?v=zc0T6PAAaLM"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/rock_formation_large_god.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "lake",
+    "name": "Lake",
+    "categoryId": "terrain",
+    "confidence": "verified",
+    "overview": "Süßwasserfläche (RustMaps-Topologie). Kein Loot/NPC/Rätsel. Frischwasser + Angel-Spot; Umland oft umkämpfter Bauplatz.",
+    "whyRunIt": "Wasserversorgung + Fisch-Nahrung. Base am RAND, nicht im Wasser.",
+    "access": "Zu Fuß/Boot.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Terrain-Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Item-Loot; Fisch via Angeln."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Offene Sichtlinien beim Überqueren."
+    },
+    "strategy": {
+      "soloTips": "Nicht offen durchschwimmen, wenn Spieler nah."
+    },
+    "beginnerMistakes": [
+      "Direkt auf dem Wasser bauen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tjdleNN3tkM"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/lake.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "oasis",
+    "name": "Oasis",
+    "categoryId": "terrain",
+    "confidence": "verified",
+    "overview": "Wasser + Palmen mitten im Wüstenbiom. Kein Loot/NPC/Rätsel. Starker, oft umkämpfter Build-/Farm-Spot.",
+    "whyRunIt": "Wasser + Holz (Palmen) im sonst kargen Biom. Contested.",
+    "access": "Nur Wüstenbiom, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Terrain-Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Item-Loot; Wasser + Palmen."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Begehrter Wüsten-Hotspot."
+    },
+    "strategy": {
+      "soloTips": "Schnell Ressourcen, dann in Deckung."
+    },
+    "beginnerMistakes": [
+      "Lange offen stehen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=T_kaQc4E76E"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/oasis.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "ice_lake",
+    "name": "Ice Lake",
+    "categoryId": "terrain",
+    "confidence": "verified",
+    "overview": "Gefrorener See im Schnee-Biom. Kein Loot/NPC/Rätsel. Sehr flach = großer Compound-Bauplatz, aber extrem offen für Sniper.",
+    "whyRunIt": "Flacher Bauplatz im Schnee. Sichtbarkeit hoch.",
+    "access": "Nur Schnee-Biom, zu Fuß; Kälteschutz.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Terrain-Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Item-Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Sehr offen einsehbar."
+    },
+    "strategy": {
+      "soloTips": "Ränder/Deckung nutzen."
+    },
+    "beginnerMistakes": [
+      "Offen queren"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=T_kaQc4E76E"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/ice_lake.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "iceberg",
+    "name": "Iceberg",
+    "categoryId": "terrain",
+    "confidence": "verified",
+    "overview": "Eis-Terrain im Ozean. Kein Loot/NPC/Rätsel. Offshore-Base-Option, durch Wasser/Kälte isoliert.",
+    "whyRunIt": "Deep-Sea-Base-Spot, schwer für Gelegenheits-Raider.",
+    "access": "Nur per Boot.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Terrain-Feature."
+    },
+    "lootGuide": {
+      "expectedLoot": "Kein Item-Loot."
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Sniper von der Küste möglich."
+    },
+    "strategy": {
+      "soloTips": "Bootzugang absichern."
+    },
+    "beginnerMistakes": [
+      "Kälte unterschätzen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=T_kaQc4E76E"
+    ],
+    "contentQuality": {
+      "depth": "short",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/iceberg.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "jungle_ruins",
+    "name": "Jungle Ruins",
+    "categoryId": "tier_1",
+    "confidence": "verified",
+    "overview": "Kleines Dschungel-Monument (Jungle-Update 2025-05-02). ~3 Kisten, Military-Chest möglich, leichtes Substation-artiges Parkour. Kaum/keine NPCs, keine Karte.",
+    "whyRunIt": "Früher Loot ohne Karte im Dschungel. Solo.",
+    "access": "Dschungel-Biom, zu Fuß/Bike.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "climbing",
+      "requiredItems": [],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Parkour",
+          "instruction": "Leichtes Sprung-Parkour zu den Kisten.",
+          "result": "~3 Kisten, Military-Chest möglich."
+        }
+      ],
+      "commonMistakes": [
+        "Kartenrätsel suchen"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "~3 Basic-Kisten, Military-Chest möglich.",
+      "crateTypes": [
+        "Basic Crate",
+        "Military Crate (möglich)"
+      ]
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine bis kaum.",
+      "pvpHotspots": "Gering."
+    },
+    "strategy": {
+      "soloTips": "Schneller Dschungel-Stopp."
+    },
+    "beginnerMistakes": [
+      "Viel Loot erwarten"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=JPDGwVgCgUU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": ""
+    },
+    "imageUrl": "assets/jungle_ruins.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "jungle_ziggurat",
+    "name": "Jungle Ziggurat",
+    "categoryId": "tier_1",
+    "confidence": "verified",
+    "overview": "Signatur-Monument des Dschungel-Bioms (Mai-2025-Update). Eines der einfachsten Monumente: KEINE Scientists, KEINE Strahlung, KEIN Kartenrätsel. Betonpyramide mit Kletter-/Parkour-Zugang über mehrere Ebenen, innen große Halle mit Wasserbecken.",
+    "whyRunIt": "Schneller Frühgame-Loot ohne Karte/NPC. Solo ideal; offenes PvP möglich (viele Ecken). Frühwipe stark frequentiert (spawnt oft mehrfach).",
+    "access": "Dschungel-Biom. Mehrere Bodeneingänge (Front-Gate/Seite/Rück) + Kletterrouten über Gerüste/Pyramidenstufen. Bike/zu Fuß; Minicopter überfliegt das Dickicht.",
+    "puzzle": {
+      "hasPuzzle": true,
+      "puzzleType": "climbing",
+      "requiredItems": [],
+      "optionalItems": [],
+      "steps": [
+        {
+          "order": 1,
+          "title": "Ebenen erklimmen",
+          "instruction": "Über Gerüste/Stufen von Front-/Rückeingang auf die 2./3. Ebene und nach oben.",
+          "warning": "Viele Ecken – campbar."
+        },
+        {
+          "order": 2,
+          "title": "Zentraler Einstieg oben",
+          "instruction": "Oben am Pyramidenzentrum führt ein Einstieg über Leitern in die Haupthalle."
+        },
+        {
+          "order": 3,
+          "title": "Halle looten",
+          "instruction": "Innenhalle mit Wasserbecken: ~2-3 Kisten + Fässer.",
+          "result": "Frühgame-Loot, evtl. grüne Small-Crate (Blow Pipe/Darts)."
+        }
+      ],
+      "commonMistakes": [
+        "Kartenrätsel/Militärloot erwarten (gibt es nicht)",
+        "Beim Fischen in den Rücken geschossen werden"
+      ]
+    },
+    "lootGuide": {
+      "expectedLoot": "~6-8 Kisten + ~6-8 Fässer; exklusive grün-getönte Small-Crate (Blow Pipe/Darts/Meds).",
+      "recyclerLocation": "1 Recycler beim Rückeingang.",
+      "crateTypes": [
+        "Basic Crate",
+        "Green Small Crate"
+      ]
+    },
+    "threats": {
+      "radiation": "none",
+      "npcs": "Keine.",
+      "pvpHotspots": "Obere Ebenen + Pools.",
+      "campingSpots": "2./3. Ebene, Dach."
+    },
+    "strategy": {
+      "soloTips": "Loot and scoot."
+    },
+    "beginnerMistakes": [
+      "Scientists/Karten erwarten",
+      "Zu lange bleiben"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=6pjnmS-gz1o",
+      "https://www.youtube.com/watch?v=JPDGwVgCgUU"
+    ],
+    "contentQuality": {
+      "depth": "deep",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "VERIFIZIERT via CorrosionHour (2026-07-08). Tier-1-Einstieg, kein Puzzle/NPC/Radiation, 1 Recycler."
+    },
+    "advancedTips": [
+      "Frischwasser + Angel-Pools nutzbar, aber exponiert"
+    ],
+    "imageUrl": "assets/jungle_ziggurat.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_small_medium",
+    "name": "Cave (Small · Medium)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Small · Medium",
+    "imageUrl": "assets/cave_small_medium.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_medium_easy",
+    "name": "Cave (Medium · Easy)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Medium · Easy",
+    "imageUrl": "assets/cave_medium_easy.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_large_hard",
+    "name": "Cave (Large · Hard)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Large · Hard",
+    "imageUrl": "assets/cave_large_hard.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_small_easy",
+    "name": "Cave (Small · Easy)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Small · Easy",
+    "imageUrl": "assets/cave_small_easy.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_large_medium",
+    "name": "Cave (Large · Medium)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Large · Medium",
+    "imageUrl": "assets/cave_large_medium.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_small_hard",
+    "name": "Cave (Small · Hard)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Small · Hard",
+    "imageUrl": "assets/cave_small_hard.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_large_sewers_hard",
+    "name": "Cave (Large · Sewers · Hard)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Large · Sewers · Hard",
+    "imageUrl": "assets/cave_large_sewers_hard.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  },
+  {
+    "id": "cave_medium_medium",
+    "name": "Cave (Medium · Medium)",
+    "categoryId": "cave",
+    "confidence": "verified",
+    "aliasesNote": "Deckt cave_small_easy/medium/hard, medium_*, large_*, large_sewers_hard ab (Variant-Map).",
+    "overview": "Höhlen als Base-Spots, nicht als Loot-Ziel. Kaum Loot, keine NPCs (meist). Extremer Raid-Schutz durch Chokepoint-Eingänge; 'Hard'-Varianten haben schwieriges Parkour (Falltod-Gefahr).",
+    "whyRunIt": "Günstige, schwer raidbare Cave-Base. Solo bis Clan je Größe.",
+    "access": "In Hügeln/Bergen versteckt, zu Fuß.",
+    "puzzle": {
+      "hasPuzzle": false,
+      "puzzleType": "none",
+      "note": "Kein Loot-Rätsel. 'Puzzle' = das Parkour beim Betreten, kein Keycard."
+    },
+    "lootGuide": {
+      "expectedLoot": "Wenige einfache Kisten/Fässer; 'Sewers'-Variante etwas mehr. Kein Recycler."
+    },
+    "threats": {
+      "radiation": "none bis low ('Hard'/Sewers)",
+      "npcs": "Keine (meist).",
+      "chokePoints": "Enge Eingänge = top Verteidigung; Spike-Trap-Parkour tötet Unachtsame."
+    },
+    "strategy": {
+      "soloTips": "Small/Easy = sicherer Solo-Base-Einstieg.",
+      "groupTips": "Large/Sewers = Clan-Bunker."
+    },
+    "beginnerMistakes": [
+      "Hohen Loot erwarten",
+      "Am Parkour sterben"
+    ],
+    "advancedTips": [
+      "Variant bestimmt Größe/Schwierigkeit – im Variant-Feld halten, nicht plattmachen"
+    ],
+    "relatedVideos": [
+      "https://www.youtube.com/watch?v=tiCpirwH_eA",
+      "https://www.youtube.com/watch?v=pEKyK4xHZdU"
+    ],
+    "contentQuality": {
+      "depth": "standard",
+      "puzzleVerified": true,
+      "needsOwnerReview": false,
+      "notes": "Ein Eintrag + Variant-Map (small/medium/large × easy/medium/hard, +sewers) statt 8 Karten – wie §11b."
+    },
+    "variant": "Medium · Medium",
+    "imageUrl": "assets/cave_medium_medium.svg",
+    "sources": [
+      "https://steamcommunity.com/sharedfiles/filedetails/?id=2428742835",
+      "https://eip.gg/rust/guides/monument-guide/",
+      "https://rust.fandom.com/wiki/Monument"
+    ]
+  }
+]

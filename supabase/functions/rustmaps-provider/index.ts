@@ -180,9 +180,18 @@ serve(async (req) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
     try {
+      const method = (init.method || "GET").toUpperCase();
+      const baseHeaders: Record<string, string> = {
+        "X-API-Key": apiKey!,
+        "Accept": "application/json",
+      };
+      if (method === "POST") {
+        baseHeaders["Content-Type"] = "application/json";
+      }
+
       const res = await fetch(`${apiBase}${path}`, {
         ...init,
-        headers: { "X-API-Key": apiKey!, "Content-Type": "application/json", ...(init.headers || {}) },
+        headers: { ...baseHeaders, ...(init.headers as Record<string, string> || {}) },
         signal: controller.signal,
       });
       const text = await res.text();

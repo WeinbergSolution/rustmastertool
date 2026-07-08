@@ -160,3 +160,11 @@ Keine Secrets, keine Request-Header im Payload/Log. UI zeigt „RustMaps rejecte
 - Fix: always include staging query.
 - MapAPIDTO is now normalized and cached as active.
 - Next smoke: Refresh map status should load generated map.
+
+## B1.7 GET Header Hardening
+- Postman proved endpoint and payload are correct.
+- Remaining 400 was caused by GET request construction difference.
+- GET calls now use no Content-Type and no body.
+- POST calls still use Content-Type application/json.
+- Postman GET succeeded with Accept-only GET headers; Edge Function was hardened to avoid Content-Type on GET.
+- Next smoke: Refresh map status should return active MapAPIDTO.

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
+import { ServerMapViewer } from '../map/ServerMapViewer';
 import { Search, AlertTriangle, Loader2, Filter, HelpCircle, Bookmark, MapPin } from 'lucide-react';
 import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 import { useAuth } from '../../lib/auth/useAuth';
@@ -44,6 +45,7 @@ export function ServersExplorer() {
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
+  const [selectedMapServer, setSelectedMapServer] = useState<BattleMetricsServerSummary | null>(null);
 
   const TARGET_VISIBLE_RESULTS = 50;
   const MAX_FILTER_SCAN_PAGES = 10;
@@ -57,6 +59,11 @@ export function ServersExplorer() {
   useInAppBack({
     open: selectedServerId !== null,
     onClose: () => { setSelectedServerId(null); setDetailFocus(null); },
+    enabled: isMobile,
+  });
+  useInAppBack({
+    open: selectedMapServer !== null,
+    onClose: () => setSelectedMapServer(null),
     enabled: isMobile,
   });
 
@@ -349,6 +356,7 @@ export function ServersExplorer() {
                     setDetailFocus('map');
                     window.sessionStorage.removeItem('serverExplorer.pendingAction');
                   }}
+                  onOpenMap={() => setSelectedMapServer(server)}
                 />
               ))}
               {nextPageUrl && (
@@ -943,6 +951,7 @@ export function ServersExplorer() {
                   setSelectedServerId(server.id);
                   window.sessionStorage.removeItem('serverExplorer.pendingAction');
                 }}
+                onOpenMap={() => setSelectedMapServer(server)}
               />
             ))}
             
@@ -974,6 +983,13 @@ export function ServersExplorer() {
           isActiveServer={rawServers.find(s => s.id === selectedServerId)?.internal_uuid ? rawServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
           isAuthenticated={status === 'authenticated'}
           serverSummary={rawServers.find(s => s.id === selectedServerId)}
+        />
+      )}
+
+      {selectedMapServer && (
+        <ServerMapViewer 
+          server={selectedMapServer as any} 
+          onClose={() => setSelectedMapServer(null)} 
         />
       )}
     </div>

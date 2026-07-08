@@ -12,6 +12,7 @@ interface ServerCardMobileProps {
   onToggleWatch?: () => void;
   onSelect?: () => void;
   onSelectMap?: () => void;
+  onOpenMap?: () => void;
 }
 
 function formatWipe(server: BattleMetricsServerSummary): string | null {
@@ -28,7 +29,7 @@ function formatWipe(server: BattleMetricsServerSummary): string | null {
   return null;
 }
 
-export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onSelectMap }: ServerCardMobileProps) {
+export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onSelectMap, onOpenMap }: ServerCardMobileProps) {
   const [copied, setCopied] = useState(false);
   const isOnline = server.status === 'online';
   const players = server.players || 0;
@@ -106,11 +107,62 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
         </div>
 
         {/* Thumbnail side */}
-        <div className="srv-card-thumb">
+        <div className="srv-card-thumb" style={{ position: 'relative' }}>
           {mapThumbnailUrl ? (
-            <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
+            <div style={{ position: 'relative' }}>
+              <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
+              {onOpenMap && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onOpenMap(); }}
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    backgroundColor: 'var(--status-success)',
+                    color: '#000',
+                    border: 'none',
+                    borderRadius: '50%',
+                    padding: '2px',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="Open parsed server map"
+                  aria-label="Open server map"
+                >
+                  <MapIcon size={12} />
+                </button>
+              )}
+            </div>
           ) : (
-            <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
+            <div className="srv-card-image-placeholder" style={{ position: 'relative' }}>
+              <ImageIcon size={24} />
+              {onOpenMap && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onOpenMap(); }}
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    backgroundColor: 'var(--bg-hover)',
+                    color: 'var(--text-disabled)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '50%',
+                    padding: '2px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="Map data not available yet"
+                  aria-label="Map data not available yet"
+                >
+                  <MapIcon size={12} />
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>

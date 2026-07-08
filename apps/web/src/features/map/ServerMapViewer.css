@@ -1,0 +1,228 @@
+.rm-map-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  padding: 0;
+}
+
+.rm-map-viewer-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-main);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .rm-map-viewer-overlay {
+    padding: 2rem;
+  }
+  .rm-map-viewer-container {
+    flex-direction: row;
+    max-width: 1400px;
+    height: 90vh;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.rm-map-viewer-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #111;
+  position: relative;
+}
+
+.rm-map-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 10;
+}
+
+.rm-map-viewer-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rm-map-viewer-title h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rm-map-viewer-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.rm-map-viewer-badge {
+  background-color: rgba(205, 65, 43, 0.1);
+  color: var(--accent-rust);
+  border: 1px solid rgba(205, 65, 43, 0.3);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.rm-map-viewer-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+.rm-map-viewer-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.rm-map-viewer-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  position: relative;
+  padding: 1rem;
+}
+
+.rm-map-viewer-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.rm-map-viewer-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.rm-map-viewer-sidebar {
+  width: 100%;
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 768px) {
+  .rm-map-viewer-sidebar {
+    width: 350px;
+    border-top: none;
+    border-left: 1px solid var(--border-color);
+  }
+}
+
+.rm-map-sidebar-section {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.rm-map-sidebar-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rm-map-layer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.rm-map-layer-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.rm-map-layer-name {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.rm-map-layer-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.rm-map-layer-future {
+  font-size: 0.65rem;
+  background-color: var(--bg-hover);
+  color: var(--text-muted);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+.rm-map-monument-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+@media (min-width: 768px) {
+  .rm-map-monument-list {
+    max-height: 400px;
+  }
+}
+
+.rm-map-monument-item {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rm-map-note {
+  background-color: rgba(255, 170, 0, 0.1);
+  border-left: 3px solid var(--status-warning);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  border-radius: 0 4px 4px 0;
+  margin-top: 1rem;
+}

@@ -27,7 +27,7 @@ export type ServerCardData = {
   [key: string]: any;
 };
 
-export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, onSelect }: { server: ServerCardData, isWatched?: boolean, isAuthenticated?: boolean, onToggleWatch?: () => void, onSelect?: () => void }) {
+export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onOpenMap }: { server: ServerCardData, isWatched?: boolean, isAuthenticated?: boolean, onToggleWatch?: () => void, onSelect?: () => void, onOpenMap?: () => void }) {
   const isOnline = server.status === 'online';
   const badge = getServerTypeBadge(server as unknown as BattleMetricsServerSummary);
   const mapThumbnailUrl = server.mapThumbnailUrl || server.mapImageUrl;
@@ -78,9 +78,9 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
       </div>
 
       {/* Center: Thumbnail */}
-      <div style={{ flexShrink: 0, width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ flexShrink: 0, width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
         {mapThumbnailUrl ? (
-          <>
+          <div style={{ position: 'relative' }}>
             <img 
               src={mapThumbnailUrl} 
               alt="Map" 
@@ -97,9 +97,58 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                 <img src={mapThumbnailUrl} alt="Map Enlarged" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
               </div>
             )}
-          </>
+            {onOpenMap && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onOpenMap(); }}
+                style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  backgroundColor: 'var(--status-success)',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '50%',
+                  padding: '4px',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Open parsed server map"
+                aria-label="Open server map"
+              >
+                <MapIcon size={16} />
+              </button>
+            )}
+          </div>
         ) : (
-          <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
+          <div className="srv-card-image-placeholder" style={{ position: 'relative' }}>
+            <ImageIcon size={24} />
+            {onOpenMap && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onOpenMap(); }}
+                style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  backgroundColor: 'var(--bg-hover)',
+                  color: 'var(--text-disabled)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '50%',
+                  padding: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Map data not available yet"
+                aria-label="Map data not available yet"
+              >
+                <MapIcon size={16} />
+              </button>
+            )}
+          </div>
         )}
         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', textAlign: 'center' }}>
           {server.mapIdentitySize || server.mapSize ? `Map Size: ${server.mapIdentitySize || server.mapSize}` : ''}

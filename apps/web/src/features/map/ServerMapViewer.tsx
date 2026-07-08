@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Map as MapIcon, Layers, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle } from 'lucide-react';
 import type { ServerCardData } from '../dashboard/ServerCard';
 import { parseServerToMapModel } from './serverMapModel';
 import type { ParsedServerMapModel } from './serverMapModel';
@@ -34,9 +34,34 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
     };
   }, [server, onClose]);
 
+  const [currentImageSrc, setCurrentImageSrc] = useState<string | null>(null);
+  const [imageStatus, setImageStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
+
+  useEffect(() => {
+    if (model) {
+      const initialSrc = model.imageUrl || model.thumbnailUrl || null;
+      setCurrentImageSrc(initialSrc);
+      setImageStatus(initialSrc ? 'loading' : 'error');
+    }
+  }, [model]);
+
   if (!model) return null;
 
-  const mapImageSrc = model.imageUrl || model.thumbnailUrl;
+  const handleImageError = () => {
+    if (model && currentImageSrc === model.imageUrl && model.thumbnailUrl) {
+      setCurrentImageSrc(model.thumbnailUrl);
+      setImageStatus('loading');
+    } else {
+      setImageStatus('error');
+    }
+  };
+
+  let displayBadge = model.mapSourceBadge;
+  if (imageStatus === 'loaded' && currentImageSrc === model.thumbnailUrl && currentImageSrc !== model.imageUrl) {
+    displayBadge = 'Map thumbnail preview';
+  } else if (imageStatus === 'error') {
+    displayBadge = 'No map image';
+  }
 
   return (
     <div className="rm-map-viewer-overlay" onClick={onClose}>
@@ -50,7 +75,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
               <div className="rm-map-viewer-meta">
                 <span>Type: {model.mapType}</span>
                 {model.worldSize && <span>Size: {model.worldSize}</span>}
-                <span className="rm-map-viewer-badge">{model.mapSourceBadge}</span>
+                <span className="rm-map-viewer-badge">{displayBadge}</span>
               </div>
             </div>
             <button className="rm-map-viewer-close" onClick={onClose} aria-label="Close Map">
@@ -59,17 +84,28 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
           </div>
 
           <div className="rm-map-viewer-content">
-            {mapImageSrc ? (
-              <img 
-                src={mapImageSrc} 
-                alt={`${model.serverName} Map`} 
-                className="rm-map-viewer-image" 
-              />
+            {imageStatus !== 'error' && currentImageSrc ? (
+              <>
+                {imageStatus === 'loading' && (
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)' }}>
+                    <Loader2 size={32} className="spin" />
+                    <span>Loading map...</span>
+                  </div>
+                )}
+                <img 
+                  src={currentImageSrc} 
+                  alt={`${model.serverName} Map`} 
+                  className="rm-map-viewer-image" 
+                  onLoad={() => setImageStatus('loaded')}
+                  onError={handleImageError}
+                  style={{ display: imageStatus === 'loaded' ? 'block' : 'none' }}
+                />
+              </>
             ) : (
               <div className="rm-map-viewer-empty">
-                <ShieldAlert size={48} style={{ opacity: 0.5 }} />
-                <h3>Map image is not available for this server yet.</h3>
-                <p>We are still gathering data for this map.</p>
+                <ShieldAlert size={48} style={{ opacity: 0.5, marginBottom: '1rem' }} />
+                <h3>Map preview could not be loaded.</h3>
+                <p>Source unavailable or blocked.</p>
               </div>
             )}
           </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { ServerCard } from './ServerCard';
+import { ServerCard, type ServerCardData } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
 import { ServerMapViewer } from '../map/ServerMapViewer';
 import { Search, AlertTriangle, Loader2, Filter, HelpCircle, Bookmark, MapPin } from 'lucide-react';
@@ -45,9 +45,9 @@ export function ServersExplorer() {
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
-  const [selectedMapServer, setSelectedMapServer] = useState<BattleMetricsServerSummary | null>(null);
+  const [selectedMapServer, setSelectedMapServer] = useState<ServerCardData | null>(null);
 
-  const handleOpenMap = useCallback((server: any) => {
+  const handleOpenMap = useCallback((server: ServerCardData) => {
     setSelectedMapServer(server);
   }, []);
 
@@ -992,7 +992,7 @@ export function ServersExplorer() {
 
       {selectedMapServer && (
         <ServerMapViewer 
-          server={selectedMapServer as any} 
+          server={selectedMapServer} 
           onClose={() => setSelectedMapServer(null)} 
         />
       )}

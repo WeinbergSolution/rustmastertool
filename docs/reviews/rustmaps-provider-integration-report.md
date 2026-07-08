@@ -1,7 +1,12 @@
 # RustMaps Provider Integration — Phase 2.4-B1 Report
 
 **Branch:** `feature/rustmaps-provider-integration` · **Base:** `origin/main` (`9eb942b`) · **Datum:** 2026-07-08
-**Status:** Provider-Foundation gebaut (produktionsnah). **Kein Supabase-Deploy, keine DB-Migration ausgeführt, kein API-Key** — alles wartet auf separates Owner-Go.
+**Status:** 🅿️ **PARKED / BLOCKED (2026-07-08).**
+**Grund:** Kein RustMaps-API-Zugang — es wird **kein** RustMaps API-Key beschafft. Daher wird diese Integration **nicht aktiviert** und **nicht nach main gemerged**.
+- **Kein Deploy durchgeführt:** kein `db push`, kein `functions deploy`, kein Secret gesetzt. Live-Probe bestätigt: Function ist 404/NOT_FOUND (nicht deployt).
+- **Kein Merge empfohlen:** Der Branch bleibt als geparkte, lauffähig kompilierte Foundation erhalten (siehe unten), falls sich der Zugang später ändert.
+- **No-API-Alternativen:** siehe `docs/reviews/no-api-map-source-strategy-audit.md`.
+- Ursprünglicher Aufbau der Foundation ist unten dokumentiert (Code bleibt im Branch, inaktiv).
 
 ## Was wurde gebaut
 Der interne Flow **Frontend → Supabase Edge Function → RustMaps Public API v4 → DB-Cache → Frontend Viewer**. Die Karte wird **in RustMasterTool** angezeigt; kein `rustmaps.com`-Redirect, kein API-Key im Frontend, keine Internal-API, keine User-Bearer-Tokens.

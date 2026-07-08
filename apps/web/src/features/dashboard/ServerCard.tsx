@@ -99,11 +99,16 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
             )}
             {onOpenMap && (
               <button 
-                onClick={(e) => { e.stopPropagation(); onOpenMap(); }}
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
                   top: '-8px',
                   right: '-8px',
+                  zIndex: 10,
                   backgroundColor: 'var(--status-success)',
                   color: '#000',
                   border: 'none',
@@ -127,11 +132,16 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
             <ImageIcon size={24} />
             {onOpenMap && (
               <button 
-                onClick={(e) => { e.stopPropagation(); onOpenMap(); }}
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
                   top: '-8px',
                   right: '-8px',
+                  zIndex: 10,
                   backgroundColor: 'var(--bg-hover)',
                   color: 'var(--text-disabled)',
                   border: '1px solid var(--border-color)',

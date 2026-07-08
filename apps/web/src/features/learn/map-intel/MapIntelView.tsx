@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, Map, ShieldAlert, Box, X, Lightbulb, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, Map, ShieldAlert } from 'lucide-react';
 import { MAP_MONUMENTS, MONUMENT_CATEGORIES } from './mapIntelData';
 import { DEEP_MONUMENT_DATA } from './mapIntelDeepData';
 import type { DeepMonumentData } from './mapIntelDeepData';

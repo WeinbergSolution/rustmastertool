@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Youtube, Map, AlertTriangle, Lightbulb, ExternalLink, Skull, Gem, ShieldAlert, Crosshair, BookOpen, Layers } from 'lucide-react';
+import { X, PlayCircle, Map, AlertTriangle, Lightbulb, ExternalLink, Skull, Gem, ShieldAlert, Crosshair, Layers, Package } from 'lucide-react';
 import type { DeepMonumentData } from './mapIntelDeepData';
 import type { MapMonument } from './mapIntelData';
 import { MONUMENT_CATEGORIES } from './mapIntelData';
@@ -13,8 +13,6 @@ interface MapIntelDetailModalProps {
 
 export function MapIntelDetailModal({ deep, base, onClose }: MapIntelDetailModalProps) {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
-  
-  const id = deep?.id || base?.id || '';
   const name = deep?.name || base?.name || '';
   const categoryId = deep?.categoryId || base?.categoryId || '';
   const confidence = deep?.confidence || base?.confidence || 'uncertain';
@@ -244,7 +242,7 @@ export function MapIntelDetailModal({ deep, base, onClose }: MapIntelDetailModal
               {/* Video UX */}
               {deep.relatedVideos && deep.relatedVideos.length > 0 && (
                 <section className="intel-section video-section">
-                  <h3><Youtube size={18} /> Related Videos</h3>
+                  <h3><PlayCircle size={18} /> Related Videos</h3>
                   <div className="video-grid">
                     {deep.relatedVideos.map((url, i) => {
                       const ytId = extractYoutubeId(url);
@@ -274,7 +272,7 @@ export function MapIntelDetailModal({ deep, base, onClose }: MapIntelDetailModal
                             <div className="video-thumbnail-container" onClick={() => setActiveVideo(ytId)}>
                               <img src={`https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`} alt="Video Thumbnail" />
                               <div className="video-play-overlay">
-                                <Youtube size={48} color="#ff0000" />
+                                <PlayCircle size={48} color="#ff0000" />
                               </div>
                             </div>
                           )}
@@ -309,7 +307,7 @@ export function MapIntelDetailModal({ deep, base, onClose }: MapIntelDetailModal
                 <p>{base?.explanation}</p>
               </div>
               <div className="intel-section">
-                <h4><Box size={16} /> Loot & Progression</h4>
+                <h4><Package size={16} /> Loot & Progression</h4>
                 <p>{base?.lootRelevance}</p>
               </div>
               <div className="intel-section">

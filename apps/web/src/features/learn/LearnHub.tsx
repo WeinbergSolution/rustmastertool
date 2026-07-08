@@ -1,4 +1,4 @@
-import { Building, BookOpen, ChevronRight, Map } from 'lucide-react';
+import { Building, BookOpen, ChevronRight } from 'lucide-react';
 import type { ViewState } from '../../components/AppShell';
 
 interface LearnHubProps {
@@ -36,17 +36,6 @@ export function LearnHub({ onViewChange }: LearnHubProps) {
             Rust Guides
           </div>
           <div className="learn-card-desc">Beginner-to-advanced Rust guides and video walkthroughs.</div>
-        </div>
-        <ChevronRight size={18} className="learn-card-chevron" />
-      </button>
-      {/* Map Intel */}
-      <button className="learn-card" onClick={() => onViewChange('map_intel')}>
-        <div className="learn-card-icon"><Map size={22} /></div>
-        <div className="learn-card-body">
-          <div className="learn-card-title">
-            Map Intel
-          </div>
-          <div className="learn-card-desc">Encyclopedia of Rust monuments, loot paths, and keycard puzzles.</div>
         </div>
         <ChevronRight size={18} className="learn-card-chevron" />
       </button>

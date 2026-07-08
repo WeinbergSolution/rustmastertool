@@ -144,6 +144,7 @@ export function Watchlist() {
           onSetActiveServer={handleSetActiveServer}
           isActiveServer={watchedServers.find(s => s.id === selectedServerId)?.internal_uuid ? watchedServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
           isAuthenticated={status === 'authenticated'}
+          serverSummary={watchedServers.find(s => s.id === selectedServerId)}
         />
       )}
     </div>

@@ -55,7 +55,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
     if (supabase) {
       supabase
         .from('server_map_identity')
-        .select('rustmaps_thumbnail_url, is_custom_map, seed, world_size, map_type')
+        .select('rustmaps_thumbnail_url, rustmaps_map_url, is_custom_map, seed, world_size, map_type')
         .eq('battlemetrics_server_id', serverId)
         .order('created_at', { ascending: false })
         .limit(1)

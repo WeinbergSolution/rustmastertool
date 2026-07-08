@@ -1,0 +1,60 @@
+Filter-aware Pagination Implementation Plan
+A. Audit: Aktuelle Search/Pagination
+Punkt	Ergebnis
+Initial loaded count	25 Server pro Request (pageSize: 25 in ServersExplorer.tsx).
+Page size	25
+Pagination vorhanden?	Ja, über BattleMetrics links.next (als nextPageUrl im State).
+Load More vorhanden?	Ja, als manueller Button ("Load more servers").
+Enrichment pro Page?	Ja, enrichServerSummariesWithMapIdentity läuft auf die Page-Ergebnisse (response.data), bevor sie an servers gehängt werden.
+Filter aktuell nur clientseitig?	Ja, applyClientFilters läuft rein im Browser über das useMemo auf rawServers.
+API kann Filter serverseitig?	Teilweise (BattleMetrics kann game=rust, search, status, aber wir haben keine serverseitigen Monument-Filter).
+B. Filter-aware Result Fill: Das Konzept
+Ich werde die ServersExplorer.tsx so umbauen, dass nach jeder Filter-Änderung (oder direkt nach dem ersten Laden) geprüft wird, ob die Anzahl der sichtbaren Server (visibleServers.length) unter einem Zielwert liegt, während ein Filter aktiv ist. Ist das der Fall, wird automatisch die nächste Seite geladen (nextPageUrl abgefragt).
+
+B1 — Konstanten
+TARGET_VISIBLE_RESULTS = 25 (Da BattleMetrics Pagesize 25 ist, ist 25 ein sinnvolles Minimum für eine "volle Seite", ohne zu viel Spam auszulösen).
+MAX_FILTER_SCAN_RESULTS = 500 (Maximal 500 Server im RAM pro Session halten).
+MAX_FILTER_SCAN_PAGES = 10 (Maximal 10 API-Requests nacheinander pro Filter-Event).
+B2 — Auto-Scan Logik (useAutoFillResults Hook oder useEffect)
+Ein useEffect triggert automatisch fetchServers(true), wenn:
+
+Mindestens ein Filter (Empty, Full, Queue, Map Thumbnail, Monument) aktiv ist.
+visibleServers.length < TARGET_VISIBLE_RESULTS.
+rawServers.length < MAX_FILTER_SCAN_RESULTS.
+pagesScanned < MAX_FILTER_SCAN_PAGES.
+nextPageUrl vorhanden ist.
+isSearching und isLoadingMore false sind (kein Race-Condition Loop).
+Um Race-Conditions zu verhindern, wird ein AbortController in der searchServers Methode in battlemetrics.ts implementiert oder wir nutzen eine Guard-Variable (z.B. currentScanId), sodass alte Auto-Scans abgebrochen werden, wenn sich der Filter schnell ändert.
+
+B3 — UI Status Anzeige
+Während des Scannens (isAutoScanning) wird oben bei den Filtern oder unten in der Liste eingeblendet:
+
+Expanding search because filters reduced the result set... 12 shown / 250 scanned / 190 with map intel
+
+Wenn das Limit von z.B. 10 Pages erreicht wurde und immer noch keine Ergebnisse da sind:
+
+No matching servers found after scanning 250 servers. Try relaxing your filters.
+
+C. BattleMetrics API Filter-Optimierung (Optional/Quick-Wins)
+In battlemetrics.ts gibt es die searchServers Funktion. Wenn hideEmpty aktiv ist, könnte ich der BattleMetrics Query theoretisch den Parameter filter[players][min]=1 mitgeben. Da es aber eine reine Client-Logik bleiben soll (nach Vorgaben) und das Backend für Monuments sowieso nichts weiß, halte ich den API-Aufruf vorerst dumm (ohne DB Hacks) und verlasse mich zu 100% auf die Auto-Scan-Pagination.
+
+D. Umsetzungsschritte
+ServersExplorer.tsx Status und Refactoring:
+Einführen eines isAutoScanning States.
+Einführen eines Counters für gescannte Pages seit dem letzten Filter-Wechsel.
+fetchServers um einen AbortSignal erweitern.
+battlemetrics.ts:
+searchServers muss das AbortSignal an die fetch Methode weiterreichen.
+useEffect für Auto-Scan:
+Beobachtet visibleServers, filters, nextPageUrl und triggert fetchServers(true, undefined, true).
+UI Updates:
+Anzeigen des "Scanning..." Banners.
+Leeren Zustand ("No servers found") durch den "Scanned X servers, relax filters" Zustand ersetzen.
+Mobile UI:
+Analog zur Desktop UI wird das Scanning-Banner integriert.
+User Review Required
+IMPORTANT
+
+Die pageSize für den Request lasse ich bei 25. Sollen wir das testweise für den Auto-Scan auf 50 erhöhen, damit weniger Requests pro Scan-Limit anfallen?
+TARGET_VISIBLE_RESULTS = 25 okay für dich? (Bedeutet: Er lädt so lange unsichtbar im Hintergrund weiter, bis 25 Server sichtbar sind oder 10 Seiten abgefragt wurden).
+Bist du mit dem Plan einverstanden?

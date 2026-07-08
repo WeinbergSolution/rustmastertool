@@ -19,6 +19,16 @@ export interface BattleMetricsServerSummary {
   lastWipe?: string
   rustType?: string
   queue?: number
+  mapThumbnailUrl?: string | null
+  mapImageUrl?: string | null
+  mapIdentitySeed?: number | null
+  mapIdentitySize?: number | null
+  mapType?: string | null
+  isCustomMap?: boolean | null
+  monumentNames?: string[] | null
+  pve?: boolean
+  secure?: boolean
+  tags?: string[]
 }
 
 export interface BattleMetricsServerDetail extends BattleMetricsServerSummary {
@@ -35,10 +45,11 @@ export interface BattleMetricsSearchResponse {
 
 export interface SearchOptions {
   query?: string
-  pageSize?: number
-  rustType?: string
-  sort?: string
+  limit?: number
   nextUrl?: string
+  status?: string
+  rustType?: 'official' | 'community' | 'modded'
+  pageSize?: number
 }
 
 export interface BattleMetricsApiError {
@@ -89,7 +100,10 @@ export async function searchServers(options: SearchOptions | string): Promise<Ba
     queue: item.attributes.details?.rust_queued_players,
     mapSize: item.attributes.details?.rust_world_size,
     seed: item.attributes.details?.rust_world_seed,
-    lastWipe: item.attributes.details?.rust_last_wipe
+    lastWipe: item.attributes.details?.rust_last_wipe,
+    pve: item.attributes.details?.pve,
+    secure: item.attributes.details?.rust_secure,
+    tags: item.attributes.details?.tags
   })) || []
 
   return {

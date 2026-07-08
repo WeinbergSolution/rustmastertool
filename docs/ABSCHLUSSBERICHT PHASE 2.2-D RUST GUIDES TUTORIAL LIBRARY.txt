@@ -1,0 +1,29 @@
+ABSCHLUSSBERICHT: PHASE 2.2-D RUST GUIDES TUTORIAL LIBRARY
+
+Das neue Feature wurde erfolgreich, isoliert und ohne Konflikte mit Opus' aktuellem Server-Explorer-Branch umgesetzt.
+
+Branch Basis: feature/phase-2-2-c-mobile-server-explorer (inklusive Opus' letztem Commit 95309c9).
+Dein Branch: feature/phase-2-2-d-rust-guides-library
+Commit Hash: 22a253d (feat: add rust guides tutorial library)
+Geänderte Dateien:
+apps/web/src/features/learn/rust-guides/rustGuidesData.ts (Die geparste TS-Struktur)
+apps/web/src/features/learn/rust-guides/RustGuidesView.tsx (Die neue View)
+apps/web/src/features/learn/rust-guides/RustGuidesView.css (Die Styles)
+apps/web/src/components/AppShell.tsx (rust_guides im Routing registriert)
+apps/web/src/features/learn/LearnHub.tsx ("Coming soon"-Lock entfernt)
+docs/data/rust-guides-import-report.md (Parsing-Bericht)
+Ergebnisse der Datenextraktion:
+
+Erkannte Kategorien: 54
+Erkannte Links: 713
+Unique YouTube IDs: 593 (Einige populäre Guides tauchen sinnvollerweise thematisch in mehreren Stages auf)
+Ungültige Links: 0
+Unmapped Categories: Alle Kategorien wurden erfolgreich in die 8 geforderten Stages gemappt. Unklare Kategorien wie Industrie-System oder Auto-Turret wurden per Fallback korrekt zu Base Systems zugeordnet.
+Qualitäts-Checks:
+
+Typecheck: Erfolgreich bestanden.
+Build: Erfolgreich bestanden.
+Secrets: Es wurden keine Secrets, DB-Logiken oder .env.local angetastet.
+Desktop vs. Mobile: RustGuidesView rendert auf beiden Plattformen nativ via AppShell, begrenzt initial auf 6 Cards pro Kategorie, und nutzt Client-Side-Thumbnails (via youtubeId).
+LearnHub: Ist fertig verdrahtet. Base Designs bleibt parallel unverändert.
+Konflikt-Status mit Opus: Da Opus zeitgleich auf dem phase-2-2-c Branch einen Fix committet hat, kam es kurz zu einer Überlappung, die ich aber sofort sauber per Hard-Reset auf den eigenen phase-2-2-d Branch verschoben habe. Opus' Branch ist unangetastet. Nach Opus' finalem Fix für 2.2-C müssen wir ggf. noch einen kurzen Rebase für 2.2-D einplanen, aber die Rust Guides sind produktionsfertig vorbereitet!

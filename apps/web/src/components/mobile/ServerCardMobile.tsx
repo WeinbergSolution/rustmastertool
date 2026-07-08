@@ -1,9 +1,15 @@
 import { useState } from 'react';
-import { Users, Clock, Globe, Map as MapIcon, Copy, Check } from 'lucide-react';
+import { Users, Clock, Globe, Map as MapIcon, Copy, Check, Image as ImageIcon } from 'lucide-react';
+import { Bookmark, BookmarkCheck } from 'lucide-react';
 import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
+import { getServerTypeBadge } from '../../features/dashboard/serverCardUtils';
+import '../../features/dashboard/serverCards.css';
 
 interface ServerCardMobileProps {
   server: BattleMetricsServerSummary;
+  isWatched?: boolean;
+  isAuthenticated?: boolean;
+  onToggleWatch?: () => void;
   onSelect?: () => void;
   onSelectMap?: () => void;
 }
@@ -22,13 +28,7 @@ function formatWipe(server: BattleMetricsServerSummary): string | null {
   return null;
 }
 
-/**
- * Mobile-first server card. Rust-server-browser feel (not admin monitoring):
- * name + population up top, scannable meta (wipe / region / map+size / seed),
- * tappable connect string. Compact rank / modded badges. No "pulse collecting",
- * no faked death curve (reserved for when health scores exist).
- */
-export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMobileProps) {
+export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onSelectMap }: ServerCardMobileProps) {
   const [copied, setCopied] = useState(false);
   const isOnline = server.status === 'online';
   const players = server.players || 0;
@@ -36,8 +36,9 @@ export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMo
   const fill = maxPlayers > 0 ? Math.min(100, (players / maxPlayers) * 100) : 0;
   const wipe = formatWipe(server);
   const connect = server.ip ? `${server.ip}${server.port ? ':' + server.port : ''}` : null;
-  const isModded = (server.rustType || '').toLowerCase() === 'modded';
-  const hasMapData = Boolean(server.seed || server.mapSize || server.map);
+  const badge = getServerTypeBadge(server);
+  const hasMapData = Boolean(server.mapIdentitySeed || server.seed || server.mapIdentitySize || server.mapSize || server.map);
+  const mapThumbnailUrl = server.mapThumbnailUrl || server.mapImageUrl;
 
   const copyConnect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -48,40 +49,76 @@ export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMo
     }).catch(() => {});
   };
 
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      window.sessionStorage.setItem('serverExplorer.pendingAction', 'watchlist');
+      window.sessionStorage.setItem('serverExplorer.selectedServerId', server.id);
+      window.sessionStorage.setItem('serverExplorer.view', 'servers');
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (supabaseUrl) {
+        const origin = encodeURIComponent(window.location.origin);
+        window.location.href = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
+      }
+      return;
+    }
+    if (onToggleWatch) onToggleWatch();
+  };
+
   return (
     <div className="srv-card" onClick={onSelect}>
-      {/* Header: status + name, compact rank / M badge */}
-      <div className="srv-card-head">
-        <span className={`srv-dot ${isOnline ? 'on' : 'off'}`} />
-        <span className="srv-name">{server.name}</span>
-        <span className="srv-head-badges">
-          {typeof server.rank === 'number' && <span className="srv-rank">#{server.rank}</span>}
-          {isModded && <span className="srv-mod" title="Modded">M</span>}
-        </span>
+      <div className="srv-card-layout">
+        <div className="srv-card-content">
+          {/* Header */}
+          <div className="srv-card-head" style={{ paddingRight: '2rem', position: 'relative' }}>
+            <span className={`srv-dot ${isOnline ? 'on' : 'off'}`} />
+            <span className="srv-name">{server.name}</span>
+            <span className="srv-head-badges">
+              {typeof server.rank === 'number' && <span className="srv-rank">#{server.rank}</span>}
+              <span className={`srv-type-badge srv-type-${badge.type}`} title="Server Type">{badge.label}</span>
+            </span>
+            <button 
+              onClick={handleSave} 
+              style={{ position: 'absolute', right: 0, top: 0, background: 'transparent', border: 'none', padding: '0.25rem', color: isWatched ? 'var(--status-error)' : 'var(--text-disabled)', cursor: 'pointer' }}
+            >
+              {isWatched ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+            </button>
+          </div>
+
+          {/* Population */}
+          <div className="srv-pop">
+            <Users size={14} className="srv-pop-icon" />
+            <span className="srv-pop-count">{players}</span>
+            <span className="srv-pop-max">/ {maxPlayers || '?'}</span>
+            {(server.queue ?? 0) > 0 && <span className="srv-queue">+{server.queue} queue</span>}
+            <span className="srv-pop-bar"><span className="srv-pop-fill" style={{ width: `${fill}%` }} /></span>
+          </div>
+
+          {/* Meta grid */}
+          <div className="srv-meta">
+            <div className="srv-meta-item">
+              <Clock size={13} /> <span>{wipe ? `Wiped ${wipe}` : 'Wipe unknown'}</span>
+            </div>
+            <div className="srv-meta-item">
+              <Globe size={13} /> <span>{server.country || 'Unknown'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Thumbnail side */}
+        <div className="srv-card-thumb">
+          {mapThumbnailUrl ? (
+            <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
+          ) : (
+            <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
+          )}
+        </div>
       </div>
 
-      {/* Population */}
-      <div className="srv-pop">
-        <Users size={14} className="srv-pop-icon" />
-        <span className="srv-pop-count">{players}</span>
-        <span className="srv-pop-max">/ {maxPlayers || '?'}</span>
-        {(server.queue ?? 0) > 0 && <span className="srv-queue">+{server.queue} queue</span>}
-        <span className="srv-pop-bar"><span className="srv-pop-fill" style={{ width: `${fill}%` }} /></span>
-      </div>
-
-      {/* Meta grid */}
-      <div className="srv-meta">
+      {/* Map meta */}
+      <div className="srv-meta" style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
         <div className="srv-meta-item">
-          <Clock size={13} /> <span>{wipe ? `Wiped ${wipe}` : 'Wipe unknown'}</span>
-        </div>
-        <div className="srv-meta-item">
-          <Globe size={13} /> <span>{server.country || 'Unknown'}</span>
-        </div>
-        <div className="srv-meta-item">
-          <MapIcon size={13} /> <span>{server.map || 'Procedural'}{server.mapSize ? ` · ${server.mapSize}` : ''}</span>
-        </div>
-        <div className="srv-meta-item">
-          <span className="srv-meta-key">Seed</span> <span>{server.seed ?? 'Hidden'}</span>
+          <MapIcon size={13} /> <span>{server.mapType || server.map || 'Procedural'} {server.mapIdentitySize || server.mapSize ? `· Map Size: ${server.mapIdentitySize || server.mapSize}` : ''}</span>
         </div>
       </div>
 

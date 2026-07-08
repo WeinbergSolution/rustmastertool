@@ -1,0 +1,32 @@
+ABSCHLUSSBERICHT: PHASE 2.2-D RUST GUIDES TUTORIAL LIBRARY (Dedupliziert & Modal Player)
+
+Alle Prüfungen und Modifikationen sind abgeschlossen. Die Rust Guides Library ist nun komplett dedupliziert, verfügt über den Base Blueprints Inline Player und ehrliche Stats.
+
+1. Git & Branch Status
+
+Aktueller Branch: feature/phase-2-2-d-rust-guides-library
+Finaler Commit Hash: 0f3c409 (fix: update hero stats to reflect deduplicated unique video count)
+Diff-Check gegen Opus-Branch: git diff feature/phase-2-2-c-mobile-server-explorer...HEAD zeigt ausschließlich die 6 erlaubten Dateien (RustGuidesView.tsx, RustGuidesView.css, rustGuidesData.ts, AppShell.tsx, LearnHub.tsx und den import-report.md). Keine Server Explorer, Mobile Detail oder Backend-Dateien wurden angetastet. Kein Force Push, kein git add ..
+2. Statistik & Deduplizierung
+
+Collected Links: 713 (Ursprungsdaten)
+Unique Videos im Code & UI: 593 (Jedes Video existiert nun exakt ein einziges Mal, Duplikate werden beim Parsen beim ersten Match gebunden und danach gedroppt).
+Categories: 54
+Stages: 8
+Stats ehrlich korrigiert: Ja. Die Hero Section in der UI zeigt nun stolz: "593 Unique Videos" und "713 Collected Links".
+3. Player Modal Check
+
+Verhalten: Klickt man auf ein Video Thumbnail (die Lupe wurde im UI zum "Play"-Button geändert), öffnet sich das abgedunkelte Fullscreen-Modal.
+Iframe: Standard YouTube <iframe> – nur nach explizitem User-Klick (keine Autoplay-Ladeorgien beim Betreten der Seite).
+Scripts: Keine externen Scripts, keine YouTube API Packages.
+Schließen: Das Modal hat einen "Close" Button rechts oben und lässt sich sauber beenden. (Mobile Overflow ist durch maxWidth und aspectRatio sichergestellt).
+Base Designs: Die bestehende BaseBlueprintsView blieb exakt so, wie sie war – unangetastet.
+4. Qualitätssicherung
+
+Desktop & Mobile: Über die AppShell (LearnHub -> "Rust Guides") problemlos erreichbar. Die Cards brechen responsiv sauber um (1, 2 oder 3 Spalten).
+Typecheck: npm run typecheck:web -> Grün (Passed).
+Build: npm run build:web -> Grün (Passed, ~550ms).
+Secrets Check: Keine .env oder Supabase-Keys wurden ausgelesen, angefasst oder versehentlich deployed.
+Zum Thema "All Stages" vs "Start Here": Du hattest absolut recht! Wenn der Reiter "All Stages" angewählt ist, fängt die Seite oben mit "Start Here" an (weil das logischerweise die erste Stage ist). Wenn man dann auf den Filter "Start Here" klickt, sieht der obere Bereich der Seite identisch aus – der einzige Unterschied ist, dass man bei "Start Here" nicht mehr weiter nach unten zu den anderen Stages scrollen kann. Das ist also kein Bug, sondern normales Filter-Verhalten, da "Start Here" nunmal ganz oben angesiedelt ist.
+
+Alles ist sauber auf feature/phase-2-2-d-rust-guides-library gesichert. Von meiner Seite aus ist Phase 2.2-D zu 100% fertig und wartet auf deinen Gate-Befehl oder den Rebase, sobald Opus fertig ist!

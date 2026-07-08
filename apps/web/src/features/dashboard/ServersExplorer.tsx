@@ -1,16 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
-import { Search, AlertTriangle, Loader2, Filter, Globe, Users, Map as MapIcon, Clock, HardDrive, HelpCircle, Lock } from 'lucide-react';
+import { Search, AlertTriangle, Loader2, Filter, HelpCircle, Bookmark, MapPin } from 'lucide-react';
 import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 import { useAuth } from '../../lib/auth/useAuth';
 import { watchlistRepository } from '../../lib/data/watchlistRepository';
 import { supabase } from '../../lib/supabaseClient';
 import { useIsMobile } from '../../components/mobile/useIsMobile';
+import { useInAppBack } from '../../components/mobile/useInAppBack';
 import { ServerCardMobile } from '../../components/mobile/ServerCardMobile';
 import { BottomSheet } from '../../components/mobile/BottomSheet';
+import { enrichServerSummariesWithMapIdentity } from './mapIdentityEnrichment';
+import { type ServerFilters, defaultFilters, applyClientFilters, type SortOption, applySort } from './serverFilters';
+import { MONUMENTS } from './monumentFilters';
 
-type TabType = 'official' | 'community' | 'modded' | 'favorites' | 'history';
+type TabType = 'official' | 'community' | 'modded' | 'saved' | 'history';
 
 export function ServersExplorer() {
   const { status, user } = useAuth();
@@ -21,6 +25,8 @@ export function ServersExplorer() {
   });
 
   const [searchQuery, setSearchQuery] = useState(() => window.sessionStorage.getItem('serverExplorer.query') || '');
+  const [filters, setFilters] = useState<ServerFilters>(defaultFilters);
+  const [sortBy, setSortBy] = useState<SortOption>('players_desc');
   const [servers, setServers] = useState<BattleMetricsServerSummary[]>(() => {
     const saved = window.sessionStorage.getItem('serverExplorer.results');
     return saved ? JSON.parse(saved) : [];
@@ -37,6 +43,21 @@ export function ServersExplorer() {
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
+
+  const TARGET_VISIBLE_RESULTS = 50;
+  const MAX_FILTER_SCAN_PAGES = 10;
+  const MAX_FILTER_SCAN_RESULTS = 1000;
+  const [isAutoScanning, setIsAutoScanning] = useState(false);
+  const pagesScannedRef = useRef(0);
+  const currentScanIdRef = useRef<number>(0);
+
+  // Mobile browser Back closes the filter sheet / server detail before leaving.
+  useInAppBack({ open: filtersOpen, onClose: () => setFiltersOpen(false), enabled: isMobile });
+  useInAppBack({
+    open: selectedServerId !== null,
+    onClose: () => { setSelectedServerId(null); setDetailFocus(null); },
+    enabled: isMobile,
+  });
 
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.tab', activeTab); }, [activeTab]);
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.query', searchQuery); }, [searchQuery]);
@@ -59,7 +80,12 @@ export function ServersExplorer() {
       try {
         if (status === 'authenticated' && user) {
            const saved = window.localStorage.getItem(`rm_watchlist_${user.id}`);
-           if (saved && mounted) setWatchedServers(JSON.parse(saved));
+           if (saved && mounted) {
+             const parsed = JSON.parse(saved);
+             enrichServerSummariesWithMapIdentity(parsed).then(enriched => {
+               if (mounted) setWatchedServers(enriched);
+             });
+           }
            if (supabase) {
              const { data: p } = await supabase.from('profiles').select('active_server_id').eq('id', user.id).single();
              if (p?.active_server_id && mounted) setActiveServerId(p.active_server_id);
@@ -84,20 +110,25 @@ export function ServersExplorer() {
     };
   }, [status, user]);
 
-  const fetchServers = async (isLoadMore = false, overrideQuery?: string) => {
+  const fetchServers = async (isLoadMore = false, overrideQuery?: string, isAutoScan = false) => {
     const queryToUse = overrideQuery !== undefined ? overrideQuery : searchQuery;
+    const scanId = Date.now();
+    currentScanIdRef.current = scanId;
+
     if (!isLoadMore) {
       setIsSearching(true);
       setSearchError(null);
       setHasSearched(true);
       setServers([]);
+      pagesScannedRef.current = 0;
     } else {
-      setIsLoadingMore(true);
+      if (isAutoScan) setIsAutoScanning(true);
+      else setIsLoadingMore(true);
     }
 
     try {
       const options: any = {
-        pageSize: 25,
+        pageSize: 100,
         rustType: (activeTab === 'official' || activeTab === 'community' || activeTab === 'modded') ? activeTab : undefined,
       };
 
@@ -108,21 +139,39 @@ export function ServersExplorer() {
       }
 
       const response = await searchServers(options);
+      if (currentScanIdRef.current !== scanId) return;
+
+      const enrichedData = await enrichServerSummariesWithMapIdentity(response.data);
+      if (currentScanIdRef.current !== scanId) return;
       
       if (isLoadMore) {
-        setServers(prev => [...prev, ...response.data]);
+        setServers(prev => {
+           const newServers = [...prev];
+           for (const s of enrichedData) {
+             if (!newServers.some(existing => existing.id === s.id)) {
+               newServers.push(s);
+             }
+           }
+           return newServers;
+        });
+        pagesScannedRef.current += 1;
       } else {
-        setServers(response.data);
+        setServers(enrichedData);
       }
       
       setNextPageUrl(response.links?.next || null);
 
     } catch (err: any) {
-      setSearchError(err.message || 'Failed to search servers');
-      if (!isLoadMore) setServers([]);
+      if (currentScanIdRef.current === scanId) {
+        setSearchError(err.message || 'Failed to search servers');
+        if (!isLoadMore) setServers([]);
+      }
     } finally {
-      setIsSearching(false);
-      setIsLoadingMore(false);
+      if (currentScanIdRef.current === scanId) {
+        setIsSearching(false);
+        setIsLoadingMore(false);
+        setIsAutoScanning(false);
+      }
     }
   };
 
@@ -182,13 +231,47 @@ export function ServersExplorer() {
 
   const pendingActionMsg = window.sessionStorage.getItem('serverExplorer.pendingAction');
 
+  const rawServers = activeTab === 'saved' ? watchedServers : servers;
+  const filteredServers = useMemo(() => applyClientFilters(rawServers, filters), [rawServers, filters]);
+  const visibleServers = useMemo(() => applySort(filteredServers, sortBy), [filteredServers, sortBy]);
+  const serversWithMapIntel = useMemo(() => rawServers.filter(s => s.monumentNames && s.monumentNames.length > 0).length, [rawServers]);
+
+  const toggleMonumentFilter = (monumentId: string) => {
+    setFilters(prev => {
+      const current = prev.monuments || [];
+      if (current.includes(monumentId)) {
+        return { ...prev, monuments: current.filter(id => id !== monumentId) };
+      } else {
+        return { ...prev, monuments: [...current, monumentId] };
+      }
+    });
+  };
+
+  const hasActiveFilters = filters.hideEmpty || filters.hideFull || filters.hasQueue || filters.hasMapThumbnail || filters.secure || filters.country !== null || filters.mode !== null || filters.minPlayers !== null || (filters.monuments && filters.monuments.length > 0);
+
+  useEffect(() => {
+    if (activeTab === 'saved') return;
+    if (!hasActiveFilters) return;
+    if (isSearching || isLoadingMore || isAutoScanning) return;
+    if (!nextPageUrl) return;
+    
+    if (
+      visibleServers.length < TARGET_VISIBLE_RESULTS &&
+      rawServers.length < MAX_FILTER_SCAN_RESULTS &&
+      pagesScannedRef.current < MAX_FILTER_SCAN_PAGES
+    ) {
+      fetchServers(true, undefined, true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleServers.length, hasActiveFilters, isSearching, isLoadingMore, isAutoScanning, nextPageUrl, activeTab, rawServers.length]);
+
   // ---- Mobile presentation (2.2-C). Same state & handlers; different layout only. ----
   if (isMobile) {
     return (
       <>
         <div className="mobile-servers">
           <div className="mobile-seg" role="tablist">
-            {(['official', 'community', 'modded'] as TabType[]).map(tab => (
+            {(['official', 'community', 'modded', 'saved'] as TabType[]).map(tab => (
               <button
                 key={tab}
                 className={`mobile-seg-btn${activeTab === tab ? ' active' : ''}`}
@@ -215,30 +298,46 @@ export function ServersExplorer() {
           <div className="mobile-servers-toolbar">
             <button className="mobile-filter-btn" onClick={() => setFiltersOpen(true)}>
               <Filter size={14} /> Filters
+              {filters.monuments.length > 0 && <span style={{ marginLeft: '4px', background: 'var(--accent-rust)', color: '#fff', borderRadius: '50%', padding: '0 4px', fontSize: '10px' }}>{filters.monuments.length}</span>}
             </button>
-            {servers.length > 0 && <span className="mobile-servers-count">{servers.length} shown</span>}
+            {rawServers.length > 0 && <span className="mobile-servers-count">{visibleServers.length} shown / {rawServers.length} loaded / {serversWithMapIntel} with map intel</span>}
           </div>
 
           {pendingActionMsg && status === 'authenticated' && (
             <div className="mobile-restore-banner">
-              Your server search was restored. {pendingActionMsg === 'watchlist' ? 'Continue adding to your Watchlist.' : 'Continue setting your Active Server.'}
+              Your server search was restored. {pendingActionMsg === 'watchlist' ? 'Continue saving the server.' : 'Continue setting your Active Server.'}
             </div>
           )}
 
-          {isSearching ? (
+          {isAutoScanning && (
+            <div className="mobile-restore-banner" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)', border: '1px dashed var(--border-color)' }}>
+              <Loader2 size={14} className="spin" />
+              <span>Expanding search because filters reduced the result set...</span>
+            </div>
+          )}
+
+          {activeTab === 'saved' && status !== 'authenticated' ? (
+            <div className="mobile-servers-state">
+              <Bookmark size={28} style={{ opacity: 0.3 }} />
+              <span>Sign in with Steam to view your saved servers.</span>
+            </div>
+          ) : isSearching ? (
             <div className="mobile-servers-state"><Loader2 size={28} className="spin" /><span>Fetching live server data…</span></div>
           ) : searchError ? (
             <div className="mobile-servers-state mobile-servers-state--error">
               <AlertTriangle size={26} /><strong>Search failed</strong><span>{searchError}</span>
             </div>
-          ) : hasSearched && servers.length === 0 ? (
-            <div className="mobile-servers-state">No servers found in this category. Try another search.</div>
-          ) : servers.length > 0 ? (
+          ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 && !isAutoScanning && !isSearching && !isLoadingMore ? (
+            <div className="mobile-servers-state">No matching servers found after scanning {rawServers.length} loaded servers. Try relaxing your filters.</div>
+          ) : visibleServers.length > 0 ? (
             <div className="mobile-servers-list">
-              {servers.map(server => (
+              {visibleServers.map(server => (
                 <ServerCardMobile
                   key={server.id}
                   server={server}
+                  isWatched={watchedServers.some(s => s.id === server.id)}
+                  isAuthenticated={status === 'authenticated'}
+                  onToggleWatch={() => toggleWatch(server.id, server.internal_uuid)}
                   onSelect={() => {
                     setSelectedServerId(server.id);
                     setDetailFocus(null);
@@ -262,14 +361,121 @@ export function ServersExplorer() {
           )}
         </div>
 
-        <BottomSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
-          <p className="mobile-filters-note">
-            Advanced filters (region, players, wipe schedule, map size) are coming soon.
-            For now use the category tabs and search.
-          </p>
-          {['Region / Country', 'Players', 'Server Type', 'Map Size', 'Wipe Schedule'].map(f => (
-            <div key={f} className="mobile-filter-coming"><Lock size={13} /> {f}</div>
-          ))}
+        <BottomSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters (Loaded Results)">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem 0' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hideEmpty} onChange={e => setFilters({ ...filters, hideEmpty: e.target.checked })} />
+              Hide Empty Servers
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hideFull} onChange={e => setFilters({ ...filters, hideFull: e.target.checked })} />
+              Hide Full Servers
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hasQueue} onChange={e => setFilters({ ...filters, hasQueue: e.target.checked })} />
+              Has Queue
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" checked={filters.hasMapThumbnail} onChange={e => setFilters({ ...filters, hasMapThumbnail: e.target.checked })} />
+              Has Map Thumbnail
+            </label>
+            
+            <div style={{ marginTop: '0.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Sort By</label>
+              <select className="rm-select mobile" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+                <option value="players_desc">Players: High to Low</option>
+                <option value="players_asc">Players: Low to High</option>
+                <option value="fill_desc">Fill Rate: High to Low</option>
+                <option value="rank_asc">Rank: Best First</option>
+                <option value="queue_desc">Queue: High to Low</option>
+                <option value="updated_desc">Recently Updated</option>
+              </select>
+            </div>
+
+            <div style={{ marginTop: '0.5rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Minimum Players</label>
+              <select className="rm-select mobile" value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+                <option value="any">Any</option>
+                <option value="100">100+</option>
+                <option value="200">200+</option>
+                <option value="300">300+</option>
+                <option value="400">400+</option>
+                <option value="500">500+</option>
+                <option value="600">600+</option>
+                <option value="700">700+</option>
+                <option value="800">800+</option>
+                <option value="900">900+</option>
+                <option value="1000">1000+</option>
+              </select>
+            </div>
+          </div>
+          
+          <div style={{ padding: '0 0 1rem 0' }}>
+            <div style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={14} /> Monuments Filter</div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Applies to loaded servers with known map intel.</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {MONUMENTS.filter(m => ['launch_site', 'power_plant', 'military_tunnels', 'train_yard', 'airfield', 'water_treatment', 'large_oil_rig', 'small_oil_rig', 'excavator', 'outpost'].includes(m.id)).map(mon => {
+                const isActive = filters.monuments?.includes(mon.id);
+                return (
+                  <button
+                    key={mon.id}
+                    onClick={() => toggleMonumentFilter(mon.id)}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '16px',
+                      fontSize: '0.75rem',
+                      border: `1px solid ${isActive ? 'var(--accent-rust)' : 'var(--border-color)'}`,
+                      backgroundColor: isActive ? 'rgba(205, 65, 43, 0.1)' : 'transparent',
+                      color: isActive ? 'var(--accent-rust)' : 'var(--text-primary)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {mon.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <details style={{ marginBottom: '1rem' }}>
+             <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem', padding: '0.5rem 0' }}>Advanced Filters</summary>
+             <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input type="checkbox" checked={filters.secure} onChange={e => setFilters({ ...filters, secure: e.target.checked })} />
+                  Secure only (EAC)
+                </label>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Server Mode <span style={{ fontSize: '0.7rem', color: 'var(--text-disabled)', fontWeight: 400 }}>(Name/tag based)</span></label>
+                  <select className="rm-select mobile" value={filters.mode === null ? 'any' : filters.mode} onChange={e => setFilters({ ...filters, mode: e.target.value === 'any' ? null : e.target.value as any })}>
+                     <option value="any">Any Mode</option>
+                     <option value="vanilla">Vanilla</option>
+                     <option value="pve">PvE</option>
+                     <option value="roleplay">Roleplay</option>
+                     <option value="creative">Creative / Build</option>
+                     <option value="softcore">Softcore</option>
+                     <option value="hardcore">Hardcore</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Country <span style={{ fontSize: '0.7rem', color: 'var(--text-disabled)', fontWeight: 400 }}>(Scanned only)</span></label>
+                  <select className="rm-select mobile" value={filters.country === null ? 'any' : filters.country} onChange={e => setFilters({ ...filters, country: e.target.value === 'any' ? null : e.target.value })}>
+                     <option value="any">Any Country</option>
+                     {Array.from(new Set(rawServers.map(s => s.country).filter(Boolean))).sort().map(c => (
+                        <option key={c} value={c as string}>{c as string}</option>
+                     ))}
+                  </select>
+                </div>
+
+                <div style={{ opacity: 0.5, pointerEvents: 'none', marginTop: '0.5rem', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                   <span style={{ fontSize: '0.75rem', color: 'var(--text-disabled)' }}>Coming soon (Roadmap)</span>
+                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><input type="checkbox" disabled /> Region filter</label>
+                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><input type="checkbox" disabled /> Wipe Schedule</label>
+                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><input type="checkbox" disabled /> Combat Training</label>
+                </div>
+             </div>
+          </details>
         </BottomSheet>
 
         {selectedServerId && (
@@ -279,8 +485,9 @@ export function ServersExplorer() {
             onClose={() => { setSelectedServerId(null); setDetailFocus(null); }}
             onToggleWatch={toggleWatch}
             onSetActiveServer={handleSetActiveServer}
-            isActiveServer={servers.find(s => s.id === selectedServerId)?.internal_uuid ? servers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
+            isActiveServer={rawServers.find(s => s.id === selectedServerId)?.internal_uuid ? rawServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
             isAuthenticated={status === 'authenticated'}
+            serverSummary={rawServers.find(s => s.id === selectedServerId)}
             initialFocus={detailFocus}
           />
         )}
@@ -293,7 +500,7 @@ export function ServersExplorer() {
       
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-        {(['official', 'community', 'modded'] as TabType[]).map(tab => (
+        {(['official', 'community', 'modded', 'saved'] as TabType[]).map(tab => (
           <button 
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -311,9 +518,6 @@ export function ServersExplorer() {
             {tab}
           </button>
         ))}
-        <button disabled style={{ padding: '0.5rem 1.5rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-disabled)', cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          Favorites <span style={{ fontSize: '0.6rem', color: 'var(--accent-rust)' }}>(Soon)</span>
-        </button>
         <button disabled style={{ padding: '0.5rem 1.5rem', background: 'transparent', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-disabled)', cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           History <span style={{ fontSize: '0.6rem', color: 'var(--accent-rust)' }}>(Soon)</span>
         </button>
@@ -351,31 +555,144 @@ export function ServersExplorer() {
             </button>
           </form>
           
-          {/* Static UI Filters */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'not-allowed', opacity: 0.7 }}>
-               <Globe size={12} /> Region / Country
-            </div>
-            <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'not-allowed', opacity: 0.7 }}>
-               <Users size={12} /> Players
-            </div>
-            <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'not-allowed', opacity: 0.7 }}>
-               <HardDrive size={12} /> Server Type
-            </div>
-            <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'not-allowed', opacity: 0.7 }}>
-               <MapIcon size={12} /> Map Size
-            </div>
-            <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-muted)', cursor: 'not-allowed', opacity: 0.7 }}>
-               <Clock size={12} /> Wipe Schedule
-            </div>
-            <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'transparent', border: '1px dashed var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-disabled)', marginLeft: 'auto' }}>
-               <HelpCircle size={12} /> Using current provider search until category feed is expanded.
-            </div>
+          {/* Dynamic UI Filters */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+               <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                 <input type="checkbox" checked={filters.hideEmpty} onChange={e => setFilters({ ...filters, hideEmpty: e.target.checked })} />
+                 Hide Empty
+               </label>
+               <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                 <input type="checkbox" checked={filters.hideFull} onChange={e => setFilters({ ...filters, hideFull: e.target.checked })} />
+                 Hide Full
+               </label>
+               <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                 <input type="checkbox" checked={filters.hasQueue} onChange={e => setFilters({ ...filters, hasQueue: e.target.checked })} />
+                 Has Queue
+               </label>
+               <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                 <input type="checkbox" checked={filters.hasMapThumbnail} onChange={e => setFilters({ ...filters, hasMapThumbnail: e.target.checked })} />
+                 Has Map Thumbnail
+               </label>
+               
+               <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--border-color)', margin: '0 0.5rem' }}></div>
+               
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                 <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sort:</label>
+                 <select className="rm-select" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+                   <option value="players_desc">Players: High to Low</option>
+                   <option value="players_asc">Players: Low to High</option>
+                   <option value="fill_desc">Fill Rate: High to Low</option>
+                   <option value="rank_asc">Rank: Best First</option>
+                   <option value="queue_desc">Queue: High to Low</option>
+                   <option value="updated_desc">Recently Updated</option>
+                 </select>
+               </div>
+
+               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                 <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Min Players:</label>
+                 <select className="rm-select" value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+                   <option value="any">Any</option>
+                   <option value="100">100+</option>
+                   <option value="200">200+</option>
+                   <option value="300">300+</option>
+                   <option value="400">400+</option>
+                   <option value="500">500+</option>
+                   <option value="600">600+</option>
+                   <option value="700">700+</option>
+                   <option value="800">800+</option>
+                   <option value="900">900+</option>
+                   <option value="1000">1000+</option>
+                 </select>
+               </div>
+             </div>
+
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><MapPin size={12}/> Monuments:</span>
+               <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                 {MONUMENTS.filter(m => ['launch_site', 'power_plant', 'military_tunnels', 'train_yard', 'airfield', 'water_treatment', 'large_oil_rig', 'small_oil_rig', 'excavator', 'outpost'].includes(m.id)).map(mon => {
+                   const isActive = filters.monuments?.includes(mon.id);
+                   return (
+                     <button
+                       key={mon.id}
+                       onClick={() => toggleMonumentFilter(mon.id)}
+                       style={{
+                         padding: '0.15rem 0.5rem',
+                         borderRadius: '12px',
+                         fontSize: '0.7rem',
+                         border: `1px solid ${isActive ? 'var(--accent-rust)' : 'var(--border-color)'}`,
+                         backgroundColor: isActive ? 'rgba(205, 65, 43, 0.1)' : 'var(--bg-panel)',
+                         color: isActive ? 'var(--accent-rust)' : 'var(--text-secondary)',
+                         cursor: 'pointer'
+                       }}
+                     >
+                       {mon.label}
+                     </button>
+                   );
+                 })}
+               </div>
+             </div>
+
+             <details style={{ marginTop: '0.5rem' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>Advanced Filters</summary>
+                <div style={{ marginTop: '0.75rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', padding: '1rem', backgroundColor: 'var(--bg-hover)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={filters.secure} onChange={e => setFilters({ ...filters, secure: e.target.checked })} />
+                        Secure only (EAC)
+                      </label>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Mode <span style={{ fontSize: '0.65rem' }}>(Name/tag based)</span>:</label>
+                        <select className="rm-select" value={filters.mode === null ? 'any' : filters.mode} onChange={e => setFilters({ ...filters, mode: e.target.value === 'any' ? null : e.target.value as any })}>
+                           <option value="any">Any</option>
+                           <option value="vanilla">Vanilla</option>
+                           <option value="pve">PvE</option>
+                           <option value="roleplay">Roleplay</option>
+                           <option value="creative">Creative / Build</option>
+                           <option value="softcore">Softcore</option>
+                           <option value="hardcore">Hardcore</option>
+                        </select>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Country <span style={{ fontSize: '0.65rem' }}>(Scanned only)</span>:</label>
+                        <select className="rm-select" value={filters.country === null ? 'any' : filters.country} onChange={e => setFilters({ ...filters, country: e.target.value === 'any' ? null : e.target.value })}>
+                           <option value="any">Any</option>
+                           {Array.from(new Set(rawServers.map(s => s.country).filter(Boolean))).sort().map(c => (
+                              <option key={c} value={c as string}>{c as string}</option>
+                           ))}
+                        </select>
+                      </div>
+                   </div>
+
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', opacity: 0.5, pointerEvents: 'none', borderLeft: '1px dashed var(--border-color)', paddingLeft: '1.5rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-disabled)', fontWeight: 'bold' }}>Coming soon (Roadmap)</span>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem' }}><input type="checkbox" disabled /> Region filter</label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem' }}><input type="checkbox" disabled /> Wipe Schedule (Day)</label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem' }}><input type="checkbox" disabled /> Combat Training</label>
+                   </div>
+                </div>
+             </details>
+             
+             <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'transparent', border: '1px dashed var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-disabled)', alignSelf: 'flex-start' }}>
+                <HelpCircle size={12} /> {visibleServers.length} shown / {rawServers.length} scanned / {serversWithMapIntel} with map intel / sorted by {sortBy.replace('_', ' ')}
+             </div>
           </div>
         </div>
 
+        {isAutoScanning && (
+          <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)', border: '1px dashed var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+             <Loader2 size={16} className="spin" />
+             <span>Expanding search because filters reduced the result set...</span>
+          </div>
+        )}
+
         {/* Results */}
-        {isSearching ? (
+        {activeTab === 'saved' && status !== 'authenticated' ? (
+           <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+             <Bookmark size={32} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+             <p>Sign in with Steam to view your saved servers.</p>
+           </div>
+        ) : isSearching ? (
           <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <Loader2 size={32} className="spin" />
             <span>Fetching live server data...</span>
@@ -386,16 +703,19 @@ export function ServersExplorer() {
             <strong>Search Failed</strong>
             <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>{searchError}</p>
           </div>
-        ) : hasSearched && servers.length === 0 ? (
+        ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 && !isAutoScanning && !isSearching && !isLoadingMore ? (
           <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
-            No servers found in this category. Try adjusting your filters.
+            No matching servers found after scanning {rawServers.length} loaded servers. Try relaxing your filters.
           </div>
-        ) : servers.length > 0 ? (
+        ) : visibleServers.length > 0 ? (
           <div className="server-list" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {servers.map(server => (
+            {visibleServers.map(server => (
               <ServerCard 
                 key={server.id} 
                 server={server} 
+                isWatched={watchedServers.some(s => s.id === server.id)}
+                isAuthenticated={status === 'authenticated'}
+                onToggleWatch={() => toggleWatch(server.id, server.internal_uuid)}
                 onSelect={() => {
                   setSelectedServerId(server.id);
                   window.sessionStorage.removeItem('serverExplorer.pendingAction');
@@ -428,8 +748,9 @@ export function ServersExplorer() {
           onClose={() => setSelectedServerId(null)}
           onToggleWatch={toggleWatch}
           onSetActiveServer={handleSetActiveServer}
-          isActiveServer={servers.find(s => s.id === selectedServerId)?.internal_uuid ? servers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
+          isActiveServer={rawServers.find(s => s.id === selectedServerId)?.internal_uuid ? rawServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
           isAuthenticated={status === 'authenticated'}
+          serverSummary={rawServers.find(s => s.id === selectedServerId)}
         />
       )}
     </div>

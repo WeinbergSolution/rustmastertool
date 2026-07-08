@@ -10,6 +10,8 @@ import type {
   RustGuideCategory 
 } from './rustGuidesData';
 import type { ViewState } from '../../../components/AppShell';
+import { useIsMobile } from '../../../components/mobile/useIsMobile';
+import { useInAppBack } from '../../../components/mobile/useInAppBack';
 import './RustGuidesView.css';
 
 interface RustGuidesViewProps {
@@ -20,6 +22,10 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeStage, setActiveStage] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+
+  // Mobile browser Back closes the video modal first (stays inside Rust Guides).
+  useInAppBack({ open: activeVideoId !== null, onClose: () => setActiveVideoId(null), enabled: isMobile });
 
   // Memoized search filtering
   const filteredVideos = useMemo(() => {
@@ -134,7 +140,7 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
 
       {/* Video Modal */}
       {activeVideoId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="video-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', position: 'relative', padding: '1rem' }}>
             <button
               onClick={() => setActiveVideoId(null)}

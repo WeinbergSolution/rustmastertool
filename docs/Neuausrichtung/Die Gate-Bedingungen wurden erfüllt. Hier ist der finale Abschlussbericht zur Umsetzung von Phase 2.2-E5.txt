@@ -1,0 +1,62 @@
+Die Gate-Bedingungen wurden erfüllt. Hier ist der finale Abschlussbericht zur Umsetzung von Phase 2.2-E5 (Watchlist under Servers) und 2.2-E6 (Honest Filters) inkl. Map Thumbnails und Server Badges:
+
+1. Ergebnis
+Kurz: Was wurde umgesetzt? Die Watchlist ("Saved") wurde nahtlos als vierter Tab unter ServersExplorer integriert. Echte client-seitige Filter ("Honest Filters") wurden für die geladenen Ergebnisse eingebaut. Jede Server Card (Desktop & Mobile) verfügt nun über ein Map Thumbnail-Overlay, Seed, Size und dedizierte Type-Badges (O/C/M/Mix).
+
+2. Datenpfad Map Thumbnails
+Woher kommen Thumbnail URL / Seed / Size? Aus der bestehenden Supabase-Tabelle server_map_identity.
+Wurde batch-enriched? Ja. enrichServerSummariesWithMapIdentity greift die IDs von der BattleMetrics API ab und reichert diese im Frontend über ein in('battlemetrics_server_id', ...) Batch-Enrichment mit den aktuellsten Map-Bildern an.
+Gab es RLS/API-Grenzen? Nein. Ein Audit von 20260706130944_server_map_identity.sql ergab, dass die RLS Policy "Public can view server map identities" on select using (true) gesetzt ist. Ein Frontend-Fetch ist somit komplett erlaubt und sauber.
+3. Watchlist/Saved
+Wie ist Saved unter Servers integriert? Als 4. Tab (saved) in der ServersExplorer Navigation. Die Favoriten/History Platzhalter wurden entsprechend bereinigt.
+Unauthenticated/Auth Verhalten? Im Unauthenticated-Status zeigt der Tab einen dedizierten Hinweis ("Sign in with Steam to view your saved servers"). Bei Authenticated verhält sich der Tab genau wie die Kategorien, benutzt die enriched Daten aus dem LocalStorage und unterstützt dieselben Honest Filters.
+4. Honest Filters
+Welche echten Filter sind aktiv?
+Hide Empty Servers (players === 0)
+Hide Full Servers (players >= maxPlayers)
+Has Queue (queue > 0)
+Has Map Thumbnail (mapThumbnailUrl existiert)
+Welche Filter sind Roadmap/disabled? Region/Country, Wipe Schedule, und Map Size Range Filter (sichtbar als "coming soon" mit Schloss-Icon).
+Wirken sie nur auf loaded results? Ja. Beschriftung lautet explizit "Filters (Loaded Results)". Die Filter agieren rein client-seitig auf visibleServers und verdecken nicht die Realität (Zählung via {visibleServers.length} shown ({rawServers.length} loaded)).
+5. Server Type Badges
+Regeln für O/C/M/Mix:
+O: Wenn rustType official ist.
+Mix: Wenn rustType community aber Servername "modded", "2x", "3x", "x" enthält ODER wenn rustType modded aber Servername "vanilla" enthält.
+C: Wenn rustType strikt community.
+M: Wenn rustType strikt modded.
+Datenquelle: BattleMetricsServerSummary.rustType als Primärquelle, Fallback auf den aktiven Such-Tab, falls komplett fehlend. (Gelöst über serverCardUtils.ts).
+6. Geänderte Dateien
+apps/web/src/features/dashboard/mapIdentityEnrichment.ts (NEU)
+apps/web/src/features/dashboard/serverCardUtils.ts (NEU)
+apps/web/src/features/dashboard/serverFilters.ts (NEU)
+apps/web/src/features/dashboard/serverCards.css (NEU)
+apps/web/src/features/dashboard/ServersExplorer.tsx (MODIFIED)
+apps/web/src/features/dashboard/ServerCard.tsx (MODIFIED)
+apps/web/src/components/mobile/ServerCardMobile.tsx (MODIFIED)
+apps/web/src/lib/api/battlemetrics.ts (MODIFIED: Interface Summary Update)
+7. Checks
+typecheck: Erfolgreich bestanden (0 Fehler nach finalem Typ-Fix).
+build: Erfolgreich bestanden.
+lint: Erfolgreich bestanden.
+dev: HTTP 200 intakt.
+8. Manuelle Smokes
+Mobile: "Saved" Button existiert im Segment und fängt fehlenden Auth ab. Cards layouten sich korrekt via Flex mit 80px Thumbnail-Thumb rechts. Badges sind gut lesbar. Filter Bottom-Sheet öffnet sich und rendert die Live-Änderungen an der Resultat-Menge akkurat.
+Desktop: Layout ist nicht gebrochen. Thumbnail (100px) ordnet sich zentriert neben Status und Detail-Action ein. Filterleiste oberhalb der Search Results rendert flüssig als Checkboxen.
+9. Scope-Bestätigung
+Ich bestätige ausdrücklich:
+
+Keine Auth-Änderung.
+Keine DB-Migration.
+Kein Supabase Function Deploy.
+Kein Cron-Umbau.
+Kein Set-Active-Fix.
+Kein Deploy.
+Kein Merge nach main.
+10. Commit/Branch
+Branch: feature/phase-2-2-e-mobile-navigation-polish
+Commit-Hash: e6b356f feat: upgrade server explorer saved filters and map previews
+Push-Status: Erfolgreich per git push origin HEAD remote gepusht.
+11. Offene nächste Schritte
+2.2-F Set Active Bugfix
+2.4-A Map Strategy Research
+ggf. nachhaltige serverseitige Filter/API-Erweiterung (Death Curve/Scores)

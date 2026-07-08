@@ -1,0 +1,50 @@
+/* Server Card Map Thumbnail Additions */
+.srv-card-layout {
+  display: flex;
+  gap: 1rem;
+}
+.srv-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.srv-card-thumb {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+.srv-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--bg-hover);
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+.srv-card-image-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--bg-hover);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-color);
+}
+.srv-type-badge {
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-left: auto;
+}
+.srv-type-official { background-color: rgba(220, 38, 38, 0.2); color: #f87171; }
+.srv-type-community { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.srv-type-modded { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
+.srv-type-mix { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.srv-type-unknown { background-color: var(--bg-hover); color: var(--text-muted); }

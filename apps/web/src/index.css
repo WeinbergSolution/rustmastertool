@@ -989,3 +989,36 @@ html, body {
   cursor: pointer;
 }
 
+/* ---- Forms & Inputs ---- */
+.rm-select {
+  appearance: none;
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-main);
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1em;
+}
+
+.rm-select:hover {
+  border-color: var(--text-muted);
+  background-color: #333;
+}
+
+.rm-select:focus {
+  border-color: var(--accent-rust);
+  box-shadow: 0 0 0 2px rgba(206, 66, 43, 0.2);
+}
+
+.rm-select.mobile {
+  font-size: 1rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+}

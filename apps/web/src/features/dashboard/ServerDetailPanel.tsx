@@ -270,7 +270,16 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                         style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
                         onClick={() => setIsMapEnlarged(false)}
                       >
-                        <img src={fullImageUrl} alt="Map Enlarged" style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+                        <img 
+                          src={fullImageUrl} 
+                          alt="Map Enlarged" 
+                          style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} 
+                          onError={(e) => {
+                            if (displayUrl && e.currentTarget.src !== displayUrl) {
+                              e.currentTarget.src = displayUrl;
+                            }
+                          }}
+                        />
                       </div>
                     )}
 

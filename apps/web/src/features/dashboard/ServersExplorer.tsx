@@ -484,6 +484,7 @@ export function ServersExplorer() {
           onSetActiveServer={handleSetActiveServer}
           isActiveServer={rawServers.find(s => s.id === selectedServerId)?.internal_uuid ? rawServers.find(s => s.id === selectedServerId)?.internal_uuid === activeServerId : false}
           isAuthenticated={status === 'authenticated'}
+          serverSummary={rawServers.find(s => s.id === selectedServerId)}
         />
       )}
     </div>

@@ -102,7 +102,7 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
           <div className="srv-card-image-placeholder"><ImageIcon size={24} /></div>
         )}
         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', textAlign: 'center' }}>
-          Seed Hidden<br/>{server.mapIdentitySize ?? server.mapSize ?? '?'}
+          {server.mapIdentitySize || server.mapSize ? `Map Size: ${server.mapIdentitySize || server.mapSize}` : ''}
         </div>
       </div>
 
@@ -147,7 +147,6 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem', fontSize: '0.75rem', color: 'var(--text-disabled)' }}>
           <span>{server.ip || server.address || 'Unknown'}:{server.port}</span>
-          <span>Seed Hidden</span>
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

@@ -15,11 +15,12 @@ interface ServerDetailPanelProps {
   isActiveServer?: boolean;
   isAuthenticated?: boolean;
   initialFocus?: 'map' | null;
+  serverSummary?: any;
 }
 
 import { supabase } from '../../lib/supabaseClient';
 
-export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch, onSetActiveServer, isActiveServer, isAuthenticated, initialFocus }: ServerDetailPanelProps) {
+export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch, onSetActiveServer, isActiveServer, isAuthenticated, initialFocus, serverSummary }: ServerDetailPanelProps) {
   const [server, setServer] = useState<BattleMetricsServerDetail | null>(null);
   const [mapIdentity, setMapIdentity] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -217,10 +218,11 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 
                 // Priority 1: DB server_map_identity.rustmaps_thumbnail_url
                 // Priority 2: BM embedded details.rust_maps.thumbnailUrl
-                const thumbnailUrl = mapIdentity?.rustmaps_thumbnail_url || (hasRustMaps ? details.rust_maps?.thumbnailUrl : null);
+                // Priority 3: Enriched serverSummary.mapThumbnailUrl
+                const thumbnailUrl = mapIdentity?.rustmaps_thumbnail_url || (hasRustMaps ? details.rust_maps?.thumbnailUrl : null) || serverSummary?.mapThumbnailUrl || serverSummary?.mapImageUrl;
                 const isCustomMap = mapIdentity?.is_custom_map || mapType === 'custom';
-                const mapSeed = mapIdentity?.seed || details.rust_world_seed;
-                const mapSize = mapIdentity?.world_size || details.rust_world_size;
+                const mapSeed = mapIdentity?.seed || details.rust_world_seed || serverSummary?.seed || serverSummary?.mapIdentitySeed;
+                const mapSize = mapIdentity?.world_size || details.rust_world_size || serverSummary?.mapSize || serverSummary?.mapIdentitySize;
                 
                 if (isCustomMap && !thumbnailUrl) {
                    return (
@@ -243,7 +245,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                            <Maximize2 size={32} color="#fff" />
                          </div>
                          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', backgroundColor: 'rgba(0,0,0,0.7)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
-                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} · {mapSize} · Seed Hidden
+                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} {mapSize ? `· Map Size: ${mapSize}` : ''}
                          </div>
                        </div>
                        
@@ -278,7 +280,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                    return (
                      <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
                        <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />
-                       <h4 style={{ margin: 0, color: '#fff' }}>Seed Hidden · Size {mapSize}</h4>
+                       <h4 style={{ margin: 0, color: '#fff' }}>{mapSize ? `Map Size: ${mapSize}` : 'Map Preview'}</h4>
                        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
                          Seed detected. Map preview not cached yet.
                        </p>
@@ -372,6 +374,13 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                {(() => {
                  if (isSnapshotsLoading) {
                    return <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Loading historical data...</div>;
+                 }
+                 if (snapshots.length === 0) {
+                   return (
+                     <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textAlign: 'center', padding: '1rem' }}>
+                       Pulse monitoring has not collected data for this server yet.
+                     </div>
+                   );
                  }
                  const pulse = calculatePulseSummary(snapshots, server.details?.rust_last_wipe);
                  

@@ -118,10 +118,7 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
       {/* Map meta */}
       <div className="srv-meta" style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-color)' }}>
         <div className="srv-meta-item">
-          <MapIcon size={13} /> <span>{server.mapType || server.map || 'Procedural'} {server.mapIdentitySize || server.mapSize ? `· ${server.mapIdentitySize || server.mapSize}` : ''}</span>
-        </div>
-        <div className="srv-meta-item">
-          <span className="srv-meta-key">Seed</span> <span>Hidden</span>
+          <MapIcon size={13} /> <span>{server.mapType || server.map || 'Procedural'} {server.mapIdentitySize || server.mapSize ? `· Map Size: ${server.mapIdentitySize || server.mapSize}` : ''}</span>
         </div>
       </div>
 

@@ -67,7 +67,10 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
   };
 
   return (
-    <div className="srv-card" onClick={onSelect}>
+    <div className="srv-card" onClick={(e) => {
+      if ((e.target as HTMLElement).closest('[data-map-action="open-server-map"]')) return;
+      onSelect?.();
+    }}>
       <div className="srv-card-layout">
         <div className="srv-card-content">
           {/* Header */}
@@ -114,10 +117,14 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
               {onOpenMap && (
                 <button 
                   type="button"
+                  className="srv-map-open-btn"
+                  data-map-action="open-server-map"
+                  onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
+                  onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onTouchStartCapture={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute',
                     top: '-4px',
@@ -147,10 +154,14 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
               {onOpenMap && (
                 <button 
                   type="button"
+                  className="srv-map-open-btn"
+                  data-map-action="open-server-map"
+                  onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
+                  onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onTouchStartCapture={(e) => e.stopPropagation()}
                   style={{
                     position: 'absolute',
                     top: '-4px',
@@ -194,9 +205,17 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
         ) : <span className="srv-connect srv-connect--none">Connect hidden</span>}
         {hasMapData && (
           <button
-            className="srv-map-ind"
-            onClick={(e) => { e.stopPropagation(); (onSelectMap || onSelect)?.(); }}
+            type="button"
+            className="srv-map-open-btn"
+            data-map-action="open-server-map"
+            onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); if(onOpenMap) onOpenMap(); else if(onSelectMap) onSelectMap(); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); if(onOpenMap) onOpenMap(); else if(onSelectMap) onSelectMap(); }}
+            onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onTouchStartCapture={(e) => e.stopPropagation()}
             title="Open map preview"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: 'var(--status-success)', color: '#000', borderRadius: '4px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
           >
             <MapIcon size={12} /> Map
           </button>

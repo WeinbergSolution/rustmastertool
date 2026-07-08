@@ -53,7 +53,10 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
   };
   
   return (
-    <div className="server-item" onClick={onSelect} style={{ 
+    <div className="server-item" onClick={(e) => {
+      if ((e.target as HTMLElement).closest('[data-map-action="open-server-map"]')) return;
+      onSelect?.();
+    }} style={{ 
       cursor: onSelect ? 'pointer' : 'default',
       backgroundColor: 'var(--bg-panel)',
       border: '1px solid var(--border-color)',
@@ -100,10 +103,14 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
             {onOpenMap && (
               <button 
                 type="button"
+                className="srv-map-open-btn"
+                data-map-action="open-server-map"
+                onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                onPointerDown={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
+                onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onTouchStartCapture={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
                   top: '-8px',
@@ -113,7 +120,7 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                   color: '#000',
                   border: 'none',
                   borderRadius: '50%',
-                  padding: '4px',
+                  padding: '6px',
                   cursor: 'pointer',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
                   display: 'flex',
@@ -123,7 +130,7 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                 title="Open parsed server map"
                 aria-label="Open server map"
               >
-                <MapIcon size={16} />
+                <MapIcon size={18} />
               </button>
             )}
           </div>
@@ -133,10 +140,14 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
             {onOpenMap && (
               <button 
                 type="button"
+                className="srv-map-open-btn"
+                data-map-action="open-server-map"
+                onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                onPointerDown={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
+                onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onTouchStartCapture={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
                   top: '-8px',
@@ -146,7 +157,7 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                   color: 'var(--text-disabled)',
                   border: '1px solid var(--border-color)',
                   borderRadius: '50%',
-                  padding: '4px',
+                  padding: '6px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -155,7 +166,7 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                 title="Map data not available yet"
                 aria-label="Map data not available yet"
               >
-                <MapIcon size={16} />
+                <MapIcon size={18} />
               </button>
             )}
           </div>

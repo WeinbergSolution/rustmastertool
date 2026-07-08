@@ -35,8 +35,8 @@ export const MAP_LAYERS: Record<MapLayerId, MapLayerConfig> = {
   },
   monument_markers: {
     id: 'monument_markers',
-    label: 'Monument Markers',
-    description: 'Exact monument positions on map (Coming later)',
+    label: 'Interactive Monument Markers',
+    description: 'Interactive markers require validated coordinate projection (Coming later)',
     isActive: false,
     isFuture: true,
     requiresCoordinates: true,

@@ -13,7 +13,17 @@ export type ProviderMapState =
   | 'failed'
   | 'unavailable'
   | 'quota_exhausted'
-  | 'provider_not_configured';
+  | 'provider_not_configured'
+  | 'provider_bad_request'
+  | 'validation_error';
+
+export interface ProviderRequestDebug {
+  endpoint: string;
+  method: string;
+  seed: number;
+  worldSize: number;
+  sentBodyKeys: string[];
+}
 
 export interface ProviderMonument {
   type?: number;
@@ -44,6 +54,10 @@ export interface ProviderMapResponse {
   cacheKey: string | null;
   data: ProviderMapData | null;
   message: string | null;
+  /** Diagnostics for provider_bad_request / non-2xx (sanitized, no secrets). */
+  providerStatus?: number | null;
+  providerMessage?: string | null;
+  requestDebug?: ProviderRequestDebug | null;
 }
 
 export interface RequestProviderMapArgs {
@@ -70,6 +84,7 @@ export function pickProviderImage(data: ProviderMapData | null): string | null {
 const VALID_STATES: ProviderMapState[] = [
   'idle', 'queued', 'in_queue', 'generating', 'processing', 'uploading',
   'active', 'failed', 'unavailable', 'quota_exhausted', 'provider_not_configured',
+  'provider_bad_request', 'validation_error',
 ];
 
 function fail(message: string, state: ProviderMapState = 'failed'): ProviderMapResponse {
@@ -100,12 +115,25 @@ function normalize(raw: unknown): ProviderMapResponse {
         currentStep: typeof d.currentStep === 'string' ? d.currentStep : null,
       }
     : null;
+  const rd = (r.requestDebug ?? null) as Record<string, unknown> | null;
+  const requestDebug: ProviderRequestDebug | null = rd
+    ? {
+        endpoint: typeof rd.endpoint === 'string' ? rd.endpoint : '',
+        method: typeof rd.method === 'string' ? rd.method : '',
+        seed: typeof rd.seed === 'number' ? rd.seed : 0,
+        worldSize: typeof rd.worldSize === 'number' ? rd.worldSize : 0,
+        sentBodyKeys: Array.isArray(rd.sentBodyKeys) ? (rd.sentBodyKeys as string[]) : [],
+      }
+    : null;
   return {
     ok: Boolean(r.ok),
     state,
     cacheKey: typeof r.cacheKey === 'string' ? r.cacheKey : null,
     data,
     message: typeof r.message === 'string' ? r.message : null,
+    providerStatus: typeof r.providerStatus === 'number' ? r.providerStatus : null,
+    providerMessage: typeof r.providerMessage === 'string' ? r.providerMessage : null,
+    requestDebug,
   };
 }
 

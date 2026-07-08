@@ -40,9 +40,18 @@ function corsHeadersFor(origin: string | null): Record<string, string> {
 
 type ProviderState =
   | "idle" | "queued" | "in_queue" | "generating" | "processing" | "uploading"
-  | "active" | "failed" | "unavailable" | "quota_exhausted" | "provider_not_configured";
+  | "active" | "failed" | "unavailable" | "quota_exhausted" | "provider_not_configured"
+  | "provider_bad_request" | "validation_error";
 
 const PENDING_STATES: ProviderState[] = ["queued", "in_queue", "generating", "processing", "uploading"];
+
+// Sanitize a provider error body for safe surfacing: cap length and mask any
+// long token-like strings (defensive — the provider body should not contain our
+// key, but we never risk echoing a secret).
+function sanitizeBody(text: string | null): string | null {
+  if (!text) return null;
+  return text.replace(/[A-Za-z0-9_-]{32,}/g, "***").slice(0, 1000);
+}
 
 function buildCacheKey(worldSize: number, seed: number, staging: boolean): string {
   return `procedural:${worldSize}:${seed}:${staging}`;
@@ -163,7 +172,7 @@ serve(async (req) => {
   });
 
   // Thin RustMaps API caller. Returns status + parsed JSON, never throws.
-  async function callProvider(path: string, init: RequestInit = {}): Promise<{ status: number; data: any }> {
+  async function callProvider(path: string, init: RequestInit = {}): Promise<{ status: number; data: any; text: string | null }> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
     try {
@@ -172,12 +181,13 @@ serve(async (req) => {
         headers: { "X-API-Key": apiKey!, "Content-Type": "application/json", ...(init.headers || {}) },
         signal: controller.signal,
       });
+      const text = await res.text();
       let data: any = null;
-      try { data = await res.json(); } catch { data = null; }
-      return { status: res.status, data };
+      try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+      return { status: res.status, data, text: text ? text.slice(0, 2000) : null };
     } catch (_e) {
       // Network/timeout — do not leak details.
-      return { status: 0, data: null };
+      return { status: 0, data: null, text: null };
     } finally {
       clearTimeout(timeout);
     }
@@ -236,10 +246,31 @@ serve(async (req) => {
 
   // Translate a provider HTTP error into a state.
   function errorState(status: number): { state: ProviderState; message: string } {
+    if (status === 400) return { state: "provider_bad_request", message: "RustMaps rejected the map request." };
     if (status === 401 || status === 403) return { state: "failed", message: "Provider authentication error." };
     if (status === 429) return { state: "quota_exhausted", message: "RustMaps rate limit / quota reached." };
     if (status >= 500) return { state: "unavailable", message: "RustMaps provider is temporarily unavailable." };
     return { state: "failed", message: `Provider error (${status}).` };
+  }
+
+  // Build a diagnostics-rich error response (sanitized — no secrets/headers).
+  function providerErrorResponse(
+    cacheKey: string,
+    status: number,
+    text: string | null,
+    debug: { endpoint: string; method: string; seed: number; worldSize: number; sentBodyKeys: string[] },
+  ) {
+    const es = errorState(status);
+    return json({
+      ok: false,
+      state: es.state,
+      message: es.message,
+      cacheKey,
+      providerStatus: status,
+      providerMessage: sanitizeBody(text),
+      requestDebug: debug,
+      data: null,
+    });
   }
 
   // Poll a known map by rustmaps_id, update cache, return response.
@@ -281,9 +312,12 @@ serve(async (req) => {
       seed = Number(body?.seed);
       worldSize = Number(body?.worldSize);
       staging = Boolean(body?.staging ?? false);
-      if (!Number.isFinite(seed) || seed <= 0) return json({ ok: false, state: "failed", message: "Invalid seed." });
+      // Server-side validation (HTTP 200 + state so supabase-js keeps the body).
+      if (!Number.isFinite(seed) || seed <= 0) {
+        return json({ ok: false, state: "validation_error", message: "A positive numeric seed is required." });
+      }
       if (!Number.isFinite(worldSize) || worldSize < 1000 || worldSize > 6000) {
-        return json({ ok: false, state: "failed", message: "worldSize must be between 1000 and 6000." });
+        return json({ ok: false, state: "validation_error", message: "worldSize must be a number between 1000 and 6000." });
       }
       cacheKey = buildCacheKey(worldSize, seed, staging);
     }
@@ -324,7 +358,10 @@ serve(async (req) => {
     }
 
     // 4) Does the map already exist on the provider? (seed + size lookup)
-    const lookup = await callProvider(`/v4/maps/${worldSize}/${seed}`);
+    //    NOTE: `staging` is a REQUIRED query parameter on this endpoint per the
+    //    RustMaps v4 Swagger — omitting it makes the API reject with 400.
+    const lookupPath = `/v4/maps/${worldSize}/${seed}?staging=${staging}`;
+    const lookup = await callProvider(lookupPath);
     if (lookup.status === 200 && lookup.data?.data) {
       const { patch, state } = dtoToPatch(lookup.data.data, base);
       const updated = await upsertCache(cacheKey, patch);
@@ -336,13 +373,13 @@ serve(async (req) => {
       const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: "generating", ...(rid ? { rustmaps_id: rid } : {}), ...(battlemetricsServerId ? { battlemetrics_server_id: battlemetricsServerId } : {}) });
       return json(toResponse(true, "generating", cacheKey, updated ?? existing, "Map is still generating."));
     }
+    // 404 = not generated yet -> continue to POST. 0 = network blip -> also try POST.
+    // Anything else (400/401/403/429/5xx) -> surface sanitized diagnostics, do NOT POST.
     if (lookup.status !== 404 && lookup.status !== 200 && lookup.status !== 0) {
-      const { state, message } = errorState(lookup.status);
-      // Auth/quota errors should not silently trigger a POST.
-      if (state === "failed" || state === "quota_exhausted") {
-        const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state, last_error: message });
-        return json(toResponse(false, state, cacheKey, updated ?? existing, message));
-      }
+      await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: errorState(lookup.status).state, last_error: `lookup ${lookup.status}` });
+      return providerErrorResponse(cacheKey, lookup.status, lookup.text, {
+        endpoint: lookupPath, method: "GET", seed, worldSize, sentBodyKeys: [],
+      });
     }
 
     // 5) Start a new procedural generation.
@@ -363,9 +400,10 @@ serve(async (req) => {
       return json(toResponse(true, "generating", cacheKey, updated ?? existing, "Map is already generating."));
     }
 
-    const { state, message } = errorState(created.status || 500);
-    const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state, last_error: message });
-    return json(toResponse(false, state, cacheKey, updated ?? existing, message));
+    await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: errorState(created.status || 500).state, last_error: `post ${created.status}` });
+    return providerErrorResponse(cacheKey, created.status || 500, created.text, {
+      endpoint: "/v4/maps", method: "POST", seed, worldSize, sentBodyKeys: ["size", "seed", "staging"],
+    });
   } catch (e) {
     // Never leak internals.
     console.error("rustmaps-provider unexpected error", (e as Error)?.message);

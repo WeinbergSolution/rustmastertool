@@ -170,6 +170,16 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
         </button>
       );
     }
+    if (providerState === 'validation_error') {
+      return <span className="rm-map-provider-cta" aria-disabled="true"><AlertTriangle size={16} /> {provider?.message ?? 'Invalid map request'}</span>;
+    }
+    if (providerState === 'provider_bad_request') {
+      return (
+        <button type="button" className="rm-map-provider-cta active" onClick={startGeneration}>
+          <RefreshCw size={16} /> RustMaps rejected this map request — retry
+        </button>
+      );
+    }
     if (providerState === 'failed') {
       return (
         <button type="button" className="rm-map-provider-cta active" onClick={startGeneration}>
@@ -236,6 +246,14 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             {renderCta()}
             {provider?.message && providerState !== 'active' && (
               <span className="rm-map-provider-cta-note">{provider.message}</span>
+            )}
+            {providerState === 'provider_bad_request' && provider?.providerMessage && (
+              <span className="rm-map-cta-provider-msg">Provider: {provider.providerMessage.slice(0, 200)}</span>
+            )}
+            {providerState === 'provider_bad_request' && provider?.requestDebug && (
+              <span className="rm-map-cta-debug">
+                debug · {provider.requestDebug.method} {provider.requestDebug.endpoint} · status {provider.providerStatus ?? '—'} · seed {provider.requestDebug.seed} · size {provider.requestDebug.worldSize} · body [{provider.requestDebug.sentBodyKeys.join(', ')}]
+              </span>
             )}
           </div>
         </div>

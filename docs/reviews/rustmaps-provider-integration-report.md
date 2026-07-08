@@ -1,8 +1,8 @@
 # RustMaps Provider Integration — Phase 2.4-B1 Report
 
 **Branch:** `feature/rustmaps-provider-integration` · **Base:** `origin/main` (`9eb942b`) · **Datum:** 2026-07-08
-**Status:** 🅿️ **PARKED / BLOCKED (2026-07-08).**
-**Grund:** Kein RustMaps-API-Zugang — es wird **kein** RustMaps API-Key beschafft. Daher wird diese Integration **nicht aktiviert** und **nicht nach main gemerged**.
+**Status:** 🔧 **AKTIV / B1.2 400-Fix (2026-07-08).** *(Hinweis: Der frühere „parked"-Stand wurde vom Owner revidiert — Migration + Function deployt, `RUSTMAPS_API_KEY` gesetzt. Siehe „Provider 400 Investigation (B1.2)" am Ende. Merge-Entscheidung weiterhin separat.)*
+**(Historisch) Grund für Parken:** ursprünglich kein RustMaps-API-Zugang erwartet.
 - **Kein Deploy durchgeführt:** kein `db push`, kein `functions deploy`, kein Secret gesetzt. Live-Probe bestätigt: Function ist 404/NOT_FOUND (nicht deployt).
 - **Kein Merge empfohlen:** Der Branch bleibt als geparkte, lauffähig kompilierte Foundation erhalten (siehe unten), falls sich der Zugang später ändert.
 - **No-API-Alternativen:** siehe `docs/reviews/no-api-map-source-strategy-audit.md`.
@@ -101,3 +101,29 @@ curl -i -X POST "https://<project>.supabase.co/functions/v1/rustmaps-provider" \
   -H "apikey: <anon-key>" -H "Authorization: Bearer <anon-key>" \
   -d '{"action":"get_or_create","seed":123456,"worldSize":4000}'
 ```
+
+## Provider 400 Investigation (B1.2)
+**Symptom:** Nach Deploy + Key + grünem CORS lieferten **alle** Kategorien (official/community/modded) einen Provider-**400**. Also kein reines Custom-Map-Problem.
+
+**Swagger geprüft** (`https://api.rustmaps.com/swagger/v4-public/swagger.json`, live via curl gezogen und mit Node geparst):
+- **`GET /v4/maps/{size}/{seed}`** hat einen **`staging`-Query-Parameter mit `required: true`** (`parameters: [{name:size,in:path},{name:seed,in:path},{name:staging,in:query,required:true}]`). Dokumentierte Responses: 200/401/403/404/409.
+- **`POST /v4/maps`** Body-Schema: `{ size:int(1000–6000), seed:int(>0), staging:bool }`, `additionalProperties:false`. Responses: 200/201/401/403/409. Auth-Schema: `X-API-Key` (header).
+
+**Unser alter Request:** `GET /v4/maps/{worldSize}/{seed}` **ohne** `?staging=` → das ASP.NET-Model-Binding lehnt den **required** Query-Parameter mit **400** ab (400 ist bei RustMaps nicht als fachliche Response dokumentiert, sondern Framework-Validierung). Da dieser Lookup **vor** dem POST läuft und jedes Nicht-200/404/409 früh als Fehler zurückkam, scheiterten **alle** Kategorien — unabhängig vom Map-Typ. `POST /v4/maps` selbst war bereits korrekt (`{size,seed,staging}`, keine Extra-Felder).
+
+**Unterschied gefunden:** fehlender **required** `staging`-Query-Parameter am Seed/Size-Lookup.
+
+**Fix angewendet:** Lookup ist jetzt `GET /v4/maps/{worldSize}/{seed}?staging={staging}`.
+
+**400-Diagnostics jetzt sichtbar:** Bei jedem Nicht-2xx (v. a. 400) liefert die Function sanitized:
+```json
+{ "ok": false, "state": "provider_bad_request", "message": "RustMaps rejected the map request.",
+  "providerStatus": 400, "providerMessage": "<sanitized body, <=1000, long tokens masked>",
+  "cacheKey": "…", "requestDebug": { "endpoint": "/v4/maps/{size}/{seed}?staging=false", "method": "GET", "seed": 123, "worldSize": 4000, "sentBodyKeys": [] }, "data": null }
+```
+Keine Secrets, keine Request-Header im Payload/Log. UI zeigt „RustMaps rejected this map request." + gekürzte Provider-Message + kleine Debug-Zeile (Status/Seed/Size/Endpoint/Body-Keys). `validation_error` (200 + State) für fehlende/ungültige Eingaben — bewusst **kein** rohes 422 (sonst verschluckt supabase-js den Body).
+
+**Nächste Smoke-Schritte (nach Function-Redeploy):**
+1. `npx supabase functions deploy rustmaps-provider` — Function-Code geändert → **Redeploy nötig**.
+2. Browser: „Generate full map…" → erwartet jetzt `active`/pending statt `provider_bad_request`.
+3. Falls weiterhin 400: neue `providerMessage`/`requestDebug` in UI/Response lesen → exakter Grund ohne Secrets.

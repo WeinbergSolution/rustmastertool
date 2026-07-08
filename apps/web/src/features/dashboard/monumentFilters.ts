@@ -46,3 +46,43 @@ export function normalizeMonumentName(rawName: string): string | null {
   }
   return null;
 }
+
+export function normalizeMonumentNames(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string')
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return []
+
+    try {
+      const parsed = JSON.parse(trimmed)
+      return normalizeMonumentNames(parsed)
+    } catch {
+      return [trimmed]
+    }
+  }
+
+  if (value && typeof value === 'object') {
+    const maybeObject = value as Record<string, unknown>
+
+    if (Array.isArray(maybeObject.monuments)) {
+      return normalizeMonumentNames(maybeObject.monuments)
+    }
+
+    if (Array.isArray(maybeObject.monumentNames)) {
+      return normalizeMonumentNames(maybeObject.monumentNames)
+    }
+
+    if (Array.isArray(maybeObject.names)) {
+      return normalizeMonumentNames(maybeObject.names)
+    }
+
+    return Object.values(maybeObject)
+      .flatMap((entry) => normalizeMonumentNames(entry))
+      .filter(Boolean)
+  }
+
+  return []
+}

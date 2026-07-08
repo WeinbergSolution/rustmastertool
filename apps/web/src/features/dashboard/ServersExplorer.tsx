@@ -12,7 +12,7 @@ import { ServerCardMobile } from '../../components/mobile/ServerCardMobile';
 import { BottomSheet } from '../../components/mobile/BottomSheet';
 import { enrichServerSummariesWithMapIdentity } from './mapIdentityEnrichment';
 import { type ServerFilters, defaultFilters, applyClientFilters, type SortOption, applySort } from './serverFilters';
-import { MONUMENTS } from './monumentFilters';
+import { MONUMENTS, normalizeMonumentNames } from './monumentFilters';
 
 type TabType = 'official' | 'community' | 'modded' | 'saved' | 'history';
 
@@ -234,7 +234,7 @@ export function ServersExplorer() {
   const rawServers = activeTab === 'saved' ? watchedServers : servers;
   const filteredServers = useMemo(() => applyClientFilters(rawServers, filters), [rawServers, filters]);
   const visibleServers = useMemo(() => applySort(filteredServers, sortBy), [filteredServers, sortBy]);
-  const serversWithMapIntel = useMemo(() => rawServers.filter(s => s.monumentNames && s.monumentNames.length > 0).length, [rawServers]);
+  const serversWithMapIntel = useMemo(() => rawServers.filter(s => normalizeMonumentNames(s.monumentNames).length > 0).length, [rawServers]);
 
   const toggleMonumentFilter = (monumentId: string) => {
     setFilters(prev => {

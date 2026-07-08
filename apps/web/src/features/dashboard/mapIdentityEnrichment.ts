@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabaseClient';
 import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
+import { normalizeMonumentNames } from './monumentFilters';
 
 export async function enrichServerSummariesWithMapIdentity(
   servers: BattleMetricsServerSummary[]
@@ -44,7 +45,7 @@ export async function enrichServerSummariesWithMapIdentity(
         mapIdentitySize: identity.world_size,
         mapType: identity.map_type,
         isCustomMap: identity.is_custom_map,
-        monumentNames: identity.monument_names,
+        monumentNames: normalizeMonumentNames(identity.monument_names),
       };
     });
   } catch (err) {

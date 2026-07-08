@@ -41,9 +41,13 @@ function corsHeadersFor(origin: string | null): Record<string, string> {
 type ProviderState =
   | "idle" | "queued" | "in_queue" | "generating" | "processing" | "uploading"
   | "active" | "failed" | "unavailable" | "quota_exhausted" | "provider_not_configured"
-  | "provider_bad_request" | "validation_error";
+  | "provider_bad_request" | "validation_error"
+  | "provider_success_without_data" | "active_lookup_required" | "provider_lookup_failed";
 
 const PENDING_STATES: ProviderState[] = ["queued", "in_queue", "generating", "processing", "uploading"];
+// States that mean "the provider accepted the request; fetch details via a
+// lookup on the next call — do NOT POST again (avoids generation spam)."
+const LOOKUP_STATES: ProviderState[] = ["active_lookup_required", "provider_success_without_data"];
 
 // Sanitize a provider error body for safe surfacing: cap length and mask any
 // long token-like strings (defensive — the provider body should not contain our
@@ -273,25 +277,46 @@ serve(async (req) => {
     });
   }
 
-  // Poll a known map by rustmaps_id, update cache, return response.
-  async function pollById(cacheKey: string, row: any, base: { seed: number; worldSize: number; staging: boolean; battlemetricsServerId?: string }) {
-    if (!row?.rustmaps_id) {
-      return json(toResponse(true, (row?.state as ProviderState) ?? "queued", cacheKey, row, "No provider map id to poll yet."));
-    }
-    const { status, data, text } = await callProvider(`/v4/maps/${encodeURIComponent(row.rustmaps_id)}`);
+  // Fetch map details. Prefers GET /v4/maps/{mapId}; falls back to the
+  // CLI-style GET /v4/maps/{size}/{seed}. A failed lookup (e.g. the size/seed
+  // endpoint's 400 SerializerErrors) is NEVER a hard failure here — the map
+  // request was already accepted, so we stay in a neutral waiting state.
+  async function attemptLookup(cacheKey: string, base: { seed: number; worldSize: number; staging: boolean; battlemetricsServerId?: string }, row: any) {
+    const rid = row?.rustmaps_id ?? null;
+    const path = rid ? `/v4/maps/${encodeURIComponent(rid)}` : `/v4/maps/${base.worldSize}/${base.seed}`;
+    const { status, data, text } = await callProvider(path);
+
     if (status === 200 && data?.data) {
       const { patch, state } = dtoToPatch(data.data, base);
       const updated = await upsertCache(cacheKey, patch);
       return json(toResponse(true, state, cacheKey, updated ?? row));
     }
     if (status === 409) {
-      // Still generating — expected.
-      const updated = await upsertCache(cacheKey, { state: row.state && PENDING_STATES.includes(row.state) ? row.state : "generating" });
-      return json(toResponse(true, (updated?.state as ProviderState) ?? "generating", cacheKey, updated ?? row, "Map is still generating."));
+      const updated = await upsertCache(cacheKey, { state: "generating" });
+      return json(toResponse(true, "generating", cacheKey, updated ?? row, "Map is still generating."));
     }
-    await upsertCache(cacheKey, { state: errorState(status || 500).state, last_error: `poll ${status}` });
-    return providerErrorResponse(cacheKey, status || 500, text, {
-      endpoint: `/v4/maps/${row.rustmaps_id}`, method: "GET", seed: base.seed, worldSize: base.worldSize, sentBodyKeys: [],
+    // Auth / quota are still hard signals even during lookup.
+    if (status === 401 || status === 403) {
+      await upsertCache(cacheKey, { state: "failed", last_error: `lookup ${status}` });
+      return json(toResponse(false, "failed", cacheKey, row, "Provider authentication error."));
+    }
+    if (status === 429) {
+      const updated = await upsertCache(cacheKey, { state: "quota_exhausted" });
+      return json(toResponse(false, "quota_exhausted", cacheKey, updated ?? row, "RustMaps rate limit / quota reached."));
+    }
+    // Lookup did not (yet) yield a payload — neutral waiting, not a failure.
+    const updated = await upsertCache(cacheKey, {
+      seed: base.seed, world_size: base.worldSize, staging: base.staging,
+      state: "provider_success_without_data", last_error: `lookup ${status}`,
+      ...(base.battlemetricsServerId ? { battlemetrics_server_id: base.battlemetricsServerId } : {}),
+    });
+    const resp = toResponse(true, "provider_success_without_data", cacheKey, updated ?? row,
+      "RustMaps accepted the map request but returned no map payload yet.");
+    return json({
+      ...resp,
+      providerStatus: status,
+      providerMessage: sanitizeBody(text),
+      requestDebug: { endpoint: path, method: "GET", seed: base.seed, worldSize: base.worldSize, sentBodyKeys: [] },
     });
   }
 
@@ -332,7 +357,7 @@ serve(async (req) => {
       if (existing.state === "active" && (existing.image_url || existing.image_icon_url || existing.raw_image_url)) {
         return json(toResponse(true, "active", cacheKey, existing));
       }
-      return await pollById(cacheKey, existing, base);
+      return await attemptLookup(cacheKey, base, existing);
     }
 
     // ---- get_or_create -------------------------------------------------------
@@ -340,9 +365,10 @@ serve(async (req) => {
     if (existing?.state === "active" && (existing.image_url || existing.image_icon_url || existing.raw_image_url)) {
       return json(toResponse(true, "active", cacheKey, existing));
     }
-    // 2) Pending with a known id — poll once.
-    if (existing?.rustmaps_id && PENDING_STATES.includes(existing.state)) {
-      return await pollById(cacheKey, existing, base);
+    // 2) Pending, or "accepted-without-payload" — look up details first instead
+    //    of POSTing again (prevents generation spam on repeated clicks).
+    if (existing && (PENDING_STATES.includes(existing.state) || LOOKUP_STATES.includes(existing.state))) {
+      return await attemptLookup(cacheKey, base, existing);
     }
 
     // 3) Optional quota guard. Soft by design: a parse error / non-200 must NOT
@@ -373,9 +399,11 @@ serve(async (req) => {
     // 4) Start generation via POST — the canonical entrypoint.
     //    B1.3: the GET /v4/maps/{size}/{seed} preflight lookup was REMOVED
     //    (it returned 400 SerializerErrors live and blocked all generation).
+    //    B1.5: send seed as a STRING (matches the working rustmaps-cli); the
+    //    numeric seed produced HTTP 200 + data:null (misread as failed before).
     const created = await callProvider("/v4/maps", {
       method: "POST",
-      body: JSON.stringify({ size: worldSize, seed, staging }),
+      body: JSON.stringify({ size: worldSize, seed: String(seed), staging }),
     });
 
     if ((created.status === 200 || created.status === 201) && created.data?.data) {
@@ -383,6 +411,18 @@ serve(async (req) => {
       const updated = await upsertCache(cacheKey, patch);
       const pendingMsg = state === "active" ? undefined : "Map generation started.";
       return json(toResponse(true, state, cacheKey, updated ?? existing, pendingMsg));
+    }
+    // B1.5: HTTP 200/201 with meta.Success but data:null is NOT a failure —
+    // the request was accepted. Record it and fetch details via a follow-up
+    // lookup instead of returning "failed".
+    if (created.status === 200 || created.status === 201) {
+      const rid = created.data?.data?.id ?? created.data?.data?.mapId ?? created.data?.mapId ?? null;
+      await upsertCache(cacheKey, {
+        seed, world_size: worldSize, staging, state: "active_lookup_required",
+        ...(rid ? { rustmaps_id: rid } : {}),
+        ...(battlemetricsServerId ? { battlemetrics_server_id: battlemetricsServerId } : {}),
+      });
+      return await attemptLookup(cacheKey, base, { rustmaps_id: rid });
     }
     if (created.status === 409) {
       // Already generating / exists — extract an id if present, report pending.

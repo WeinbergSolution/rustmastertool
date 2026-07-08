@@ -15,7 +15,10 @@ export type ProviderMapState =
   | 'quota_exhausted'
   | 'provider_not_configured'
   | 'provider_bad_request'
-  | 'validation_error';
+  | 'validation_error'
+  | 'provider_success_without_data'
+  | 'active_lookup_required'
+  | 'provider_lookup_failed';
 
 export interface ProviderRequestDebug {
   endpoint: string;
@@ -85,6 +88,7 @@ const VALID_STATES: ProviderMapState[] = [
   'idle', 'queued', 'in_queue', 'generating', 'processing', 'uploading',
   'active', 'failed', 'unavailable', 'quota_exhausted', 'provider_not_configured',
   'provider_bad_request', 'validation_error',
+  'provider_success_without_data', 'active_lookup_required', 'provider_lookup_failed',
 ];
 
 function fail(message: string, state: ProviderMapState = 'failed'): ProviderMapResponse {

@@ -81,6 +81,22 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
     setIsRequesting(false);
   }, [model, canGenerate, isRequesting]);
 
+  // Refresh status WITHOUT re-POSTing: poll by cacheKey (server does a lookup),
+  // falling back to get_or_create which also looks up for accepted-no-payload.
+  const refreshStatus = useCallback(async () => {
+    if (isRequesting) return;
+    setIsRequesting(true);
+    const res = provider?.cacheKey
+      ? await pollRustMapsProviderMap(provider.cacheKey)
+      : await requestRustMapsProviderMap({
+          seed: model!.seed as number,
+          worldSize: model!.worldSize as number,
+          battlemetricsServerId: model!.serverId,
+        });
+    setProvider(res);
+    setIsRequesting(false);
+  }, [provider, model, isRequesting]);
+
   // Auto-poll while the provider map is pending (capped at MAX_POLL_MS).
   useEffect(() => {
     if (!provider?.cacheKey || !isPendingProviderState(provider.state)) return;
@@ -125,6 +141,10 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   else if (imageStatus === 'error') displayBadge = 'No map image';
 
   const isPending = provider ? isPendingProviderState(provider.state) : false;
+  const showProviderDiag =
+    providerState === 'provider_bad_request' ||
+    providerState === 'provider_success_without_data' ||
+    providerState === 'provider_lookup_failed';
   const biomeEntries = providerData?.biomePercentages
     ? Object.entries(providerData.biomePercentages).filter(([, v]) => typeof v === 'number')
     : [];
@@ -168,6 +188,21 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
         <button type="button" className="rm-map-provider-cta active" onClick={startGeneration}>
           <RefreshCw size={16} /> Retry provider request
         </button>
+      );
+    }
+    if (providerState === 'provider_success_without_data' || providerState === 'active_lookup_required' || providerState === 'provider_lookup_failed') {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '100%', alignItems: 'center' }}>
+          <span className="rm-map-cta-status" style={{ color: 'var(--text-normal)' }}>
+            <MapIcon size={16} /> RustMaps accepted the request
+          </span>
+          <span className="rm-map-provider-cta-note" style={{ textAlign: 'center', marginBottom: '0.25rem' }}>
+            Waiting for map details from the provider.
+          </span>
+          <button type="button" className="rm-map-provider-cta active" onClick={refreshStatus}>
+            <RefreshCw size={16} /> Refresh map status
+          </button>
+        </div>
       );
     }
     if (providerState === 'validation_error') {
@@ -244,13 +279,13 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
           {/* Internal generation CTA — no external redirect. */}
           <div className="rm-map-viewer-cta">
             {renderCta()}
-            {provider?.message && providerState !== 'active' && (
+            {provider?.message && providerState !== 'active' && !['provider_success_without_data', 'active_lookup_required', 'provider_lookup_failed'].includes(providerState!) && (
               <span className="rm-map-provider-cta-note">{provider.message}</span>
             )}
-            {providerState === 'provider_bad_request' && provider?.providerMessage && (
+            {showProviderDiag && provider?.providerMessage && (
               <span className="rm-map-cta-provider-msg">Provider: {provider.providerMessage.slice(0, 200)}</span>
             )}
-            {providerState === 'provider_bad_request' && provider?.requestDebug && (
+            {showProviderDiag && provider?.requestDebug && (
               <span className="rm-map-cta-debug">
                 debug · {provider.requestDebug.method} {provider.requestDebug.endpoint} · status {provider.providerStatus ?? '—'} · seed {provider.requestDebug.seed} · size {provider.requestDebug.worldSize} · body [{provider.requestDebug.sentBodyKeys.join(', ')}]
               </span>

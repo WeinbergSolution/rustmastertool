@@ -141,3 +141,14 @@ Keine Secrets, keine Request-Header im Payload/Log. UI zeigt „RustMaps rejecte
 - **Zukunft:** Ein Lookup-/Search-Endpoint (`/v4/maps/{size}/{seed}` oder `/v4/maps/search`) kann später **separat** neu evaluiert werden (evtl. anderes Request-Format), ist aber **nicht Teil von B1**.
 
 **Redeploy nötig:** `npx supabase functions deploy rustmaps-provider`.
+
+## B1.5 rustmaps-cli Alignment
+- rustmaps-cli sendet seed als String.
+- POST /maps 200 wird als Success behandelt, nicht als Fehler.
+- alter Code behandelte 200 Success + data:null falsch als failed.
+- /v4/maps/search ist kein Seed-Lookup.
+- neuer Zustand:
+  seed String,
+  Success+data:null neutraler State,
+  Follow-up Lookup/Status,
+  kein POST-Spam.

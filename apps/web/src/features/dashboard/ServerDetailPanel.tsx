@@ -221,7 +221,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
           )}
 
           {/* Map Preview MVP */}
-          <div ref={mapSectionRef} style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', scrollMarginTop: '1rem', backgroundColor: 'var(--bg-panel)' }}>
+          <div ref={mapSectionRef} style={{ flexShrink: 0, marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', scrollMarginTop: '1rem', backgroundColor: 'var(--bg-panel)' }}>
              {(() => {
                 const details = server.details || {};
                 const mapType = mapIdentity?.map_type || (details.map === 'Procedural Map' ? 'procedural' : details.map === 'Barren' ? 'barren' : 'custom');

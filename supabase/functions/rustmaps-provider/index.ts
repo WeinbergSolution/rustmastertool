@@ -278,7 +278,7 @@ serve(async (req) => {
     if (!row?.rustmaps_id) {
       return json(toResponse(true, (row?.state as ProviderState) ?? "queued", cacheKey, row, "No provider map id to poll yet."));
     }
-    const { status, data } = await callProvider(`/v4/maps/${encodeURIComponent(row.rustmaps_id)}`);
+    const { status, data, text } = await callProvider(`/v4/maps/${encodeURIComponent(row.rustmaps_id)}`);
     if (status === 200 && data?.data) {
       const { patch, state } = dtoToPatch(data.data, base);
       const updated = await upsertCache(cacheKey, patch);
@@ -289,9 +289,10 @@ serve(async (req) => {
       const updated = await upsertCache(cacheKey, { state: row.state && PENDING_STATES.includes(row.state) ? row.state : "generating" });
       return json(toResponse(true, (updated?.state as ProviderState) ?? "generating", cacheKey, updated ?? row, "Map is still generating."));
     }
-    const { state, message } = errorState(status || 500);
-    const updated = await upsertCache(cacheKey, { state, last_error: message });
-    return json(toResponse(false, state, cacheKey, updated ?? row, message));
+    await upsertCache(cacheKey, { state: errorState(status || 500).state, last_error: `poll ${status}` });
+    return providerErrorResponse(cacheKey, status || 500, text, {
+      endpoint: `/v4/maps/${row.rustmaps_id}`, method: "GET", seed: base.seed, worldSize: base.worldSize, sentBodyKeys: [],
+    });
   }
 
   try {
@@ -344,8 +345,17 @@ serve(async (req) => {
       return await pollById(cacheKey, existing, base);
     }
 
-    // 3) Optional quota guard before starting new work.
+    // 3) Optional quota guard. Soft by design: a parse error / non-200 must NOT
+    //    block generation. Only hard-stop on auth (401/403) and quota (429).
     const limits = await callProvider("/v4/maps/limits");
+    if (limits.status === 401 || limits.status === 403) {
+      await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: "failed", last_error: `limits ${limits.status}` });
+      return json(toResponse(false, "failed", cacheKey, existing, "Provider authentication error."));
+    }
+    if (limits.status === 429) {
+      const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: "quota_exhausted", ...(battlemetricsServerId ? { battlemetrics_server_id: battlemetricsServerId } : {}) });
+      return json(toResponse(false, "quota_exhausted", cacheKey, updated ?? existing, "RustMaps rate limit / quota reached."));
+    }
     if (limits.status === 200 && limits.data?.data) {
       const c = limits.data.data.concurrent;
       const mth = limits.data.data.monthly;
@@ -355,34 +365,14 @@ serve(async (req) => {
         const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: "quota_exhausted", ...(battlemetricsServerId ? { battlemetrics_server_id: battlemetricsServerId } : {}) });
         return json(toResponse(false, "quota_exhausted", cacheKey, updated ?? existing, "Generation quota reached. Try again later."));
       }
+    } else if (limits.status !== 200) {
+      // Non-fatal (e.g. the endpoint returned a parse error) — continue to POST.
+      console.warn("rustmaps limits check non-200, ignored:", limits.status);
     }
 
-    // 4) Does the map already exist on the provider? (seed + size lookup)
-    //    NOTE: `staging` is a REQUIRED query parameter on this endpoint per the
-    //    RustMaps v4 Swagger — omitting it makes the API reject with 400.
-    const lookupPath = `/v4/maps/${worldSize}/${seed}?staging=${staging}`;
-    const lookup = await callProvider(lookupPath);
-    if (lookup.status === 200 && lookup.data?.data) {
-      const { patch, state } = dtoToPatch(lookup.data.data, base);
-      const updated = await upsertCache(cacheKey, patch);
-      return json(toResponse(true, state, cacheKey, updated ?? existing));
-    }
-    if (lookup.status === 409 && lookup.data?.data) {
-      // Exists but not finished — record id if present and report pending.
-      const rid = lookup.data.data.id ?? lookup.data.data.mapId ?? null;
-      const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: "generating", ...(rid ? { rustmaps_id: rid } : {}), ...(battlemetricsServerId ? { battlemetrics_server_id: battlemetricsServerId } : {}) });
-      return json(toResponse(true, "generating", cacheKey, updated ?? existing, "Map is still generating."));
-    }
-    // 404 = not generated yet -> continue to POST. 0 = network blip -> also try POST.
-    // Anything else (400/401/403/429/5xx) -> surface sanitized diagnostics, do NOT POST.
-    if (lookup.status !== 404 && lookup.status !== 200 && lookup.status !== 0) {
-      await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: errorState(lookup.status).state, last_error: `lookup ${lookup.status}` });
-      return providerErrorResponse(cacheKey, lookup.status, lookup.text, {
-        endpoint: lookupPath, method: "GET", seed, worldSize, sentBodyKeys: [],
-      });
-    }
-
-    // 5) Start a new procedural generation.
+    // 4) Start generation via POST — the canonical entrypoint.
+    //    B1.3: the GET /v4/maps/{size}/{seed} preflight lookup was REMOVED
+    //    (it returned 400 SerializerErrors live and blocked all generation).
     const created = await callProvider("/v4/maps", {
       method: "POST",
       body: JSON.stringify({ size: worldSize, seed, staging }),
@@ -394,8 +384,10 @@ serve(async (req) => {
       const pendingMsg = state === "active" ? undefined : "Map generation started.";
       return json(toResponse(true, state, cacheKey, updated ?? existing, pendingMsg));
     }
-    if (created.status === 409 && created.data?.data) {
-      const rid = created.data.data.id ?? created.data.data.mapId ?? null;
+    if (created.status === 409) {
+      // Already generating / exists — extract an id if present, report pending.
+      const d = created.data?.data ?? created.data ?? null;
+      const rid = d?.id ?? d?.mapId ?? null;
       const updated = await upsertCache(cacheKey, { seed, world_size: worldSize, staging, state: "generating", ...(rid ? { rustmaps_id: rid } : {}), ...(battlemetricsServerId ? { battlemetrics_server_id: battlemetricsServerId } : {}) });
       return json(toResponse(true, "generating", cacheKey, updated ?? existing, "Map is already generating."));
     }

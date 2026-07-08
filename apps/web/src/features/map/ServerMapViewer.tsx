@@ -176,7 +176,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
     if (providerState === 'provider_bad_request') {
       return (
         <button type="button" className="rm-map-provider-cta active" onClick={startGeneration}>
-          <RefreshCw size={16} /> RustMaps rejected this map request — retry
+          <RefreshCw size={16} /> RustMaps rejected the generation request — retry
         </button>
       );
     }

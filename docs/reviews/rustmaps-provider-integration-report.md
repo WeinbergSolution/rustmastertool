@@ -127,3 +127,17 @@ Keine Secrets, keine Request-Header im Payload/Log. UI zeigt „RustMaps rejecte
 1. `npx supabase functions deploy rustmaps-provider` — Function-Code geändert → **Redeploy nötig**.
 2. Browser: „Generate full map…" → erwartet jetzt `active`/pending statt `provider_bad_request`.
 3. Falls weiterhin 400: neue `providerMessage`/`requestDebug` in UI/Response lesen → exakter Grund ohne Secrets.
+
+## B1.3 Seed/Size Lookup Removed
+**Owner-Smoke nach Redeploy (B1.2):** `GET /v4/maps/{size}/{seed}?staging=false` lieferte **400 SerializerErrors** — „The input does not contain any JSON tokens. Expected the input to start with a valid JSON token." (z. B. `GET /v4/maps/3900/11975?staging=false`, `sentBodyKeys: []`), reproduzierbar über mehrere Server. Der `?staging=`-Fix aus B1.2 hat den 400 also **nicht** behoben — dieser Endpoint ist in unserem Integrationspfad **unzuverlässig**.
+
+**Entscheidung/Änderung (B1.3):**
+- **`GET /v4/maps/{size}/{seed}` wurde vollständig aus dem Flow entfernt.** Er blockiert die Generierung nicht mehr.
+- **`POST /v4/maps`** ist jetzt der **kanonische Generierungs-Einstieg** (Body `{size, seed, staging}`).
+- **Polling** ausschließlich über **`GET /v4/maps/{mapId}`**; `409` = erwartetes „noch nicht fertig" (pending), `200` = fertige MapAPIDTO → Cache active.
+- **Cache** verhindert Doppel-Generierung: aktive Maps (mit Bild-URL) werden direkt aus `rustmaps_map_cache` serviert; pending Maps mit bekannter `rustmaps_id` werden nur gepollt, nicht neu gestartet.
+- **Limits** (`GET /v4/maps/limits`) bleibt, aber **soft**: nur `401/403` (auth) und `429` (quota) stoppen hart; jeder andere Nicht-200 (inkl. Parse-Fehler) wird sanitized geloggt und **blockiert die Generierung nicht**.
+- **Diagnostics** zeigen jetzt `requestDebug.endpoint = "/v4/maps"`, `method = "POST"`, `sentBodyKeys = ["size","seed","staging"]` (bzw. `GET /v4/maps/{mapId}` beim Poll). Ein `GET /v4/maps/{size}/{seed}` darf im B1-Pfad **nicht mehr** auftauchen — falls doch, ist das ein Bug.
+- **Zukunft:** Ein Lookup-/Search-Endpoint (`/v4/maps/{size}/{seed}` oder `/v4/maps/search`) kann später **separat** neu evaluiert werden (evtl. anderes Request-Format), ist aber **nicht Teil von B1**.
+
+**Redeploy nötig:** `npx supabase functions deploy rustmaps-provider`.

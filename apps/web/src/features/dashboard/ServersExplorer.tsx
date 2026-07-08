@@ -448,19 +448,25 @@ export function ServersExplorer() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>Wipe Age</label>
-                    <select className="rm-select mobile" value={filters.maxWipeAgeHours === null ? 'any' : filters.maxWipeAgeHours} onChange={e => setFilters({ ...filters, maxWipeAgeHours: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+                    <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }} title="Filters by time elapsed since the server's last reported wipe.">Wipe Age</label>
+                    <select className="rm-select mobile" value={filters.maxWipeAgeHours === null ? 'any' : filters.maxWipeAgeHours} onChange={e => setFilters({ ...filters, maxWipeAgeHours: e.target.value === 'any' ? null : parseFloat(e.target.value) })}>
                        <option value="any">Any</option>
-                       <option value="1">≤ 1 hour</option>
-                       <option value="4">≤ 4 hours</option>
-                       <option value="12">≤ 12 hours</option>
-                       <option value="24">≤ 24 hours</option>
-                       <option value="72">≤ 3 days</option>
-                       <option value="168">≤ 1 week</option>
+                       <option value="0.166">≤ 10m</option>
+                       <option value="0.5">≤ 30m</option>
+                       <option value="1">≤ 1h</option>
+                       <option value="2">≤ 2h</option>
+                       <option value="4">≤ 4h</option>
+                       <option value="8">≤ 8h</option>
+                       <option value="12">≤ 12h</option>
+                       <option value="24">≤ 24h</option>
+                       <option value="72">≤ 3d</option>
+                       <option value="168">≤ 7d</option>
+                       <option value="336">≤ 14d</option>
+                       <option value="720">≤ 30d</option>
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>Wipe Day</label>
+                    <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }} title="Derived from the last wipe timestamp. Uses reported wipe date/time.">Wipe Day</label>
                     <select className="rm-select mobile" value={filters.wipeTiming === null ? 'any' : filters.wipeTiming} onChange={e => setFilters({ ...filters, wipeTiming: e.target.value === 'any' ? null : e.target.value as any })}>
                        <option value="any">Any</option>
                        <option value="today">Today</option>
@@ -749,24 +755,30 @@ export function ServersExplorer() {
                    
                    {/* Column 1: Core & Wipe */}
                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }} title="Only servers with confirmed EAC secure flag from BattleMetrics.">
                         <input type="checkbox" checked={filters.secure} onChange={e => setFilters({ ...filters, secure: e.target.checked })} />
                         Secure only (EAC)
                       </label>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Wipe Age:</label>
-                        <select className="rm-select" value={filters.maxWipeAgeHours === null ? 'any' : filters.maxWipeAgeHours} onChange={e => setFilters({ ...filters, maxWipeAgeHours: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Filters by time elapsed since the server's last reported wipe.">Wipe Age:</label>
+                        <select className="rm-select" value={filters.maxWipeAgeHours === null ? 'any' : filters.maxWipeAgeHours} onChange={e => setFilters({ ...filters, maxWipeAgeHours: e.target.value === 'any' ? null : parseFloat(e.target.value) })}>
                            <option value="any">Any</option>
-                           <option value="1">≤ 1 hour</option>
-                           <option value="4">≤ 4 hours</option>
-                           <option value="12">≤ 12 hours</option>
-                           <option value="24">≤ 24 hours</option>
-                           <option value="72">≤ 3 days</option>
-                           <option value="168">≤ 1 week</option>
+                           <option value="0.166">≤ 10m</option>
+                           <option value="0.5">≤ 30m</option>
+                           <option value="1">≤ 1h</option>
+                           <option value="2">≤ 2h</option>
+                           <option value="4">≤ 4h</option>
+                           <option value="8">≤ 8h</option>
+                           <option value="12">≤ 12h</option>
+                           <option value="24">≤ 24h</option>
+                           <option value="72">≤ 3d</option>
+                           <option value="168">≤ 7d</option>
+                           <option value="336">≤ 14d</option>
+                           <option value="720">≤ 30d</option>
                         </select>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Wipe Day:</label>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Derived from the last wipe timestamp. Uses reported wipe date/time.">Wipe Day:</label>
                         <select className="rm-select" value={filters.wipeTiming === null ? 'any' : filters.wipeTiming} onChange={e => setFilters({ ...filters, wipeTiming: e.target.value === 'any' ? null : e.target.value as any })}>
                            <option value="any">Any</option>
                            <option value="today">Wiped Today</option>
@@ -788,7 +800,7 @@ export function ServersExplorer() {
                    {/* Column 2: Region & Map */}
                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Region:</label>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Derived from the server country code.">Region:</label>
                         <select className="rm-select" value={filters.region === null ? 'any' : filters.region} onChange={e => setFilters({ ...filters, region: e.target.value === 'any' ? null : e.target.value as any })}>
                            <option value="any">Any Region</option>
                            <option value="EU">Europe (EU)</option>
@@ -809,16 +821,16 @@ export function ServersExplorer() {
                         </select>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Map Type:</label>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Reported or derived map type, e.g. procedural or custom.">Map Type:</label>
                         <select className="rm-select" value={filters.mapType === null ? 'any' : filters.mapType} onChange={e => setFilters({ ...filters, mapType: e.target.value === 'any' ? null : e.target.value as any })}>
                            <option value="any">Any</option>
                            <option value="procedural">Procedural</option>
                            <option value="custom">Custom Map</option>
-                           <option value="barren">Barren</option>
+                           <option value="barren" title="Special map type. Rare; many server lists may have none.">Barren</option>
                         </select>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Map Size:</label>
+                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Rust world size in map units.">Map Size:</label>
                         <select className="rm-select" value={filters.minMapSize === null ? 'any' : filters.minMapSize} onChange={e => setFilters({ ...filters, minMapSize: e.target.value === 'any' ? null : parseInt(e.target.value, 10), maxMapSize: e.target.value === 'any' ? null : parseInt(e.target.value, 10) + 999 })}>
                            <option value="any">Any Size</option>
                            <option value="1000">1000 - 1999 (Tiny)</option>
@@ -846,36 +858,36 @@ export function ServersExplorer() {
                            <option value="hardcore">Hardcore</option>
                         </select>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Farm/Loot <span style={{ fontSize: '0.65rem', color: 'var(--status-warning)' }}>(Heur)</span>:</label>
-                        <select className="rm-select" value={filters.lootMultiplier === null ? 'any' : filters.lootMultiplier} onChange={e => setFilters({ ...filters, lootMultiplier: e.target.value === 'any' ? null : e.target.value as any })}>
-                           <option value="any">Any</option>
-                           <option value="1x">1x (Vanilla)</option>
-                           <option value="2x">2x</option>
-                           <option value="3x">3x</option>
-                           <option value="5x">5x</option>
-                           <option value="10x">10x</option>
-                           <option value="10x+">10x+</option>
-                        </select>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Group Limit <span style={{ fontSize: '0.65rem', color: 'var(--status-warning)' }}>(Heur)</span>:</label>
-                        <select className="rm-select" value={filters.teamLimit === null ? 'any' : filters.teamLimit} onChange={e => setFilters({ ...filters, teamLimit: e.target.value === 'any' ? null : e.target.value as any })}>
-                           <option value="any">Any</option>
-                           <option value="solo">Solo</option>
-                           <option value="duo">Duo</option>
-                           <option value="trio">Trio</option>
-                           <option value="quad">Quad (4)</option>
-                           <option value="5+">5+ / Zerg</option>
-                           <option value="clan">Clan / No Limit</option>
-                        </select>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Heuristic: detected from server name/tags. May be approximate.">Farm/Loot:</label>
+                          <select className="rm-select" value={filters.lootMultiplier === null ? 'any' : filters.lootMultiplier} onChange={e => setFilters({ ...filters, lootMultiplier: e.target.value === 'any' ? null : e.target.value as any })}>
+                             <option value="any">Any</option>
+                             <option value="1x">Vanilla / likely 1x</option>
+                             <option value="2x">2x</option>
+                             <option value="3x">3x</option>
+                             <option value="5x">5x</option>
+                             <option value="10x">10x</option>
+                             <option value="10x+">10x+</option>
+                          </select>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} title="Heuristic: detected from server name/tags. Means maximum likely team size.">Group Limit:</label>
+                          <select className="rm-select" value={filters.teamLimit === null ? 'any' : filters.teamLimit} onChange={e => setFilters({ ...filters, teamLimit: e.target.value === 'any' ? null : e.target.value as any })}>
+                             <option value="any">Any</option>
+                             <option value="solo">Solo</option>
+                             <option value="duo">Duo</option>
+                             <option value="trio">Trio</option>
+                             <option value="quad">Quad (4)</option>
+                          </select>
+                        </div>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }} title="Heuristic: detects raid windows or Offline Raid Protection keywords.">
                           <input type="checkbox" checked={filters.hasRaidWindows} onChange={e => setFilters({ ...filters, hasRaidWindows: e.target.checked })} />
                           Raid Windows / ORP <span style={{ fontSize: '0.65rem', color: 'var(--status-warning)' }}>(Heur)</span>
                         </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', cursor: 'pointer' }} title="Heuristic: detects restart/reboot schedule keywords.">
                           <input type="checkbox" checked={filters.hasScheduledRestart} onChange={e => setFilters({ ...filters, hasScheduledRestart: e.target.checked })} />
                           Scheduled Restarts <span style={{ fontSize: '0.65rem', color: 'var(--status-warning)' }}>(Heur)</span>
                         </label>

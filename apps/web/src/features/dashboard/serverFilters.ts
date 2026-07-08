@@ -22,7 +22,7 @@ export interface ServerFilters {
   maxMapSize: number | null;
   mapType: 'procedural' | 'custom' | 'barren' | null;
   lootMultiplier: '1x' | '2x' | '3x' | '5x' | '10x' | '10x+' | null;
-  teamLimit: 'solo' | 'duo' | 'trio' | 'quad' | '5+' | 'clan' | null;
+  teamLimit: 'solo' | 'duo' | 'trio' | 'quad' | null;
   hasRaidWindows: boolean;
   hasScheduledRestart: boolean;
 }
@@ -93,6 +93,19 @@ function matchesMode(s: BattleMetricsServerSummary, mode: string): boolean {
   return false;
 }
 
+export function detectTeamLimit(text: string): number | 'unknown' {
+  let maxSize = -1;
+  if (/\b(clan|no limit|nolimit|main)\b/i.test(text)) return 'unknown'; // don't try to guess max size for these
+  
+  if (/\b(quad|4 man|4man)\b/i.test(text)) maxSize = Math.max(maxSize, 4);
+  if (/\btrio\b/i.test(text) || /\b3 man\b/i.test(text) || /\b3man\b/i.test(text)) maxSize = Math.max(maxSize, 3);
+  if (/\bduo\b/i.test(text) || /\b2 man\b/i.test(text) || /\b2man\b/i.test(text)) maxSize = Math.max(maxSize, 2);
+  if (/\bsolo\b/i.test(text) || /\b1 man\b/i.test(text) || /\b1man\b/i.test(text)) maxSize = Math.max(maxSize, 1);
+  
+  if (maxSize === -1) return 'unknown';
+  return maxSize;
+}
+
 export function applyClientFilters(
   servers: BattleMetricsServerSummary[],
   filters: ServerFilters
@@ -114,7 +127,10 @@ export function applyClientFilters(
     // NEW FILTERS - EXACT
     if (filters.maxWipeAgeHours !== null) {
       if (!s.lastWipe) return false;
-      const wipeAgeHours = (now - new Date(s.lastWipe).getTime()) / (1000 * 60 * 60);
+      const wipeDate = new Date(s.lastWipe);
+      const wipeAgeMs = now - wipeDate.getTime();
+      if (Number.isNaN(wipeAgeMs)) return false;
+      const wipeAgeHours = wipeAgeMs / (1000 * 60 * 60);
       if (wipeAgeHours > filters.maxWipeAgeHours) return false;
     }
 
@@ -155,7 +171,9 @@ export function applyClientFilters(
 
     if (filters.lootMultiplier !== null) {
       if (filters.lootMultiplier === '1x') {
-        if (!/\b(1x|vanilla)\b/.test(searchableText)) return false;
+        const has1x = /\b(1x|x1|vanilla)\b/.test(searchableText);
+        const hasOther = /\b(2x|x2|3x|x3|5x|x5|10x|x10|10x\+|100x|1000x|10000x|100x\+|millionx)\b/.test(searchableText);
+        if (!has1x || hasOther) return false;
       } else if (filters.lootMultiplier === '10x+') {
         if (!/\b(100x|1000x|10000x|10x\+|100x\+|millionx)\b/.test(searchableText)) return false;
       } else {
@@ -166,12 +184,12 @@ export function applyClientFilters(
     }
 
     if (filters.teamLimit !== null) {
-      if (filters.teamLimit === 'solo' && !/\bsolo\b/.test(searchableText)) return false;
-      if (filters.teamLimit === 'duo' && !/\bduo\b/.test(searchableText)) return false;
-      if (filters.teamLimit === 'trio' && !/\btrio\b/.test(searchableText)) return false;
-      if (filters.teamLimit === 'quad' && !/\b(quad|4 man|4man)\b/.test(searchableText)) return false;
-      if (filters.teamLimit === '5+' && !/\b(5 man|5man|6 man|6man|8 man|8man|zerg)\b/.test(searchableText)) return false;
-      if (filters.teamLimit === 'clan' && !/\b(clan|no limit|main)\b/.test(searchableText)) return false;
+      const detected = detectTeamLimit(searchableText);
+      if (detected === 'unknown') return false;
+      if (filters.teamLimit === 'solo' && detected !== 1) return false;
+      if (filters.teamLimit === 'duo' && detected > 2) return false;
+      if (filters.teamLimit === 'trio' && detected > 3) return false;
+      if (filters.teamLimit === 'quad' && detected > 4) return false;
     }
 
     if (filters.hasRaidWindows) {

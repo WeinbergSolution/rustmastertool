@@ -10,6 +10,7 @@ import { Watchlist } from '../features/dashboard/Watchlist';
 import { ServerPulseView } from '../features/dashboard/ServerPulseView';
 import { LearnHub } from '../features/learn/LearnHub';
 import { RustGuidesView } from '../features/learn/rust-guides/RustGuidesView';
+import { MapIntelView } from '../features/learn/map-intel/MapIntelView';
 import { useIsMobile } from './mobile/useIsMobile';
 import { consumeLayerPop } from './mobile/useInAppBack';
 import { MobileAppShell } from './mobile/MobileAppShell';
@@ -109,12 +110,9 @@ export function AppShell() {
         <RustGuidesView onViewChange={setCurrentView} />
       </div>
       {currentView === 'learn' && <LearnHub onViewChange={setCurrentView} />}
-      {currentView === 'map_intel' && (
-        <RoadmapView
-          title="Map Intelligence"
-          message="Map Intelligence will unlock map preview, monuments, heatmap overlays and build-location recommendations for selected servers."
-        />
-      )}
+      <div style={{ display: currentView === 'map_intel' ? 'block' : 'none', height: '100%' }}>
+        <MapIntelView onViewChange={setCurrentView} />
+      </div>
       {currentView === 'filter_profiles' && (
         <RoadmapView
           title="Filter Profiles"

@@ -1,6 +1,6 @@
 import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 
-import { normalizeMonumentName } from './monumentFilters';
+import { normalizeMonumentName, normalizeMonumentNames } from './monumentFilters';
 
 export interface ServerFilters {
   hideEmpty: boolean;
@@ -67,9 +67,10 @@ export function applyClientFilters(
     if (filters.mode !== null && !matchesMode(s, filters.mode)) return false;
     
     if (filters.monuments && filters.monuments.length > 0) {
-      if (!s.monumentNames || s.monumentNames.length === 0) return false;
+      const safeMonuments = normalizeMonumentNames(s.monumentNames);
+      if (safeMonuments.length === 0) return false;
       const normalizedServerMonuments = new Set(
-        s.monumentNames.map(m => normalizeMonumentName(m)).filter(Boolean)
+        safeMonuments.map(m => normalizeMonumentName(m)).filter(Boolean)
       );
       // AND logic: Server must contain ALL selected monuments
       for (const selected of filters.monuments) {

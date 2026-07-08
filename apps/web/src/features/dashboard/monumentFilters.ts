@@ -46,3 +46,25 @@ export function normalizeMonumentName(rawName: string): string | null {
   }
   return null;
 }
+
+export function normalizeMonumentNames(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string')
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return []
+
+    try {
+      return normalizeMonumentNames(JSON.parse(trimmed))
+    } catch {
+      return trimmed
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }
+  }
+
+  return []
+}

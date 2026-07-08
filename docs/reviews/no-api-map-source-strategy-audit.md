@@ -78,3 +78,20 @@ Zu prüfende Ansätze, falls je „echte Vollkarte intern" ohne RustMaps gewüns
 2. **Preview-Foundation bleibt** der Produktionsweg; CTA ehrlich (disabled) halten — als separate kleine UI-Aufgabe, falls die aktive CTA schon auf main sichtbar wäre (aktuell nur auf dem Provider-Branch).
 3. Weiter voll auf **BattleMetrics-Daten + Map Intel** setzen (Thumbnails, Seed/Size, Monument-Namen, Biome) — alles ohne Key.
 4. „Echte Vollkarte" nur wieder aufgreifen, wenn (a) doch ein RustMaps-Key kommt oder (b) eine eigene Generierung (D) bewusst als Projekt gestartet wird.
+
+## 8. Addendum: RustServerList als Cross-Check-Kandidat (2026-07-08)
+Ergänzung zu Abschnitt 5-B als **möglicher zusätzlicher Referenz-/Cross-Check-Kandidat** — nicht als bestätigte Datenquelle.
+
+1. **Was es öffentlich zeigt:** RustServerList listet pro Server öffentlich sichtbare Metadaten wie **Map Size**, **World Seed**, **Last Seen** sowie Wipe-/Server-Infos. Das überschneidet sich mit dem, was wir bereits aus BattleMetrics + `server_map_identity` haben, und könnte als **manuelle Referenz** oder **späterer Source-Candidate** dienen.
+2. **Rolle:** nützlich zum **Gegenprüfen** von Seed/Size/Wipe (Confidence-Erhöhung), **nicht** als primäre oder alleinige Quelle.
+3. **Grenzen — kein Ersatz für Full-Map-Generierung:** liefert **keine** generierte Vollkarte und **keinen** Ersatz für die (blockierte) RustMaps-Provider-Generierung.
+4. **Keine automatischen Koordinaten/Heatmaps:** liefert **nicht** automatisch validierte Monument-Koordinaten oder Heatmap-Daten.
+5. **Nutzungsvorbehalt:** **Keine dokumentierte öffentliche API hier verifiziert.** Eine Nutzung (programmatisch oder als Referenz) nur, **nachdem** API-Verfügbarkeit, Terms of Service und ausdrückliche Erlaubnis geklärt sind. **Kein Scraping.** Bis dahin bestenfalls **manuelle** Owner-Referenz.
+6. **Produktidee — „Map Data Confidence Layer":**
+   Ein optionaler Konfidenz-Layer, der mehrere unabhängige Signale kombiniert, statt sich auf eine Quelle zu verlassen:
+   `BattleMetrics (rust_maps/seed/size/wipe)` + `server_map_identity (persistiert, wipe-historisiert)` + **optional** `RustServerList / direkte Server-Query` als Cross-Check.
+   - Ausgabe: ein Confidence-Score pro Map-Identität (z. B. „seed+size über 2+ Quellen bestätigt").
+   - Vorteil: robuster gegen Dummy-Seeds (Custom Maps) und veraltete Werte — **ohne** RustMaps-API.
+   - Voraussetzung für die RustServerList-Komponente: geklärte API/Terms (Punkt 5). Bis dahin bleibt der Layer auf die bereits vorhandenen Quellen (BattleMetrics + `server_map_identity`) beschränkt.
+
+**Einordnung:** RustServerList ist ein **Kandidat**, kein bestätigter Integrationsweg. Es ändert die Empfehlung nicht (A halten, B nutzen), erweitert aber Option C/„Confidence Layer" um eine potenzielle spätere Cross-Check-Quelle — vorbehaltlich Rechte-/Terms-Klärung.

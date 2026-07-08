@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type CSSProperties } from 'react';
-import { X, ShieldAlert, Globe, Map as MapIcon, Users, Loader2, AlertTriangle, Maximize2, Star, Play, Settings, RefreshCw, Layers } from 'lucide-react';
+import { X, ShieldAlert, Globe, Map as MapIcon, Users, Loader2, AlertTriangle, Maximize2 } from 'lucide-react';
 import { getServerDetails, type BattleMetricsServerDetail } from '../../lib/api/battlemetrics';
 import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api/serverPulse';
 import { calculatePulseSummary } from '../../lib/api/retention';

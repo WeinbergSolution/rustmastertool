@@ -73,3 +73,26 @@ Auto-Poll alle **9 s** (`action:"poll"`), gedeckelt auf **5 min**; danach „Sti
 - Ohne gesetzten Key: „RustMaps Provider is not configured yet." (kein Crash, kein Secret-Leak).
 - Quota/Fehler: sauberer Retry, keine Endlosschleife (5-min-Cap).
 - Console frei von Exceptions; kein externer rustmaps.com-Link.
+
+## CORS & Deploy Readiness (B1.1)
+- **Browser-Aufrufe brauchen CORS/OPTIONS.** Die Function beantwortet den `OPTIONS`-Preflight **als Erstes** (Status **204**), bevor Body-Parsing/Env/DB/Provider-Calls laufen. **Alle** Responses (inkl. Fehler und `provider_not_configured`) tragen CORS-Header über einen zentralen Helper `corsHeadersFor(origin)`.
+- **Header:** `Access-Control-Allow-Origin` (echoet für localhost / `*.vercel.app` / `ALLOWED_ORIGIN(S)`-env, sonst `*`), `Access-Control-Allow-Headers: authorization, x-client-info, apikey, content-type`, `Access-Control-Allow-Methods: POST, OPTIONS`, `Vary: Origin`.
+- **Die Preview allein reicht NICHT.** Der Browser-Fehler „preflight … does not have HTTP ok status" tritt auf, solange die Function **nicht deployt** ist (Supabase liefert dann keine CORS-fähige OPTIONS-Antwort). Erst nach Deploy von Migration **und** Function greift der CORS-Fix.
+- **Aktivierung ist ein separates Owner-Gate:** `supabase db push` + `supabase functions deploy rustmaps-provider` + `supabase secrets set RUSTMAPS_API_KEY=…`. Ohne diese Schritte zeigt die UI ehrlich „Provider function is not deployed or not reachable yet." (state `unavailable`) bzw. nach Deploy ohne Key „RustMaps Provider is not configured yet." (state `provider_not_configured`).
+- **UI unterscheidet jetzt:** Erreichbarkeits-/CORS-/Deploy-Problem → `unavailable` → Button „Retry provider request"; echter RustMaps-Generierungsfehler → `failed` → Button „Generation failed — retry".
+
+### CORS-Smoke (nach Deploy)
+```bash
+# Preflight muss 204 + CORS-Header liefern:
+curl -i -X OPTIONS "https://<project>.supabase.co/functions/v1/rustmaps-provider" \
+  -H "Origin: https://rustmastertool-web.vercel.app" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: content-type, authorization, apikey"
+# Erwartung: HTTP/2 204, Access-Control-Allow-Origin, Access-Control-Allow-Methods: POST, OPTIONS, Vary: Origin
+
+# POST (ohne Key -> provider_not_configured, MIT CORS-Header, kein Crash):
+curl -i -X POST "https://<project>.supabase.co/functions/v1/rustmaps-provider" \
+  -H "Origin: https://rustmastertool-web.vercel.app" -H "Content-Type: application/json" \
+  -H "apikey: <anon-key>" -H "Authorization: Bearer <anon-key>" \
+  -d '{"action":"get_or_create","seed":123456,"worldSize":4000}'
+```

@@ -123,10 +123,10 @@ export async function requestRustMapsProviderMap(
         staging: args.staging ?? false,
       },
     });
-    if (error) return fail('Could not reach the map provider.');
+    if (error) return fail('Provider function is not deployed or not reachable yet.', 'unavailable');
     return normalize(data);
   } catch {
-    return fail('Could not reach the map provider.');
+    return fail('Provider function is not deployed or not reachable yet.', 'unavailable');
   }
 }
 
@@ -136,9 +136,9 @@ export async function pollRustMapsProviderMap(cacheKey: string): Promise<Provide
     const { data, error } = await supabase.functions.invoke('rustmaps-provider', {
       body: { action: 'poll', cacheKey },
     });
-    if (error) return fail('Could not reach the map provider.');
+    if (error) return fail('Provider function is not deployed or not reachable yet.', 'unavailable');
     return normalize(data);
   } catch {
-    return fail('Could not reach the map provider.');
+    return fail('Provider function is not deployed or not reachable yet.', 'unavailable');
   }
 }

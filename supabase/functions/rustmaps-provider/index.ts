@@ -13,23 +13,36 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const ALLOW_HEADERS = "authorization, x-client-info, apikey, content-type";
+
+// Allow localhost, any *.vercel.app (covers preview + production), and any
+// origins configured via ALLOWED_ORIGIN / ALLOWED_ORIGINS env. Unknown origins
+// fall back to "*" so the endpoint never breaks (no cookies/credentials, no
+// user secrets are returned here).
+function isAllowedOrigin(o: string): boolean {
+  if (o.startsWith("http://localhost:") || o.startsWith("http://127.0.0.1:")) return true;
+  if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(o)) return true;
+  const single = (Deno.env.get("ALLOWED_ORIGIN") || "").trim();
+  if (single && o === single) return true;
+  const list = (Deno.env.get("ALLOWED_ORIGINS") || "").split(",").map((s) => s.trim()).filter(Boolean);
+  return list.includes(o);
+}
+
+function corsHeadersFor(origin: string | null): Record<string, string> {
+  const allowOrigin = origin && isAllowedOrigin(origin) ? origin : "*";
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Headers": ALLOW_HEADERS,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
 type ProviderState =
   | "idle" | "queued" | "in_queue" | "generating" | "processing" | "uploading"
   | "active" | "failed" | "unavailable" | "quota_exhausted" | "provider_not_configured";
 
 const PENDING_STATES: ProviderState[] = ["queued", "in_queue", "generating", "processing", "uploading"];
-
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
 
 function buildCacheKey(worldSize: number, seed: number, staging: boolean): string {
   return `procedural:${worldSize}:${seed}:${staging}`;
@@ -107,8 +120,15 @@ function toResponse(ok: boolean, state: ProviderState, cacheKey: string, row: an
 }
 
 serve(async (req) => {
+  const origin = req.headers.get("Origin");
+  const cors = corsHeadersFor(origin);
+  const json = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
+
+  // Answer the CORS preflight FIRST — before body parsing, env checks, DB init
+  // or any provider call — so it can never fail with a non-2xx status.
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: cors });
   }
 
   const apiKey = Deno.env.get("RUSTMAPS_API_KEY");

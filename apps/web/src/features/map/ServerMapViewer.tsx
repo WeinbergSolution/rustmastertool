@@ -162,7 +162,15 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
         </button>
       );
     }
-    if (providerState === 'failed' || providerState === 'unavailable') {
+    if (providerState === 'unavailable') {
+      // Transport/CORS/function-not-deployed — distinct from a real generation error.
+      return (
+        <button type="button" className="rm-map-provider-cta active" onClick={startGeneration}>
+          <RefreshCw size={16} /> Retry provider request
+        </button>
+      );
+    }
+    if (providerState === 'failed') {
       return (
         <button type="button" className="rm-map-provider-cta active" onClick={startGeneration}>
           <RefreshCw size={16} /> Generation failed — retry

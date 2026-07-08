@@ -152,3 +152,11 @@ Keine Secrets, keine Request-Header im Payload/Log. UI zeigt „RustMaps rejecte
   Success+data:null neutraler State,
   Follow-up Lookup/Status,
   kein POST-Spam.
+
+## B1.6 Seed/Size Lookup Confirmed
+- Postman verified POST /v4/maps returns Success + data:null.
+- Postman verified GET /v4/maps/{size}/{seed}?staging=false returns full MapAPIDTO.
+- Previous function omitted staging query in fallback lookup.
+- Fix: always include staging query.
+- MapAPIDTO is now normalized and cached as active.
+- Next smoke: Refresh map status should load generated map.

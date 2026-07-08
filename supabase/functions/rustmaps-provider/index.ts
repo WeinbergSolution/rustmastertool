@@ -283,7 +283,7 @@ serve(async (req) => {
   // request was already accepted, so we stay in a neutral waiting state.
   async function attemptLookup(cacheKey: string, base: { seed: number; worldSize: number; staging: boolean; battlemetricsServerId?: string }, row: any) {
     const rid = row?.rustmaps_id ?? null;
-    const path = rid ? `/v4/maps/${encodeURIComponent(rid)}` : `/v4/maps/${base.worldSize}/${base.seed}`;
+    const path = rid ? `/v4/maps/${encodeURIComponent(rid)}` : `/v4/maps/${base.worldSize}/${base.seed}?staging=${base.staging}`;
     const { status, data, text } = await callProvider(path);
 
     if (status === 200 && data?.data) {

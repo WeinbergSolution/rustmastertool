@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type CSSProperties } from 'react';
-import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle } from 'lucide-react';
+import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle, Maximize2 } from 'lucide-react';
 import { getServerDetails, type BattleMetricsServerDetail } from '../../lib/api/battlemetrics';
 import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api/serverPulse';
 import { calculatePulseSummary } from '../../lib/api/retention';
@@ -27,6 +27,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [showAuthCta, setShowAuthCta] = useState<'watchlist' | 'active_server' | null>(null);
   const [snapshots, setSnapshots] = useState<ServerPopulationSnapshot[]>([]);
   const [isSnapshotsLoading, setIsSnapshotsLoading] = useState(false);
+  const [isMapEnlarged, setIsMapEnlarged] = useState(false);
   const isMobile = useIsMobile();
   const mapSectionRef = useRef<HTMLDivElement>(null);
 
@@ -71,17 +72,17 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
 
   useEffect(() => {
     let mounted = true;
-    if (!server?.internal_uuid) return;
+    if (!server?.id) return;
     
     setIsSnapshotsLoading(true);
-    getServerSnapshots(server.internal_uuid).then(data => {
+    getServerSnapshots(server.id).then(data => {
       if (mounted) setSnapshots(data);
     }).finally(() => {
       if (mounted) setIsSnapshotsLoading(false);
     });
     
     return () => { mounted = false; };
-  }, [server?.internal_uuid]);
+  }, [server?.id]);
 
   // When opened via the card's map indicator, scroll to the map section once loaded.
   useEffect(() => {
@@ -176,14 +177,14 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center'
               }}
             >
-              {isWatched ? 'Remove Watchlist' : 'Add Watchlist'}
+              {isWatched ? 'Remove Saved' : 'Save Server'}
             </button>
           </div>
 
           {showAuthCta && (
             <div style={{ marginBottom: '2rem', padding: '1.5rem', border: '1px dashed var(--accent-rust)', borderRadius: '4px', backgroundColor: 'rgba(205, 65, 43, 0.1)' }}>
               <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', textAlign: 'center', color: 'var(--text-primary)' }}>
-                {showAuthCta === 'watchlist' ? 'Sign in with Steam to add this server to your Watchlist.' : 'Sign in with Steam to set an Active Server.'}
+                {showAuthCta === 'watchlist' ? 'Sign in with Steam to save this server.' : 'Sign in with Steam to set an Active Server.'}
               </p>
               <button 
                 className="btn-steam" 
@@ -236,12 +237,24 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 if (thumbnailUrl) {
                    return (
                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                       <div style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111' }}>
+                       <div style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111', cursor: 'zoom-in' }} onClick={() => setIsMapEnlarged(true)}>
                          <img src={thumbnailUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                         <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', ':hover': { opacity: 1 } } as any}>
+                           <Maximize2 size={32} color="#fff" />
+                         </div>
                          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', backgroundColor: 'rgba(0,0,0,0.7)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
-                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} · {mapSize} · Seed {mapSeed}
+                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} · {mapSize} · Seed Hidden
                          </div>
                        </div>
+                       
+                       {isMapEnlarged && (
+                         <div 
+                           style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
+                           onClick={() => setIsMapEnlarged(false)}
+                         >
+                           <img src={thumbnailUrl} alt="Map Enlarged" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+                         </div>
+                       )}
                        {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
                          <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                            {details.rust_maps.monuments.slice(0, 5).map((m: string) => (
@@ -265,7 +278,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                    return (
                      <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
                        <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />
-                       <h4 style={{ margin: 0, color: '#fff' }}>Seed {mapSeed} · Size {mapSize}</h4>
+                       <h4 style={{ margin: 0, color: '#fff' }}>Seed Hidden · Size {mapSize}</h4>
                        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
                          Seed detected. Map preview not cached yet.
                        </p>

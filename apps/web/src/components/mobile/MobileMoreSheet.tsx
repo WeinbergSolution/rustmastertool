@@ -3,7 +3,7 @@ import { useAuth } from '../../lib/auth/useAuth';
 import { BottomSheet } from './BottomSheet';
 import type { ViewState } from '../AppShell';
 import {
-  User, Eye, Settings, LineChart, MapPin, Calculator, BookOpen, Filter, Map as MapIcon,
+  User, Settings, LineChart, MapPin, Calculator, BookOpen, Filter, Map as MapIcon,
   Lock, ChevronRight, LogOut,
 } from 'lucide-react';
 
@@ -23,13 +23,13 @@ interface Row {
 
 const ACCOUNT_ROWS: Row[] = [
   { icon: User, label: 'MyRust', view: 'my_rust' },
-  { icon: Eye, label: 'Watchlist', view: 'watchlist' },
   { icon: Settings, label: 'Settings', view: 'settings' },
 ];
 
 // Secondary tools that are live but not primary bottom-nav features.
 const TOOL_ROWS: Row[] = [
   { icon: LineChart, label: 'Server Pulse', view: 'server_pulse', note: 'Population & analytics' },
+  { icon: BookOpen, label: 'Learning', view: 'learn', note: 'Base designs & guides' },
 ];
 
 // Roadmap rows navigate to honest "coming soon" roadmap views — never dead buttons.

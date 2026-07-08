@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Users, Clock, Globe, Map as MapIcon, Copy, Check, Image as ImageIcon } from 'lucide-react';
+import { Bookmark, BookmarkCheck } from 'lucide-react';
 import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 import { getServerTypeBadge } from '../../features/dashboard/serverCardUtils';
 import '../../features/dashboard/serverCards.css';
 
 interface ServerCardMobileProps {
   server: BattleMetricsServerSummary;
+  isWatched?: boolean;
+  isAuthenticated?: boolean;
+  onToggleWatch?: () => void;
   onSelect?: () => void;
   onSelectMap?: () => void;
 }
@@ -24,7 +28,7 @@ function formatWipe(server: BattleMetricsServerSummary): string | null {
   return null;
 }
 
-export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMobileProps) {
+export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleWatch, onSelect, onSelectMap }: ServerCardMobileProps) {
   const [copied, setCopied] = useState(false);
   const isOnline = server.status === 'online';
   const players = server.players || 0;
@@ -45,18 +49,40 @@ export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMo
     }).catch(() => {});
   };
 
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      window.sessionStorage.setItem('serverExplorer.pendingAction', 'watchlist');
+      window.sessionStorage.setItem('serverExplorer.selectedServerId', server.id);
+      window.sessionStorage.setItem('serverExplorer.view', 'servers');
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (supabaseUrl) {
+        const origin = encodeURIComponent(window.location.origin);
+        window.location.href = `${supabaseUrl}/functions/v1/steam-auth?action=login&origin=${origin}`;
+      }
+      return;
+    }
+    if (onToggleWatch) onToggleWatch();
+  };
+
   return (
     <div className="srv-card" onClick={onSelect}>
       <div className="srv-card-layout">
         <div className="srv-card-content">
           {/* Header */}
-          <div className="srv-card-head">
+          <div className="srv-card-head" style={{ paddingRight: '2rem', position: 'relative' }}>
             <span className={`srv-dot ${isOnline ? 'on' : 'off'}`} />
             <span className="srv-name">{server.name}</span>
             <span className="srv-head-badges">
               {typeof server.rank === 'number' && <span className="srv-rank">#{server.rank}</span>}
               <span className={`srv-type-badge srv-type-${badge.type}`} title="Server Type">{badge.label}</span>
             </span>
+            <button 
+              onClick={handleSave} 
+              style={{ position: 'absolute', right: 0, top: 0, background: 'transparent', border: 'none', padding: '0.25rem', color: isWatched ? 'var(--status-error)' : 'var(--text-disabled)', cursor: 'pointer' }}
+            >
+              {isWatched ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+            </button>
           </div>
 
           {/* Population */}
@@ -95,7 +121,7 @@ export function ServerCardMobile({ server, onSelect, onSelectMap }: ServerCardMo
           <MapIcon size={13} /> <span>{server.mapType || server.map || 'Procedural'} {server.mapIdentitySize || server.mapSize ? `· ${server.mapIdentitySize || server.mapSize}` : ''}</span>
         </div>
         <div className="srv-meta-item">
-          <span className="srv-meta-key">Seed</span> <span>{server.mapIdentitySeed ?? server.seed ?? 'Hidden'}</span>
+          <span className="srv-meta-key">Seed</span> <span>Hidden</span>
         </div>
       </div>
 

@@ -242,7 +242,7 @@ export function ServersExplorer() {
 
           {pendingActionMsg && status === 'authenticated' && (
             <div className="mobile-restore-banner">
-              Your server search was restored. {pendingActionMsg === 'watchlist' ? 'Continue adding to your Watchlist.' : 'Continue setting your Active Server.'}
+              Your server search was restored. {pendingActionMsg === 'watchlist' ? 'Continue saving the server.' : 'Continue setting your Active Server.'}
             </div>
           )}
 
@@ -265,6 +265,9 @@ export function ServersExplorer() {
                 <ServerCardMobile
                   key={server.id}
                   server={server}
+                  isWatched={watchedServers.some(s => s.id === server.id)}
+                  isAuthenticated={status === 'authenticated'}
+                  onToggleWatch={() => toggleWatch(server.id, server.internal_uuid)}
                   onSelect={() => {
                     setSelectedServerId(server.id);
                     setDetailFocus(null);
@@ -444,6 +447,9 @@ export function ServersExplorer() {
               <ServerCard 
                 key={server.id} 
                 server={server} 
+                isWatched={watchedServers.some(s => s.id === server.id)}
+                isAuthenticated={status === 'authenticated'}
+                onToggleWatch={() => toggleWatch(server.id, server.internal_uuid)}
                 onSelect={() => {
                   setSelectedServerId(server.id);
                   window.sessionStorage.removeItem('serverExplorer.pendingAction');

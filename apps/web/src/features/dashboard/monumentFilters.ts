@@ -22,8 +22,8 @@ export const MONUMENTS: MonumentInfo[] = [
   { id: 'satellite_dish', label: 'Satellite Dish', category: 'Keycard / Progression', aliases: ['satellite dish', 'satellite_dish'] },
 
   // Ocean / Water
-  { id: 'large_oil_rig', label: 'Large Oil Rig', category: 'Ocean / Water', aliases: ['large oil rig', 'large_oil_rig'] },
-  { id: 'small_oil_rig', label: 'Small Oil Rig', category: 'Ocean / Water', aliases: ['small oil rig', 'small_oil_rig', 'oil rig'] },
+  { id: 'large_oil_rig', label: 'Large Oil Rig', category: 'Ocean / Water', aliases: ['large oil rig', 'large_oil_rig', 'large oilrig'] },
+  { id: 'small_oil_rig', label: 'Small Oil Rig', category: 'Ocean / Water', aliases: ['small oil rig', 'small_oil_rig', 'small oilrig', 'oil rig', 'oilrig'] },
   { id: 'harbor', label: 'Harbor', category: 'Ocean / Water', aliases: ['harbor', 'large harbor', 'small harbor', 'harbour'] },
   { id: 'underwater_labs', label: 'Underwater Labs', category: 'Ocean / Water', aliases: ['underwater labs', 'underwater_labs', 'underwater lab'] },
   { id: 'ferry_terminal', label: 'Ferry Terminal', category: 'Ocean / Water', aliases: ['ferry terminal', 'ferry_terminal'] },

@@ -1,6 +1,6 @@
 import type { BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 
-import { normalizeMonumentName, normalizeMonumentNames } from './monumentFilters';
+import { classifyMonuments } from '../learn/map-intel/monumentClassification';
 
 export interface ServerFilters {
   hideEmpty: boolean;
@@ -67,14 +67,17 @@ export function applyClientFilters(
     if (filters.mode !== null && !matchesMode(s, filters.mode)) return false;
     
     if (filters.monuments && filters.monuments.length > 0) {
-      const safeMonuments = normalizeMonumentNames(s.monumentNames);
-      if (safeMonuments.length === 0) return false;
-      const normalizedServerMonuments = new Set(
-        safeMonuments.map(m => normalizeMonumentName(m)).filter(Boolean)
+      // Only match on safe, filterable canonical IDs (never on raw or on
+      // terrain/rock/infrastructure classifications).
+      const serverCanonical = new Set(
+        classifyMonuments(s.monumentNames)
+          .filter(c => c.isFilterable && c.canonicalId)
+          .map(c => c.canonicalId as string)
       );
+      if (serverCanonical.size === 0) return false;
       // AND logic: Server must contain ALL selected monuments
       for (const selected of filters.monuments) {
-        if (!normalizedServerMonuments.has(selected)) return false;
+        if (!serverCanonical.has(selected)) return false;
       }
     }
     

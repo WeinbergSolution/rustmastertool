@@ -76,7 +76,15 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
                 <div className="monument-card-header">
                   <h3 className="monument-card-title">{monument.name}</h3>
                 </div>
-                <span className="monument-card-category">{categoryName}</span>
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                  <span className="monument-card-category">{categoryName}</span>
+                  {monument.confidence !== 'verified' && (
+                    <span className="monument-card-category" style={{ color: '#d29922' }}>{monument.confidence}</span>
+                  )}
+                  {monument.needsOwnerReview && (
+                    <span className="monument-card-category" style={{ color: '#d29922' }}>needs review</span>
+                  )}
+                </div>
                 <p className="monument-card-desc">{monument.explanation}</p>
                 
                 <div className="monument-card-meta">
@@ -118,7 +126,13 @@ function MonumentModal({ monument, onClose }: { monument: MapMonument, onClose: 
 
         <div className="monument-modal-body">
           <h2>{monument.name}</h2>
-          <span className="cat-badge">{categoryName}</span>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span className="cat-badge">{categoryName}</span>
+            <span className="cat-badge" style={monument.confidence === 'verified' ? { color: '#3fb950' } : { color: '#d29922' }}>{monument.confidence}</span>
+            {monument.needsOwnerReview && (
+              <span className="cat-badge" style={{ color: '#d29922' }}>needs owner review</span>
+            )}
+          </div>
           
           <div className="monument-modal-section">
             <p>{monument.explanation}</p>

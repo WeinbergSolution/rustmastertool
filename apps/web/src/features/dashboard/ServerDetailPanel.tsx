@@ -5,6 +5,8 @@ import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api
 import { calculatePulseSummary } from '../../lib/api/retention';
 import { LineChart as LineChartIcon } from 'lucide-react';
 import { useIsMobile } from '../../components/mobile/useIsMobile';
+import { classifyMonument, type MonumentClassification } from '../learn/map-intel/monumentClassification';
+import { MAP_MONUMENTS, MONUMENT_CATEGORIES, type MonumentCategoryId } from '../learn/map-intel/mapIntelData';
 
 interface ServerDetailPanelProps {
   serverId: string;
@@ -30,6 +32,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [isSnapshotsLoading, setIsSnapshotsLoading] = useState(false);
   const [isMapEnlarged, setIsMapEnlarged] = useState(false);
   const [isMonumentsExpanded, setIsMonumentsExpanded] = useState(false);
+  const [selectedMonument, setSelectedMonument] = useState<MonumentClassification | null>(null);
   const isMobile = useIsMobile();
   const mapSectionRef = useRef<HTMLDivElement>(null);
 
@@ -287,11 +290,22 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                     {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
                       <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)' }}>
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          {(isMonumentsExpanded ? details.rust_maps.monuments : details.rust_maps.monuments.slice(0, 5)).map((m: string) => (
-                            <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
-                              {m}
-                            </span>
-                          ))}
+                          {(isMonumentsExpanded ? details.rust_maps.monuments : details.rust_maps.monuments.slice(0, 5)).map((m: string) => {
+                            const cls = classifyMonument(m);
+                            const known = cls.canonicalId !== null;
+                            return (
+                              <button
+                                key={m}
+                                type="button"
+                                onClick={() => setSelectedMonument(cls)}
+                                title={known ? `${cls.category.replace('_', ' ')}${cls.needsOwnerReview ? ' · needs review' : ''}` : 'Not yet classified'}
+                                style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: known ? 'var(--text-primary)' : 'var(--text-muted)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontStyle: known ? 'normal' : 'italic' }}
+                              >
+                                <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: monumentCategoryColor(cls.category), display: 'inline-block', flexShrink: 0 }} />
+                                {m}
+                              </button>
+                            );
+                          })}
                           {!isMonumentsExpanded && details.rust_maps.monuments.length > 5 && (
                             <button 
                               onClick={() => setIsMonumentsExpanded(true)}
@@ -530,6 +544,125 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
            </div>
         </>
       )}
+
+      {selectedMonument && (
+        <MonumentInfoModal classification={selectedMonument} onClose={() => setSelectedMonument(null)} />
+      )}
+    </div>
+  );
+}
+
+const CATEGORY_COLORS: Record<MonumentCategoryId, string> = {
+  safe_zone: '#3fb950',
+  tier_1: '#57ab5a',
+  tier_2: '#4a7a9e',
+  tier_3: '#ce422b',
+  offshore: '#d29922',
+  quarry: '#8b6d3f',
+  roadside: '#6e7681',
+  cave: '#8957e5',
+  tunnel: '#8957e5',
+  infrastructure: '#6e7681',
+  terrain: '#2f81a3',
+  rock_formation: '#a0724a',
+  event: '#db61a2',
+  unknown: '#484f58',
+};
+
+function monumentCategoryColor(category: MonumentCategoryId): string {
+  return CATEGORY_COLORS[category] ?? CATEGORY_COLORS.unknown;
+}
+
+function MonumentInfoModal({ classification, onClose }: { classification: MonumentClassification; onClose: () => void }) {
+  const entry = classification.canonicalId
+    ? MAP_MONUMENTS.find((m) => m.id === classification.canonicalId) ?? null
+    : null;
+  const categoryName =
+    MONUMENT_CATEGORIES.find((c) => c.id === classification.category)?.name ??
+    classification.category.replace('_', ' ');
+  const title = entry?.name ?? classification.rawName;
+  const variantLabel = classification.variant ? classification.variant.replace(/_/g, ' ') : null;
+
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ backgroundColor: 'var(--bg-panel, #1e1e24)', border: '1px solid var(--border-color, rgba(255,255,255,0.1))', borderRadius: '8px', width: '100%', maxWidth: '520px', maxHeight: '85vh', overflowY: 'auto', position: 'relative', color: 'var(--text-primary, #fff)' }}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', background: 'rgba(0,0,0,0.4)', border: 'none', color: '#fff', width: 30, height: 30, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <X size={18} />
+        </button>
+
+        <div style={{ padding: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: monumentCategoryColor(classification.category), flexShrink: 0 }} />
+            <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{title}</h2>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '1rem' }}>
+            <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.08)', padding: '0.2rem 0.55rem', borderRadius: '10px', textTransform: 'capitalize' }}>{categoryName}</span>
+            {variantLabel && (
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.08)', padding: '0.2rem 0.55rem', borderRadius: '10px', textTransform: 'capitalize' }}>{variantLabel}</span>
+            )}
+            <span style={{ fontSize: '0.7rem', background: classification.confidence === 'verified' ? 'rgba(63,185,80,0.15)' : 'rgba(210,153,34,0.15)', color: classification.confidence === 'verified' ? '#3fb950' : '#d29922', padding: '0.2rem 0.55rem', borderRadius: '10px' }}>{classification.confidence}</span>
+            {classification.needsOwnerReview && (
+              <span style={{ fontSize: '0.7rem', background: 'rgba(210,153,34,0.15)', color: '#d29922', padding: '0.2rem 0.55rem', borderRadius: '10px' }}>needs review</span>
+            )}
+          </div>
+
+          {entry ? (
+            <>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary, #c9d1d9)', lineHeight: 1.5, marginTop: 0 }}>{entry.explanation}</p>
+
+              <MonumentSection title="Loot & Progression" body={entry.lootRelevance} />
+              <MonumentSection title="Radiation" body={entry.radiationInfo} />
+
+              {(entry.advantages.length > 0 || entry.disadvantages.length > 0) && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '1rem 0' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.35rem', fontSize: '0.85rem', color: '#3fb950' }}>Advantages</h4>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.82rem', color: 'var(--text-secondary, #a0a0a0)' }}>
+                      {entry.advantages.map((a, i) => <li key={i}>{a}</li>)}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 style={{ margin: '0 0 0.35rem', fontSize: '0.85rem', color: '#ce422b' }}>Disadvantages</h4>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.82rem', color: 'var(--text-secondary, #a0a0a0)' }}>
+                      {entry.disadvantages.map((d, i) => <li key={i}>{d}</li>)}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ background: 'rgba(206,66,43,0.1)', borderLeft: '3px solid #ce422b', padding: '0.75rem', borderRadius: '0 4px 4px 0', marginTop: '0.5rem' }}>
+                <strong style={{ fontSize: '0.8rem', color: '#ce422b' }}>Quick Tip</strong>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary, #e0e0e0)' }}>{entry.quickTip}</p>
+              </div>
+            </>
+          ) : (
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted, #a0a0a0)', lineHeight: 1.5, marginTop: 0 }}>
+              This location isn't classified in Map Intel yet. It's shown here exactly as the server reports it, without any guessed details.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MonumentSection({ title, body }: { title: string; body: string }) {
+  return (
+    <div style={{ marginBottom: '0.85rem' }}>
+      <h4 style={{ margin: '0 0 0.25rem', fontSize: '0.85rem', color: 'var(--text-primary, #fff)' }}>{title}</h4>
+      <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary, #a0a0a0)', lineHeight: 1.5 }}>{body}</p>
     </div>
   );
 }

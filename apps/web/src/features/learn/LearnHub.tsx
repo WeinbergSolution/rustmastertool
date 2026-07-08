@@ -22,7 +22,7 @@ export function LearnHub({ onViewChange }: LearnHubProps) {
       <button className="learn-card" onClick={() => onViewChange('base_blueprints')}>
         <div className="learn-card-icon"><Building size={22} /></div>
         <div className="learn-card-body">
-          <div className="learn-card-title">Base Designs</div>
+          <div className="learn-card-title">Base Blueprints</div>
           <div className="learn-card-desc">Browse base blueprints — solo, trio, clan and bunker layouts with raid cost context.</div>
         </div>
         <ChevronRight size={18} className="learn-card-chevron" />

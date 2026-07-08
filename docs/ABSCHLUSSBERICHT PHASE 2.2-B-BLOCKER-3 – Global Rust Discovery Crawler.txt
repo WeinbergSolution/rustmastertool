@@ -1,0 +1,63 @@
+ABSCHLUSSBERICHT: PHASE 2.2-B-BLOCKER-3 – Global Rust Discovery Crawler
+
+Ich habe die Edge Function server-pulse-ingest wie gefordert auf einen zentralen "Global Discovery"-Ansatz umgerüstet und die Datenbank geprüft. Hier sind die Details:
+
+Strategie & Root Cause
+Root Cause (Alt): Die bisherige Nutzung von filter[search]=official/community/modded führte durch das harte Offset-Limit von 90 auf BattleMetrics dazu, dass niemals mehr als 100-180 Ergebnisse geladen werden konnten. Das ständige Resetten auf Seite 1 war die zwingende Folge.
+Neue URL (Neu): https://api.battlemetrics.com/servers?filter[game]=rust&filter[status]=online&sort=-players&page[size]=100 Diese URL verzichtet auf das kaputte Search-Feld und nutzt sort=-players, was bei BattleMetrics sauberes Keyset-Pagination (page[key]) aktiviert. So können wir theoretisch Zehntausende Online-Server abgrasen.
+Category global: Eingeführt. Die Function erkennt category: 'global' und baut dann die neue URL. Alle alten Kategorien (official, community, modded) sind zwecks Abwärtskompatibilität unberührt geblieben.
+Parameter & Limits
+page_size: Bleibt bei 100. Da wir nun Keyset-Pagination nutzen, ist dies kein Problem mehr.
+maxPages pro Run: Bleibt bei 1. Ein Cron-Lauf = 1 Seite (100 Server).
+max_page_window: Ich empfehle hier 50 (entspricht den Top 5000 Servern). Wir können es aber auch höher drehen, da wir jetzt wirklich tief scrollen können.
+DB State & Cron (Vorbereitet, aber NICHT ausgeführt)
+Ist eine DB Migration nötig? Nein. Ich habe information_schema.columns und pg_constraint geprüft. Es gibt keinen CHECK-Constraint auf die Spalte category. Wir können global einfach per SQL einfügen.
+Vorbereiteter SQL State Reset (Wartet auf dein Gate):
+
+sql
+
+
+INSERT INTO public.server_pulse_scheduler_state (
+  id, category, enabled, interval_minutes, max_pages_per_run,
+  updated_at, current_page, max_page_window, last_reset_at, page_size
+) VALUES (
+  'global', 'global', true, 20, 1,
+  now(), 1, 50, now(), 100
+) ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  enabled = true,
+  page_size = 100,
+  max_page_window = 50,
+  next_page_url = null,
+  current_page = 1,
+  last_reset_at = now(),
+  updated_at = now();
+Vorbereitetes Cron Setup (Wartet auf dein Gate): Wir behalten die drei alten Timeslots (Minuten 05, 25, 45), aber alle rufen global ab. Da sie 20 Minuten auseinander liegen, paginieren sie sauber durch die Liste, ohne Parallel-Konflikte.
+
+sql
+
+
+-- Alte deaktivieren
+select cron.unschedule('server-pulse-official-hourly');
+select cron.unschedule('server-pulse-community-hourly');
+select cron.unschedule('server-pulse-modded-hourly');
+-- Neue anlegen (Platzhalter-Beispiel)
+select cron.schedule('server-pulse-global-05', '5 * * * *', $$ select net.http_post(url:='...', body:='{"mode": "scheduled", "category": "global", "maxPages": 1}'::jsonb) $$);
+select cron.schedule('server-pulse-global-25', '25 * * * *', $$ select net.http_post(url:='...', body:='{"mode": "scheduled", "category": "global", "maxPages": 1}'::jsonb) $$);
+select cron.schedule('server-pulse-global-45', '45 * * * *', $$ select net.http_post(url:='...', body:='{"mode": "scheduled", "category": "global", "maxPages": 1}'::jsonb) $$);
+Rollback-Strategie
+Sollten wir jemals zurück wollen:
+
+SQL: server-pulse-global-* Crons deaktivieren.
+SQL: Die drei alten server-pulse-official-hourly etc. wieder schedulen.
+Die Edge Function Code ist abwärtskompatibel. Die alten Kategorien triggern weiterhin die alte Logik.
+Checks
+Typecheck: SUCCESS
+Build: SUCCESS
+Secret Check: SUCCESS. Keine lokalen .env.local genutzt oder ausgegeben.
+Commit: fix: add global rust server discovery crawler wurde in den Branch gepusht.
+STOP. Warten auf Gates:
+
+CONFIRM PHASE 2.2-B GLOBAL DISCOVERY DB PUSH TO fcmjevwfuwzqtpozwigf
+CONFIRM DEPLOY SERVER PULSE GLOBAL DISCOVERY TO fcmjevwfuwzqtpozwigf
+CONFIRM ENABLE GLOBAL SERVER DISCOVERY CRON ON fcmjevwfuwzqtpozwigf

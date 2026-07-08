@@ -1,0 +1,258 @@
+ABSCHLUSSBERICHT: PHASE 2.2-B-BLOCKER-3 – Global Rust Discovery Crawler
+
+Ich habe die Edge Function server-pulse-ingest wie gefordert auf einen zentralen "Global Discovery"-Ansatz umgerüstet und die Datenbank geprüft. Hier sind die Details:
+
+Strategie & Root Cause
+Root Cause (Alt): Die bisherige Nutzung von filter[search]=official/community/modded führte durch das harte Offset-Limit von 90 auf BattleMetrics dazu, dass niemals mehr als 100-180 Ergebnisse geladen werden konnten. Das ständige Resetten auf Seite 1 war die zwingende Folge.
+Neue URL (Neu): https://api.battlemetrics.com/servers?filter[game]=rust&filter[status]=online&sort=-players&page[size]=100 Diese URL verzichtet auf das kaputte Search-Feld und nutzt sort=-players, was bei BattleMetrics sauberes Keyset-Pagination (page[key]) aktiviert. So können wir theoretisch Zehntausende Online-Server abgrasen.
+Category global: Eingeführt. Die Function erkennt category: 'global' und baut dann die neue URL. Alle alten Kategorien (official, community, modded) sind zwecks Abwärtskompatibilität unberührt geblieben.
+Parameter & Limits
+page_size: Bleibt bei 100. Da wir nun Keyset-Pagination nutzen, ist dies kein Problem mehr.
+maxPages pro Run: Bleibt bei 1. Ein Cron-Lauf = 1 Seite (100 Server).
+max_page_window: Ich empfehle hier 50 (entspricht den Top 5000 Servern). Wir können es aber auch höher drehen, da wir jetzt wirklich tief scrollen können.
+DB State & Cron (Vorbereitet, aber NICHT ausgeführt)
+Ist eine DB Migration nötig? Nein. Ich habe information_schema.columns und pg_constraint geprüft. Es gibt keinen CHECK-Constraint auf die Spalte category. Wir können global einfach per SQL einfügen.
+Vorbereiteter SQL State Reset (Wartet auf dein Gate):
+
+sql
+
+
+INSERT INTO public.server_pulse_scheduler_state (
+  id, category, enabled, interval_minutes, max_pages_per_run,
+  updated_at, current_page, max_page_window, last_reset_at, page_size
+) VALUES (
+  'global', 'global', true, 20, 1,
+  now(), 1, 50, now(), 100
+) ON CONFLICT (id) DO UPDATE SET
+  category = EXCLUDED.category,
+  enabled = true,
+  page_size = 100,
+  max_page_window = 50,
+  next_page_url = null,
+  current_page = 1,
+  last_reset_at = now(),
+  updated_at = now();
+Vorbereitetes Cron Setup (Wartet auf dein Gate): Wir behalten die drei alten Timeslots (Minuten 05, 25, 45), aber alle rufen global ab. Da sie 20 Minuten auseinander liegen, paginieren sie sauber durch die Liste, ohne Parallel-Konflikte.
+
+sql
+
+
+-- Alte deaktivieren
+select cron.unschedule('server-pulse-official-hourly');
+select cron.unschedule('server-pulse-community-hourly');
+select cron.unschedule('server-pulse-modded-hourly');
+-- Neue anlegen (Platzhalter-Beispiel)
+select cron.schedule('server-pulse-global-05', '5 * * * *', $$ select net.http_post(url:='...', body:='{"mode": "scheduled", "category": "global", "maxPages": 1}'::jsonb) $$);
+select cron.schedule('server-pulse-global-25', '25 * * * *', $$ select net.http_post(url:='...', body:='{"mode": "scheduled", "category": "global", "maxPages": 1}'::jsonb) $$);
+select cron.schedule('server-pulse-global-45', '45 * * * *', $$ select net.http_post(url:='...', body:='{"mode": "scheduled", "category": "global", "maxPages": 1}'::jsonb) $$);
+Rollback-Strategie
+Sollten wir jemals zurück wollen:
+
+SQL: server-pulse-global-* Crons deaktivieren.
+SQL: Die drei alten server-pulse-official-hourly etc. wieder schedulen.
+Die Edge Function Code ist abwärtskompatibel. Die alten Kategorien triggern weiterhin die alte Logik.
+Checks
+Typecheck: SUCCESS
+Build: SUCCESS
+Secret Check: SUCCESS. Keine lokalen .env.local genutzt oder ausgegeben.
+Commit: fix: add global rust server discovery crawler wurde in den Branch gepusht.
+STOP. Warten auf Gates:
+
+CONFIRM PHASE 2.2-B GLOBAL DISCOVERY DB PUSH TO fcmjevwfuwzqtpozwigf
+CONFIRM DEPLOY SERVER PULSE GLOBAL DISCOVERY TO fcmjevwfuwzqtpozwigf
+CONFIRM ENABLE GLOBAL SERVER DISCOVERY CRON ON fcmjevwfuwzqtpozwigf
+20:04
+
+
+
+STOP – nicht alle Gates auf einmal.
+
+Die Global-Discovery-Strategie ist fachlich freigegeben, aber wir machen sie gestuft.
+
+Wichtig:
+Der Gate-Name "DB PUSH" ist missverständlich, weil laut Bericht keine Migration nötig ist.
+Es soll kein npx supabase db push ausgeführt werden.
+Stattdessen nur ein gezielter SQL State Upsert für server_pulse_scheduler_state.
+
+Reihenfolge:
+
+GATE 1:
+Global Scheduler State anlegen/resetten.
+
+CONFIRM PHASE 2.2-B GLOBAL DISCOVERY STATE UPSERT TO fcmjevwfuwzqtpozwigf
+
+Erlaubt:
+- Nur INSERT/UPDATE für public.server_pulse_scheduler_state id/category global.
+- page_size = 100
+- max_page_window = 50
+- current_page = 1
+- next_page_url = null
+- enabled = true
+- interval_minutes = 20
+- max_pages_per_run = 1
+
+Nicht erlaubt:
+- Kein npx supabase db push.
+- Keine Migration.
+- Kein Cron ändern.
+- Keine alten Jobs unschedulen.
+- Kein Function Deploy in Gate 1.
+- Keine Secrets lesen/anzeigen.
+
+Nach Gate 1 prüfen:
+select
+  id,
+  category,
+  enabled,
+  current_page,
+  page_size,
+  max_page_window,
+  next_page_url is not null as has_next_page_url,
+  last_reset_at,
+  updated_at
+from public.server_pulse_scheduler_state
+where category = 'global' or id = 'global';
+
+Dann STOP.
+
+GATE 2:
+server-pulse-ingest deployen.
+
+CONFIRM DEPLOY SERVER PULSE GLOBAL DISCOVERY TO fcmjevwfuwzqtpozwigf
+
+Erlaubt:
+- Nur server-pulse-ingest deployen.
+- Kein db push.
+- Kein Cron ändern.
+- Kein base-blueprints deploy.
+- Keine Auth/Vercel/Mobile Änderungen.
+- Keine Secrets lesen/anzeigen.
+
+Nach Gate 2:
+- npx supabase functions list
+- server-pulse-ingest ACTIVE, neue Version deployed.
+- Keine andere Function deployed.
+
+Dann STOP.
+
+GATE 3:
+Einmaligen Global-Discovery-Canary ausführen, ohne Cron umzuschalten.
+
+Wichtig:
+Nutze dieselbe sichere Secret-/Header-Struktur wie die bestehenden Cronjobs.
+Secret-Wert nicht auslesen, nicht anzeigen, nicht loggen.
+Wenn ein manueller One-Time-Call über SQL/net.http_post mit vault.decrypted_secrets möglich ist, vorbereiten und ausführen.
+Wenn nicht möglich, STOP und Owner-Anweisung geben.
+
+Payload:
+{
+  "mode": "scheduled",
+  "category": "global",
+  "maxPages": 1
+}
+
+Nach Canary prüfen:
+
+select
+  category,
+  mode,
+  status,
+  started_at,
+  finished_at,
+  servers_found,
+  errors_count,
+  start_page,
+  end_page,
+  start_page_url is not null as has_start_url,
+  end_next_page_url is not null as has_next_url,
+  note
+from public.server_pulse_ingest_runs
+order by started_at desc
+limit 10;
+
+und:
+
+select
+  category,
+  enabled,
+  current_page,
+  page_size,
+  max_page_window,
+  last_page_processed,
+  next_page_url is not null as has_next_page_url,
+  last_reset_at,
+  updated_at
+from public.server_pulse_scheduler_state
+where category = 'global' or id = 'global';
+
+Erwartung:
+- category = global
+- status = success oder ehrliches partial_success
+- servers_found ca. 100
+- errors_count = 0
+- start_page = 1
+- end_page = 1
+- has_next_url = true
+- current_page = 2
+- has_next_page_url = true
+
+Wenn das nicht erfüllt ist:
+STOP.
+Cron nicht umstellen.
+
+GATE 4:
+Erst nach erfolgreichem Canary Cron umstellen.
+
+CONFIRM ENABLE GLOBAL SERVER DISCOVERY CRON ON fcmjevwfuwzqtpozwigf
+
+Wichtig für Cron SQL:
+- Keine Platzhalter.
+- Kein Secret im Klartext.
+- Reuse der existierenden sicheren net.http_post/vault.decrypted_secrets Struktur.
+- Alte official/community/modded Jobs erst deaktivieren, wenn die global Jobs sauber angelegt wurden.
+- Neue Jobs:
+  - server-pulse-global-05: 5 * * * *
+  - server-pulse-global-25: 25 * * * *
+  - server-pulse-global-45: 45 * * * *
+- Payload jeweils:
+  {"mode":"scheduled","category":"global","maxPages":1}
+
+Nach Cron Gate prüfen:
+select jobid, jobname, schedule, active
+from cron.job
+where jobname like 'server-pulse-%'
+order by jobname;
+
+Erwartung:
+- global jobs active=true
+- alte official/community/modded Jobs nicht mehr active oder entfernt
+
+Abschlussbericht je Gate separat.
+20:09
+
+
+ABSCHLUSSBERICHT: GATE 1 – Global Scheduler State Upsert
+
+Ich habe Gate 1 erfolgreich ausgeführt.
+
+Ausgeführte Aktion: Der server_pulse_scheduler_state für global wurde per SQL (ohne Migration und ohne DB Push) eingefügt bzw. resettet.
+
+Verifizierung (Ergebnis der Prüfung):
+
+json
+
+
+{
+  "id": "global",
+  "category": "global",
+  "enabled": true,
+  "current_page": 1,
+  "page_size": 100,
+  "max_page_window": 50,
+  "has_next_page_url": false,
+  "last_reset_at": "2026-07-07 18:09:50.20254+00",
+  "updated_at": "2026-07-07 18:09:50.20254+00"
+}
+Die Werte entsprechen exakt den Vorgaben.
+
+STOP. Warten auf weiteres Vorgehen für Gate 2.

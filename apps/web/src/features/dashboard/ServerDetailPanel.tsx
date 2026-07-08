@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type CSSProperties } from 'react';
-import { X, ShieldAlert, Activity, Globe, Map as MapIcon, Users, Zap, Loader2, AlertTriangle, Maximize2 } from 'lucide-react';
+import { X, ShieldAlert, Globe, Map as MapIcon, Users, Loader2, AlertTriangle, Maximize2 } from 'lucide-react';
 import { getServerDetails, type BattleMetricsServerDetail } from '../../lib/api/battlemetrics';
 import { getServerSnapshots, type ServerPopulationSnapshot } from '../../lib/api/serverPulse';
 import { calculatePulseSummary } from '../../lib/api/retention';
@@ -142,21 +142,27 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
         <>
           {/* Action Buttons */}
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-            <button 
+              <button 
               onClick={() => {
                 if (!isAuthenticated) {
                   setShowAuthCta('active_server');
                   return;
                 }
-                if (onSetActiveServer) onSetActiveServer(server.id, server.internal_uuid);
+                if (!serverSummary?.internal_uuid) {
+                  alert('You must save this server to your watchlist before setting it as active.');
+                  return;
+                }
+                if (onSetActiveServer) onSetActiveServer(server.id, serverSummary.internal_uuid);
               }}
-              disabled={isActiveServer}
+              disabled={isActiveServer || !serverSummary?.internal_uuid}
+              title={!serverSummary?.internal_uuid ? 'Save this server to your Watchlist first' : ''}
               style={{ 
                 flex: 1, padding: '0.75rem', borderRadius: '4px',
-                cursor: isActiveServer ? 'default' : 'pointer',
+                cursor: isActiveServer || !serverSummary?.internal_uuid ? 'not-allowed' : 'pointer',
                 backgroundColor: isActiveServer ? 'var(--status-success)' : 'var(--accent-rust)',
                 color: '#fff',
                 border: 'none',
+                opacity: !serverSummary?.internal_uuid ? 0.5 : 1,
                 fontWeight: 'bold', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center'
               }}
             >
@@ -250,12 +256,12 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                        </div>
                        
                        {isMapEnlarged && (
-                         <div 
-                           style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
-                           onClick={() => setIsMapEnlarged(false)}
-                         >
-                           <img src={thumbnailUrl} alt="Map Enlarged" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
-                         </div>
+                          <div 
+                            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
+                            onClick={() => setIsMapEnlarged(false)}
+                          >
+                            <img src={thumbnailUrl} alt="Map Enlarged" style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+                          </div>
                        )}
                        {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
                          <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -378,7 +384,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                  if (snapshots.length === 0) {
                    return (
                      <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textAlign: 'center', padding: '1rem' }}>
-                       Pulse monitoring has not collected data for this server yet.
+                       Monitoring is enabled, but no snapshots have been collected for this server yet.
                      </div>
                    );
                  }
@@ -424,14 +430,16 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                         <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 'bold' }}>{predictionText}</span>
                      </div>
 
-                     {(pulse.status === 'ready' || pulse.status === 'insufficient_data') && pulse.earlyPredictionState === 'retention_ready' && (
+                     {(pulse.status === 'ready' || pulse.status === 'insufficient_data' || pulse.snapshotCount > 0) && (
                        <>
-                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                           <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
-                           <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
-                             {pulse.healthLabel}
-                           </span>
-                         </div>
+                         {pulse.earlyPredictionState === 'retention_ready' && (
+                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                             <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
+                             <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
+                               {pulse.healthLabel}
+                             </span>
+                           </div>
+                         )}
   
                          <div style={{ marginTop: '0.5rem' }}>
                            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Population Retention (Wipe Age)</span>
@@ -455,24 +463,16 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                  );
                })()}
              </div>
-          </div>
-
-          <div style={{ marginTop: '2rem' }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--status-warning)' }}>
+           </div>
+           <div style={{ marginTop: '2rem' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-disabled)' }}>
                <ShieldAlert size={16} />
                <span style={{ fontWeight: 'bold' }}>Performance Intel (Gated)</span>
              </div>
-             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.875rem', backgroundColor: 'var(--bg-panel)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)', opacity: 0.7 }}>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                 <span style={{ color: 'var(--text-disabled)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Zap size={14}/> Server FPS</span>
-                 <span style={{ color: 'var(--text-disabled)', fontFamily: 'monospace' }}>{server.details?.fps ? `${server.details.fps} fps` : 'Gated'}</span>
-               </div>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                 <span style={{ color: 'var(--text-disabled)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Activity size={14}/> Entity Count</span>
-                 <span style={{ color: 'var(--text-disabled)', fontFamily: 'monospace' }}>{server.details?.rust_ent_cnt_i?.toLocaleString() || 'Gated'}</span>
-               </div>
+             <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '4px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+               Coming later: FPS/entity/performance signals once map parsing and live telemetry are available.
              </div>
-          </div>
+           </div>
         </>
       )}
     </div>

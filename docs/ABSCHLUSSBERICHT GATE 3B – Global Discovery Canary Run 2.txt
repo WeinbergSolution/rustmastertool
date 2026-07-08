@@ -1,0 +1,26 @@
+ABSCHLUSSBERICHT: GATE 3B – Global Discovery Canary Run 2
+
+Ich habe Canary 3B erfolgreich ausgeführt. Der Run hat bewiesen, dass der gespeicherte Cursor korrekt ausgelesen, angehängt und für die nächste Seite weitergezählt wird. Das Limit von 100-180 Servern ist nun endgültig gebrochen!
+
+Ergebnisse server_pulse_ingest_runs:
+
+Canary 3B ausgeführt: Ja
+Category: global
+Status: success
+Servers found: 100
+Errors count: 0
+Start / End Page: 2 / 2
+Has Next URL: true
+Ergebnisse server_pulse_scheduler_state (NACH dem Run):
+
+Global Current Page: 3
+Global Has Next Page URL: true
+Auswirkungen auf die Datenbank (Wachstum): Die Datenbank-Zeilen sind deutlich gewachsen, da der Crawler nun nicht mehr nur Seite 1 überschreibt, sondern echte, tiefe Server crawlt!
+
+provider_servers (count): 400
+server_population_snapshots (distinct): 399
+server_map_identity (distinct): 398
+Empfehlung:
+
+Gate 4 Cron-Umstellung empfohlen: JA. Der Mechanismus funktioniert absolut reibungslos, iteriert durch die Keysets von BattleMetrics und weitet den Pool stetig aus.
+STOP. Warten auf dein Vorgehen für Gate 4 (Cron Umstellung).

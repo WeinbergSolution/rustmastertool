@@ -221,7 +221,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
           )}
 
           {/* Map Preview MVP */}
-          <div ref={mapSectionRef} style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', scrollMarginTop: '1rem' }}>
+          <div ref={mapSectionRef} style={{ marginBottom: '2rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', scrollMarginTop: '1rem', backgroundColor: 'var(--bg-panel)' }}>
              {(() => {
                 const details = server.details || {};
                 const mapType = mapIdentity?.map_type || (details.map === 'Procedural Map' ? 'procedural' : details.map === 'Barren' ? 'barren' : 'custom');
@@ -233,81 +233,62 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                 const thumbnailUrl = mapIdentity?.rustmaps_thumbnail_url || (hasRustMaps ? details.rust_maps?.thumbnailUrl : null) || serverSummary?.mapThumbnailUrl || serverSummary?.mapImageUrl;
                 const fullImageUrl = mapIdentity?.rustmaps_map_url || (hasRustMaps ? details.rust_maps?.url : null) || serverSummary?.mapImageUrl || thumbnailUrl;
                 const isCustomMap = mapIdentity?.is_custom_map || mapType === 'custom';
-                const mapSeed = mapIdentity?.seed || details.rust_world_seed || serverSummary?.seed || serverSummary?.mapIdentitySeed;
                 const mapSize = mapIdentity?.world_size || details.rust_world_size || serverSummary?.mapSize || serverSummary?.mapIdentitySize;
                 
-                if (isCustomMap && !thumbnailUrl) {
-                   return (
-                     <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
-                       <AlertTriangle size={32} style={{ color: 'var(--status-warning)' }} />
-                       <h4 style={{ margin: 0, color: '#fff' }}>Custom Map</h4>
-                       <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                         Custom map detected. Seed/size may not identify this map.
-                       </p>
-                     </div>
-                   );
-                }
+                const displayUrl = thumbnailUrl || fullImageUrl;
 
-                if (thumbnailUrl) {
-                   return (
-                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                       <div style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111', cursor: 'zoom-in' }} onClick={() => setIsMapEnlarged(true)}>
-                         <img src={thumbnailUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                         <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', ':hover': { opacity: 1 } } as any}>
-                           <Maximize2 size={32} color="#fff" />
-                         </div>
-                         <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', backgroundColor: 'rgba(0,0,0,0.7)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
-                           {mapType === 'barren' ? 'Barren' : 'Procedural Map'} {mapSize ? `· Map Size: ${mapSize}` : ''}
-                         </div>
-                       </div>
-                       
-                       {isMapEnlarged && (
-                          <div 
-                            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
-                            onClick={() => setIsMapEnlarged(false)}
-                          >
-                            <img src={fullImageUrl} alt="Map Enlarged" style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
-                          </div>
-                       )}
-                       {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
-                         <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                           {details.rust_maps.monuments.slice(0, 5).map((m: string) => (
-                             <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
-                               {m}
-                             </span>
-                           ))}
-                           {details.rust_maps.monuments.length > 5 && (
-                             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
-                               +{details.rust_maps.monuments.length - 5} more
-                             </span>
-                           )}
-                         </div>
-                       )}
-                     </div>
-                   );
-                }
-                
-                // Priority 3: Seed+Size placeholder
-                if (mapSeed) {
-                   return (
-                     <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
-                       <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />
-                       <h4 style={{ margin: 0, color: '#fff' }}>{mapSize ? `Map Size: ${mapSize}` : 'Map Preview'}</h4>
-                       <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                         Seed detected. Map preview not cached yet.
-                       </p>
-                     </div>
-                   );
-                }
-
-                // Priority 4: Unavailable placeholder
                 return (
-                   <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', textAlign: 'center' }}>
-                     <MapIcon size={32} style={{ color: 'var(--text-muted)' }} />
-                     <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                       Map data unavailable yet.
-                     </p>
-                   </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div 
+                      style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: '#111', cursor: fullImageUrl ? 'zoom-in' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }} 
+                      onClick={() => fullImageUrl && setIsMapEnlarged(true)}
+                    >
+                      {displayUrl ? (
+                        <img src={displayUrl} alt="Map Thumbnail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        // Radar/Blueprint Placeholder
+                        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)', backgroundSize: '20px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                          {isCustomMap ? <AlertTriangle size={48} style={{ opacity: 0.5, marginBottom: '0.5rem', color: 'var(--status-warning)' }} /> : <MapIcon size={48} style={{ opacity: 0.2, marginBottom: '0.5rem' }} />}
+                          <span style={{ fontSize: '1rem', fontWeight: 'bold', color: isCustomMap ? 'var(--status-warning)' : 'var(--text-muted)' }}>{isCustomMap ? 'Custom Map' : 'Map Pending'}</span>
+                          <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>{isCustomMap ? 'No preview available' : 'Awaiting telemetry'}</span>
+                        </div>
+                      )}
+                      
+                      {fullImageUrl && (
+                        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s', ':hover': { opacity: 1 } } as any}>
+                          <Maximize2 size={32} color="#fff" />
+                        </div>
+                      )}
+                      
+                      <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', backgroundColor: 'rgba(0,0,0,0.7)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', color: '#fff', fontWeight: 'bold' }}>
+                        {mapType === 'barren' ? 'Barren' : mapType === 'custom' ? 'Custom Map' : 'Procedural Map'} {mapSize ? `· Size: ${mapSize}` : ''}
+                      </div>
+                    </div>
+                    
+                    {isMapEnlarged && fullImageUrl && (
+                      <div 
+                        style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out' }}
+                        onClick={() => setIsMapEnlarged(false)}
+                      >
+                        <img src={fullImageUrl} alt="Map Enlarged" style={{ width: 'min(92vw, 1100px)', height: '88vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
+                      </div>
+                    )}
+
+                    {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
+                      <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        {details.rust_maps.monuments.slice(0, 5).map((m: string) => (
+                          <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
+                            {m}
+                          </span>
+                        ))}
+                        {details.rust_maps.monuments.length > 5 && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                            +{details.rust_maps.monuments.length - 5} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 );
              })()}
           </div>
@@ -398,61 +379,103 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                    );
                  }
                  const pulse = calculatePulseSummary(snapshots, server.details?.rust_last_wipe);
-                 
-                 let predictionColor = 'var(--text-muted)';
-                 let predictionText = '';
-                 
-                 switch (pulse.earlyPredictionState) {
-                   case 'first_seen':
-                     predictionText = 'First observation collected.';
-                     break;
-                   case 'collecting':
-                     predictionText = 'Trend collecting.';
-                     break;
-                   case 'early_trend':
-                     predictionText = `Early signal: ${pulse.earlyTrendDirection === 'population_up' ? '📈 Rising' : pulse.earlyTrendDirection === 'population_down' ? '📉 Falling' : '➖ Stable'}. Improves with more snapshots.`;
-                     if (pulse.earlyTrendDirection === 'population_up') predictionColor = 'var(--status-success)';
-                     if (pulse.earlyTrendDirection === 'population_down') predictionColor = 'var(--status-error)';
-                     if (pulse.earlyTrendDirection === 'population_stable') predictionColor = 'var(--status-warning)';
-                     break;
-                   case 'retention_ready':
-                     predictionText = 'Retention ready.';
-                     break;
-                 }
+                  
+                  // Crash Game SVG Chart Calculation
+                  const chronological = [...snapshots].reverse();
+                  const w = 300;
+                  const h = 100;
+                  const minP = Math.min(...chronological.map(s => s.players || 0));
+                  const maxP = Math.max(...chronological.map(s => s.players || 0));
+                  const rangeP = maxP - minP || 1;
+                  
+                  const points = chronological.map((s, i) => {
+                    const x = chronological.length > 1 ? (i / (chronological.length - 1)) * w : w / 2;
+                    const y = h - (((s.players || 0) - minP) / rangeP) * (h - 20) - 10;
+                    return `${x},${y}`;
+                  });
+                  const pathD = `M ${points.join(' L ')}`;
+                  const areaD = `M ${points[0]?.split(',')[0]},${h} L ${points.join(' L ')} L ${points[points.length - 1]?.split(',')[0]},${h} Z`;
+                  
+                  const firstP = chronological[0]?.players || 0;
+                  const lastP = chronological[chronological.length - 1]?.players || 0;
+                  const trendDiff = lastP - firstP;
+                  const isRising = trendDiff >= 0;
+                  const themeColor = isRising ? '#00e676' : '#ff1744'; // Neon green vs Neon red
 
-                 return (
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                       <span style={{ color: 'var(--text-muted)' }}>First seen:</span>
-                       <span style={{ fontWeight: 'bold' }}>{pulse.firstObservedAt ? new Date(pulse.firstObservedAt).toLocaleString() : 'Unknown'}</span>
-                     </div>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                       <span style={{ color: 'var(--text-muted)' }}>Last observed:</span>
-                       <span style={{ fontWeight: 'bold' }}>{pulse.lastObservedAt ? new Date(pulse.lastObservedAt).toLocaleString() : 'Unknown'}</span>
-                     </div>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                       <span style={{ color: 'var(--text-muted)' }}>Snapshots collected:</span>
-                       <span style={{ fontWeight: 'bold' }}>{pulse.snapshotCount}</span>
-                     </div>
-                     
-                     <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-hover)', borderRadius: '4px', borderLeft: `3px solid ${predictionColor}`, marginTop: '0.5rem' }}>
-                        <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 'bold' }}>{predictionText}</span>
-                     </div>
+                  // Retention Helper text
+                  const allRetentionNull = ['h6', 'h12', 'h18', 'h24', 'h30'].every(bucket => pulse.buckets[bucket as keyof typeof pulse.buckets] === null);
 
-                     {(pulse.status === 'ready' || pulse.status === 'insufficient_data' || pulse.snapshotCount > 0) && (
-                       <>
-                         {pulse.earlyPredictionState === 'retention_ready' && (
-                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                             <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
-                             <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
-                               {pulse.healthLabel}
-                             </span>
-                           </div>
-                         )}
-  
-                         <div style={{ marginTop: '0.5rem' }}>
-                           <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>Population Retention (Wipe Age)</span>
-                           <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>First seen:</span>
+                        <span style={{ fontWeight: 'bold' }}>{pulse.firstObservedAt ? new Date(pulse.firstObservedAt).toLocaleString() : 'Unknown'}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Last observed:</span>
+                        <span style={{ fontWeight: 'bold' }}>{pulse.lastObservedAt ? new Date(pulse.lastObservedAt).toLocaleString() : 'Unknown'}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Snapshots collected:</span>
+                        <span style={{ fontWeight: 'bold' }}>{pulse.snapshotCount}</span>
+                      </div>
+                      
+                      {chronological.length > 1 && (
+                        <div style={{ marginTop: '0.5rem', backgroundColor: '#0a0a0a', border: '1px solid #222', borderRadius: '8px', padding: '1rem', position: 'relative', overflow: 'hidden' }}>
+                          <div style={{ position: 'absolute', top: '1rem', left: '1rem', display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Current Trend</span>
+                            <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: themeColor, textShadow: `0 0 10px ${themeColor}88` }}>
+                              {trendDiff > 0 ? '+' : ''}{trendDiff} Players
+                            </span>
+                          </div>
+                          
+                          <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: '100px', display: 'block', marginTop: '1.5rem' }}>
+                            <defs>
+                              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor={themeColor} stopOpacity="0.3" />
+                                <stop offset="100%" stopColor={themeColor} stopOpacity="0.0" />
+                              </linearGradient>
+                            </defs>
+                            <path d={areaD} fill="url(#chartGradient)" />
+                            <path d={pathD} fill="none" stroke={themeColor} strokeWidth="2" style={{ filter: `drop-shadow(0 0 4px ${themeColor})` }} />
+                            
+                            {/* Latest point dot */}
+                            {points.length > 0 && (
+                              <circle 
+                                cx={points[points.length - 1].split(',')[0]} 
+                                cy={points[points.length - 1].split(',')[1]} 
+                                r="4" 
+                                fill={themeColor} 
+                                style={{ filter: `drop-shadow(0 0 6px ${themeColor})` }} 
+                              />
+                            )}
+                          </svg>
+                        </div>
+                      )}
+
+                      {(pulse.status === 'ready' || pulse.status === 'insufficient_data' || pulse.snapshotCount > 0) && (
+                        <>
+                          {pulse.earlyPredictionState === 'retention_ready' && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                              <span style={{ color: 'var(--text-muted)' }}>Health Label:</span>
+                              <span style={{ fontWeight: 'bold', color: pulse.healthLabel === 'Strong Retention' ? 'var(--status-success)' : pulse.healthLabel === 'Moderate Drop' ? 'var(--status-warning)' : pulse.healthLabel === 'Fast Dying' ? 'var(--status-error)' : 'var(--text-muted)' }}>
+                                {pulse.healthLabel}
+                              </span>
+                            </div>
+                          )}
+   
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between' }}>
+                              Population Retention (Wipe Age)
+                            </span>
+                            
+                            {allRetentionNull && (
+                              <div style={{ fontSize: '0.8rem', color: 'var(--status-warning)', marginBottom: '0.75rem', backgroundColor: 'rgba(234, 179, 8, 0.1)', padding: '0.5rem', borderRadius: '4px', borderLeft: '2px solid var(--status-warning)' }}>
+                                No snapshots were recorded during the initial hours after the last wipe. Waiting for next wipe to calculate early retention.
+                              </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                              {['h6', 'h12', 'h18', 'h24', 'h30'].map(bucket => {
                                const val = pulse.buckets[bucket as keyof typeof pulse.buckets];
                                return (

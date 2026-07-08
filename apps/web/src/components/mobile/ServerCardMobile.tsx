@@ -66,6 +66,13 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
     if (onToggleWatch) onToggleWatch();
   };
 
+  const handleOpenMap = (event: React.MouseEvent | React.PointerEvent | React.TouchEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (onOpenMap) onOpenMap();
+    else if (onSelectMap) onSelectMap();
+  };
+
   return (
     <div className="srv-card" onClick={(e) => {
       if ((e.target as HTMLElement).closest('[data-map-action="open-server-map"]')) return;
@@ -114,75 +121,10 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
           {mapThumbnailUrl ? (
             <div style={{ position: 'relative' }}>
               <img src={mapThumbnailUrl} alt="Map" className="srv-card-image" loading="lazy" />
-              {onOpenMap && (
-                <button 
-                  type="button"
-                  className="srv-map-open-btn"
-                  data-map-action="open-server-map"
-                  onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                  onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onTouchStartCapture={(e) => e.stopPropagation()}
-                  style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    zIndex: 10,
-                    backgroundColor: 'var(--status-success)',
-                    color: '#000',
-                    border: 'none',
-                    borderRadius: '50%',
-                    padding: '2px',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                  title="Open parsed server map"
-                  aria-label="Open server map"
-                >
-                  <MapIcon size={12} />
-                </button>
-              )}
             </div>
           ) : (
             <div className="srv-card-image-placeholder" style={{ position: 'relative' }}>
               <ImageIcon size={24} />
-              {onOpenMap && (
-                <button 
-                  type="button"
-                  className="srv-map-open-btn"
-                  data-map-action="open-server-map"
-                  onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                  onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onTouchStartCapture={(e) => e.stopPropagation()}
-                  style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    zIndex: 10,
-                    backgroundColor: 'var(--bg-hover)',
-                    color: 'var(--text-disabled)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '50%',
-                    padding: '2px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                  title="Map data not available yet"
-                  aria-label="Map data not available yet"
-                >
-                  <MapIcon size={12} />
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -206,18 +148,17 @@ export function ServerCardMobile({ server, isWatched, isAuthenticated, onToggleW
         {hasMapData && (
           <button
             type="button"
-            className="srv-map-open-btn"
+            className="srv-map-action"
             data-map-action="open-server-map"
-            onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); if(onOpenMap) onOpenMap(); else if(onSelectMap) onSelectMap(); }}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); if(onOpenMap) onOpenMap(); else if(onSelectMap) onSelectMap(); }}
-            onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            onTouchStartCapture={(e) => e.stopPropagation()}
-            title="Open map preview"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', backgroundColor: 'var(--status-success)', color: '#000', borderRadius: '4px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+            onClick={handleOpenMap}
+            onClickCapture={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            title="Open parsed server map"
+            aria-label="Open parsed server map"
           >
-            <MapIcon size={12} /> Map
+            <MapIcon size={16} /> <span>Map</span>
           </button>
         )}
       </div>

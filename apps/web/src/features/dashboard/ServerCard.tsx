@@ -51,6 +51,12 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
     }
     if (onToggleWatch) onToggleWatch();
   };
+
+  const handleOpenMap = (event: React.MouseEvent | React.PointerEvent | React.TouchEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (onOpenMap) onOpenMap();
+  };
   
   return (
     <div className="server-item" onClick={(e) => {
@@ -100,75 +106,10 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
                 <img src={mapThumbnailUrl} alt="Map Enlarged" style={{ maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }} />
               </div>
             )}
-            {onOpenMap && (
-              <button 
-                type="button"
-                className="srv-map-open-btn"
-                data-map-action="open-server-map"
-                onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStartCapture={(e) => e.stopPropagation()}
-                style={{
-                  position: 'absolute',
-                  top: '-8px',
-                  right: '-8px',
-                  zIndex: 10,
-                  backgroundColor: 'var(--status-success)',
-                  color: '#000',
-                  border: 'none',
-                  borderRadius: '50%',
-                  padding: '6px',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-                title="Open parsed server map"
-                aria-label="Open server map"
-              >
-                <MapIcon size={18} />
-              </button>
-            )}
           </div>
         ) : (
           <div className="srv-card-image-placeholder" style={{ position: 'relative' }}>
             <ImageIcon size={24} />
-            {onOpenMap && (
-              <button 
-                type="button"
-                className="srv-map-open-btn"
-                data-map-action="open-server-map"
-                onClickCapture={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onOpenMap(); }}
-                onPointerDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onMouseDownCapture={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onTouchStartCapture={(e) => e.stopPropagation()}
-                style={{
-                  position: 'absolute',
-                  top: '-8px',
-                  right: '-8px',
-                  zIndex: 10,
-                  backgroundColor: 'var(--bg-hover)',
-                  color: 'var(--text-disabled)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '50%',
-                  padding: '6px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-                title="Map data not available yet"
-                aria-label="Map data not available yet"
-              >
-                <MapIcon size={18} />
-              </button>
-            )}
           </div>
         )}
         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem', textAlign: 'center' }}>
@@ -220,6 +161,22 @@ export function ServerCard({ server, isWatched, isAuthenticated, onToggleWatch, 
         </div>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {onOpenMap && (server.mapThumbnailUrl || server.mapIdentitySeed || server.seed || server.mapIdentitySize || server.mapSize || server.map) && (
+            <button
+              type="button"
+              className="server-card-map-action"
+              data-map-action="open-server-map"
+              title="Open parsed server map"
+              aria-label="Open parsed server map"
+              onClick={handleOpenMap}
+              onClickCapture={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+            >
+              <MapIcon size={20} />
+            </button>
+          )}
           <button 
             onClick={handleSave}
             style={{ 

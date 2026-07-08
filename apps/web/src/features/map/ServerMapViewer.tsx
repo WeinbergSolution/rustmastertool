@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle } from 'lucide-react';
+import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle, ExternalLink, Info } from 'lucide-react';
 import type { ServerCardData } from '../dashboard/ServerCard';
 import { parseServerToMapModel } from './serverMapModel';
 import type { ParsedServerMapModel } from './serverMapModel';
@@ -63,6 +63,8 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
     displayBadge = 'No map image';
   }
 
+  const rustmapsUrl = model.rustmapsViewerUrl;
+
   return (
     <div className="rm-map-viewer-overlay" onClick={onClose}>
       <div className="rm-map-viewer-container" onClick={(e) => e.stopPropagation()}>
@@ -89,12 +91,12 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 {imageStatus === 'loading' && (
                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)' }}>
                     <Loader2 size={32} className="spin" />
-                    <span>Loading map...</span>
+                    <span>Loading map preview...</span>
                   </div>
                 )}
                 <img 
                   src={currentImageSrc} 
-                  alt={`${model.serverName} Map`} 
+                  alt={`${model.serverName} Map Preview`} 
                   className="rm-map-viewer-image" 
                   onLoad={() => setImageStatus('loaded')}
                   onError={handleImageError}
@@ -107,6 +109,30 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 <h3>Map preview could not be loaded.</h3>
                 <p>Source unavailable or blocked.</p>
               </div>
+            )}
+          </div>
+
+          {/* Open on RustMaps (disabled when we cannot build a link) */}
+          <div className="rm-map-viewer-rustmaps-link">
+            {rustmapsUrl ? (
+              <a
+                href={rustmapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rm-map-rustmaps-btn"
+              >
+                <ExternalLink size={16} />
+                Open full map on RustMaps
+              </a>
+            ) : (
+              <span
+                className="rm-map-rustmaps-btn disabled"
+                title="Full RustMaps link requires seed and map size."
+                aria-disabled="true"
+              >
+                <ExternalLink size={16} />
+                Open full map on RustMaps
+              </span>
             )}
           </div>
         </div>
@@ -155,6 +181,13 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 Monument coordinates are not available in the current data source yet. Markers will be enabled after coordinate enrichment.
               </div>
             )}
+
+            <div className="rm-map-note" style={{ background: 'rgba(59, 130, 246, 0.08)', borderLeftColor: 'var(--accent-rust)' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Info size={14} /> Provider Integration
+              </div>
+              Full generated map, coordinates and markers require RustMaps Provider integration.
+            </div>
           </div>
 
           <div className="rm-map-sidebar-section">

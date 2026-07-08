@@ -11,6 +11,8 @@ export type ParsedServerMapModel = {
   imageUrl?: string;
   thumbnailUrl?: string;
   mapSourceBadge: string;
+  /** URL to open the full interactive map on rustmaps.com */
+  rustmapsViewerUrl?: string;
   monumentNames: string[];
   classifiedMonuments: Array<{
     rawName: string;
@@ -55,9 +57,24 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
   
   let mapSourceBadge = 'No map image';
   if (imageUrl) {
-    mapSourceBadge = 'RustMaps image';
+    mapSourceBadge = 'Map preview';
   } else if (thumbnailUrl) {
     mapSourceBadge = 'Map thumbnail preview';
+  }
+
+  // Prefer an explicit RustMaps viewer URL if the data source already carries
+  // one; otherwise construct the canonical seed+size viewer URL. When neither is
+  // available the URL stays undefined and the UI shows a disabled link.
+  const explicitViewerUrl = [
+    server.rustmaps_map_url,
+    server.rustmapsUrl,
+    server.url,
+    server.mapImageUrl,
+  ].find((u): u is string => typeof u === 'string' && u.includes('rustmaps.com/map'));
+
+  let rustmapsViewerUrl: string | undefined = explicitViewerUrl;
+  if (!rustmapsViewerUrl && worldSize && seed) {
+    rustmapsViewerUrl = `https://rustmaps.com/map/${worldSize}_${seed}`;
   }
 
   // Determine layers based on available data
@@ -82,6 +99,7 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
     imageUrl,
     thumbnailUrl,
     mapSourceBadge,
+    rustmapsViewerUrl,
     monumentNames,
     classifiedMonuments,
     coordinateMode,

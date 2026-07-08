@@ -1,73 +1,49 @@
-# Real Server Map Parser Foundation - Report
+# Server Map Viewer — Preview Foundation Honesty Pass
 
-## 1. Branch
-`feature/real-server-map-parser-foundation`
+**Branch:** `feature/real-server-map-parser-foundation` · **Datum:** 2026-07-08
+**Scope:** UI ehrlich als *Preview Foundation* darstellen. **Keine** RustMaps-API-Integration, **keine** Fake-Koordinaten/-Heatmaps, kein DB/Supabase/Auth/env.
 
-## 2. Commit Hash
-(Wird nach dem Push bereitgestellt)
+## Ziel
+Der Viewer zeigt aktuell nur ein RustMaps-Thumbnail/Preview. Die UI darf nicht behaupten, das sei bereits die generierte/geparste Karte. Diese Änderung finalisiert die ehrliche Darstellung.
 
-## 3. Geänderte Dateien
-- `apps/web/src/features/map/mapLayerTypes.ts` (Neu)
-- `apps/web/src/features/map/serverMapModel.ts` (Neu)
-- `apps/web/src/features/map/ServerMapViewer.css` (Neu)
-- `apps/web/src/features/map/ServerMapViewer.tsx` (Neu)
-- `apps/web/src/components/mobile/ServerCardMobile.tsx` (Modifiziert)
-- `apps/web/src/features/dashboard/ServerCard.tsx` (Modifiziert)
-- `apps/web/src/features/dashboard/ServersExplorer.tsx` (Modifiziert)
-- `docs/reviews/real-server-map-parser-foundation-audit.md` (Neu)
+## Geänderte Dateien (Honesty Pass)
+- `apps/web/src/features/map/serverMapModel.ts` — Badge „RustMaps image" → „Map preview"; `rustmapsViewerUrl` (echte `rustmaps_map_url`/`url` bevorzugt, sonst `https://rustmaps.com/map/{size}_{seed}`).
+- `apps/web/src/features/map/mapLayerTypes.ts` — ehrliche Labels; alle Marker-/Heatmap-/Build-/Route-Layer `isFuture: true` + „(Coming later)".
+- `apps/web/src/features/map/ServerMapViewer.tsx` — „Open full map on RustMaps"-Button (aktiv/disabled), Provider-Hinweis, „Map preview"-Copy, Image→Thumbnail-Fallback + Empty-State.
+- `apps/web/src/features/map/ServerMapViewer.css` — Styling für den RustMaps-Button (+ disabled-Variante).
 
-## 4. Welche echten Map-Daten werden genutzt?
-- `mapImageUrl` (rustmaps_map_url)
-- `mapThumbnailUrl` (rustmaps_thumbnail_url) als Fallback
-- `mapType`, `worldSize`, `seed`
-- `isCustomMap`
-- `monumentNames` (Liste an Monumenten zur Kategorisierung und Anzeige)
+## Label-/Copy-Änderungen
+- `Map Image` → **Map Preview**; Beschreibung → „Map preview thumbnail from RustMaps".
+- Badge `RustMaps image` → **Map preview** (Fallback: „Map thumbnail preview" / „No map image").
+- Bild-alt/Loader → „Map Preview" / „Loading map preview…".
+- Empty-State: „Map preview could not be loaded."
 
-## 5. Welche Daten fehlen noch?
-- `monument_coordinates` (Positionen der Monumente)
-- `topology` (Flüsse, Straßen, Gelände)
-- `raw_map_json` oder andere exakte Grid-Daten für Heatmaps / Base-Spots.
+## RustMaps-Link-Verhalten
+- Priorität: vorhandene `rustmaps_map_url` / `rustmapsUrl` / `url` / `mapImageUrl` (nur wenn `rustmaps.com/map`) → **direkt nutzen**.
+- Sonst `worldSize` + `seed` → `https://rustmaps.com/map/{worldSize}_{seed}`.
+- **Wenn seed/size fehlen (und keine URL):** Button wird **disabled** dargestellt mit Tooltip „Full RustMaps link requires seed and map size." (nicht versteckt → ehrlich sichtbar).
 
-## 6. Öffnet das grüne ServerCard-Icon den Map Viewer?
-Ja, das Icon `MapIcon` ist grün (`var(--status-success)`) über dem Map-Thumbnail, sowohl auf Desktop (`ServerCard.tsx`) als auch auf Mobile (`ServerCardMobile.tsx`). Es verwendet `stopPropagation` und verhindert so das versehentliche Öffnen der Server Detail-Ansicht.
+## Provider-Hinweis
+Vorhanden in der Sidebar: „Full generated map, coordinates and markers require RustMaps Provider integration." Zusätzlich Koordinaten-Hinweis: Marker erst nach Coordinate-Enrichment.
 
-## 7. Was zeigt der Map Viewer?
-- Das Header-Feld mit Server-Name, Map-Size, Map-Typ und dem Map-Source-Badge (z.B. "Map thumbnail preview").
-- Das Map-Image (entweder High-Res oder als Fallback das Thumbnail).
-- Ein Empty State Icon und Text, falls keine Image-Daten vorhanden sind.
-- Im Sidebar/Bottom Panel: Layer-Controls, Monument-Liste sowie (falls verfügbar) ein dedizierter Hinweis unter den Layern, dass Koordinaten fehlen.
+## Layer-Zustände (ehrlich)
+- **Aktiv:** Map Preview, Monument List.
+- **Coming later (disabled, `isFuture`):** Monument Markers, Population Heatmap, PvP Death Heatmap, Base Build Spots, Loot Routes.
 
-## 8. Gibt es echte Koordinaten ja/nein?
-**Nein.** Der Parse-Modus `coordinateMode` steht strikt auf `'none'`.
+## Bild-Fallback (robust)
+`imageUrl` → bei `onError` Fallback auf `thumbnailUrl` → sonst Empty-State (kein kaputtes Browser-Image); Loader während des Ladens; ESC/Overlay-Klick schließt.
 
-## 9. Werden Marker angezeigt ja/nein und warum?
-**Nein.** Es werden ausnahmslos keine Marker gerendert, da keine echten Koordinaten in der API/DB-Basis existieren und Fake/Erraten von Koordinaten untersagt ist.
+## Koordinaten / Marker
+- `coordinateMode` strikt `'none'`. **Keine** Marker gerendert. **Keine** Fake-Koordinaten, **keine** Fake-Heatmaps.
 
-## 10. Welche Layer sind aktiv?
-- `map_image` (Das echte Map/Bild der Welt)
-- `monument_list` (Eine Aufzählung der identifizierten Monumente im Panel)
+## Checks
+- `npm run typecheck:web` — **EXIT 0**
+- `npm run build:web` — **EXIT 0** (nur vorbestehende 500-kB-Chunk-Info)
+- `npm run lint --workspace=apps/web` — **EXIT 0** (nur vorbestehende unused-catch-Warnungen; keine aus `features/map/`)
+- `npm run build` (Root) — **existiert nicht** im Repo-Root; nicht improvisiert. Build erfolgt über `build:web`.
 
-## 11. Welche Layer sind future/disabled?
-- `monument_markers` (Braucht echte Koordinaten)
-- `heatmap_population_future` (Coming Later)
-- `heatmap_death_curve_future` (Coming Later)
-- `build_spots_future` (Coming Later)
-- `routes_future` (Coming Later)
-
-## 12. Mobile geprüft?
-Ja, auf Mobile wird CSS `flex-direction: column` und `width: 100%` im Vollbild genutzt. Ein `useInAppBack` blockt den Mobile Back Button sauber ab und schließt stattdessen das Viewer-Modal.
-
-## 13. typecheck/build/lint Ergebnis
-Alle Fehlerfrei (`0 errors, 9 warnings`). 
-
-## 14. Vercel Preview Status
-*(Wird nach dem Push abgefragt und bereitgestellt, da noch nicht committet)*
-
-## 15. Bestätigung:
-- [x] Kein `main` push ohne explizites GO
-- [x] Keine DB Migration
-- [x] Kein Supabase Deploy
-- [x] Keine Auth/Login/env Änderungen
-- [x] Keine Fake-Koordinaten verwendet (strikt blockiert über TS-Logik)
-- [x] Keine Fake-Heatmap
-- [x] Keine untracked Dateien committed (wird per `git add` der konkreten Files gesichert)
+## Bestätigungen
+- Keine RustMaps-API-Integration, kein API-Key, kein Map-Parser, keine Fake-Koordinaten/-Heatmaps.
+- Keine DB/Supabase/Auth/env-Änderung, keine Migration.
+- Keine Map-Intel-Dateien geändert (`apps/web/src/features/learn/map-intel/`, `apps/web/public/map-intel/` unberührt).
+- Kein `main`-Push, kein Force-Push, kein `git add .`, keine `.docx` committet.

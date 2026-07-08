@@ -19,8 +19,8 @@ export interface MapLayerConfig {
 export const MAP_LAYERS: Record<MapLayerId, MapLayerConfig> = {
   map_image: {
     id: 'map_image',
-    label: 'Map Image',
-    description: 'The base generated map image',
+    label: 'Map Preview',
+    description: 'Map preview thumbnail from RustMaps',
     isActive: true,
     isFuture: false,
     requiresCoordinates: false,
@@ -36,9 +36,9 @@ export const MAP_LAYERS: Record<MapLayerId, MapLayerConfig> = {
   monument_markers: {
     id: 'monument_markers',
     label: 'Monument Markers',
-    description: 'Exact locations of monuments plotted on the map',
-    isActive: false, // Default false until coordinates are supported
-    isFuture: false,
+    description: 'Exact monument positions on map (Coming later)',
+    isActive: false,
+    isFuture: true,
     requiresCoordinates: true,
   },
   heatmap_population_future: {

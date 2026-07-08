@@ -3,6 +3,12 @@
 **Branch:** `feature/real-server-map-parser-foundation` · **Datum:** 2026-07-08
 **Scope:** UI ehrlich als *Preview Foundation* darstellen. **Keine** RustMaps-API-Integration, **keine** Fake-Koordinaten/-Heatmaps, kein DB/Supabase/Auth/env.
 
+## Provider Pivot (2026-07-08, nach Owner-Smoke)
+Owner-Smoke ergab: externer RustMaps-Link führte teils 404, und der Mobile-Map-Button öffnete nichts. Owner-Entscheidung: **alles intern in RustMasterTool**, kein externer Redirect.
+- **Externer Redirect entfernt:** Der Button „Open full map on RustMaps" und jegliches `rustmaps.com/map/{size}_{seed}`-URL-Building wurde aus dem Produktcode entfernt. Ersetzt durch eine **interne, disabled CTA** „Generate full map in RustMasterTool" + Hinweis „RustMaps Provider integration required". Kein externer Link mehr im UI, kein 404-Pfad.
+- **Mobile-Map-Bug gefixt:** `ServerMapViewer` wurde im **Mobile-Return-Zweig** von `ServersExplorer` ergänzt (er existierte nur im Desktop-Return → auf Mobile öffnete der Map-Tap nichts).
+- **Provider-ready:** Dieser Branch ist **provider-ready preview only**. Die echte, interne Vollkarte kommt in einer **separaten RustMaps Provider Integration Phase** (server-side API-Key, MapAPIDTO, Bild-URLs, Monument-Koordinaten). In diesem Fix wurde **nichts** davon gebaut (keine Edge Function, keine DB-Tabelle, kein `RUSTMAPS_API_KEY`, kein Polling, kein Cache).
+
 ## Ziel
 Der Viewer zeigt aktuell nur ein RustMaps-Thumbnail/Preview. Die UI darf nicht behaupten, das sei bereits die generierte/geparste Karte. Diese Änderung finalisiert die ehrliche Darstellung.
 

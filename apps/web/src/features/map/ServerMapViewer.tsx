@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle, ExternalLink, Info } from 'lucide-react';
+import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle, Info } from 'lucide-react';
 import type { ServerCardData } from '../dashboard/ServerCard';
 import { parseServerToMapModel } from './serverMapModel';
 import type { ParsedServerMapModel } from './serverMapModel';
@@ -63,8 +63,6 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
     displayBadge = 'No map image';
   }
 
-  const rustmapsUrl = model.rustmapsViewerUrl;
-
   return (
     <div className="rm-map-viewer-overlay" onClick={onClose}>
       <div className="rm-map-viewer-container" onClick={(e) => e.stopPropagation()}>
@@ -112,28 +110,18 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             )}
           </div>
 
-          {/* Open on RustMaps (disabled when we cannot build a link) */}
-          <div className="rm-map-viewer-rustmaps-link">
-            {rustmapsUrl ? (
-              <a
-                href={rustmapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rm-map-rustmaps-btn"
-              >
-                <ExternalLink size={16} />
-                Open full map on RustMaps
-              </a>
-            ) : (
-              <span
-                className="rm-map-rustmaps-btn disabled"
-                title="Full RustMaps link requires seed and map size."
-                aria-disabled="true"
-              >
-                <ExternalLink size={16} />
-                Open full map on RustMaps
-              </span>
-            )}
+          {/* Internal full-map CTA — no external redirect. Unlocks after the
+              RustMaps Provider integration (server-side API key) lands. */}
+          <div className="rm-map-viewer-cta">
+            <span
+              className="rm-map-provider-cta"
+              aria-disabled="true"
+              title="Full generated map will be loaded inside RustMasterTool after RustMaps Provider integration."
+            >
+              <Info size={16} />
+              Generate full map in RustMasterTool
+            </span>
+            <span className="rm-map-provider-cta-note">RustMaps Provider integration required</span>
           </div>
         </div>
 
@@ -178,7 +166,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 <div style={{ fontWeight: 'bold', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                   <AlertTriangle size={14} /> Coordinates Unavailable
                 </div>
-                Monument coordinates are not available in the current data source yet. Markers will be enabled after coordinate enrichment.
+                Markers unlock after RustMaps Provider coordinate enrichment.
               </div>
             )}
 
@@ -186,7 +174,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
               <div style={{ fontWeight: 'bold', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Info size={14} /> Provider Integration
               </div>
-              Full generated map, coordinates and markers require RustMaps Provider integration.
+              Full generated map will be loaded inside RustMasterTool after provider integration. Coordinates and marker layers require RustMaps Provider integration.
             </div>
           </div>
 

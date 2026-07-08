@@ -620,6 +620,13 @@ export function ServersExplorer() {
             initialFocus={detailFocus}
           />
         )}
+
+        {selectedMapServer && (
+          <ServerMapViewer
+            server={selectedMapServer}
+            onClose={() => setSelectedMapServer(null)}
+          />
+        )}
       </>
     );
   }

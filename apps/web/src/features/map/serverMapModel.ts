@@ -11,8 +11,6 @@ export type ParsedServerMapModel = {
   imageUrl?: string;
   thumbnailUrl?: string;
   mapSourceBadge: string;
-  /** URL to open the full interactive map on rustmaps.com */
-  rustmapsViewerUrl?: string;
   monumentNames: string[];
   classifiedMonuments: Array<{
     rawName: string;
@@ -62,20 +60,9 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
     mapSourceBadge = 'Map thumbnail preview';
   }
 
-  // Prefer an explicit RustMaps viewer URL if the data source already carries
-  // one; otherwise construct the canonical seed+size viewer URL. When neither is
-  // available the URL stays undefined and the UI shows a disabled link.
-  const explicitViewerUrl = [
-    server.rustmaps_map_url,
-    server.rustmapsUrl,
-    server.url,
-    server.mapImageUrl,
-  ].find((u): u is string => typeof u === 'string' && u.includes('rustmaps.com/map'));
-
-  let rustmapsViewerUrl: string | undefined = explicitViewerUrl;
-  if (!rustmapsViewerUrl && worldSize && seed) {
-    rustmapsViewerUrl = `https://rustmaps.com/map/${worldSize}_${seed}`;
-  }
+  // NOTE: We intentionally do NOT build an external rustmaps.com viewer URL.
+  // The full interactive map will be loaded inside RustMasterTool once the
+  // RustMaps Provider integration lands (server-side API key + MapAPIDTO).
 
   // Determine layers based on available data
   const availableLayers: MapLayerId[] = ['map_image', 'monument_list'];
@@ -99,7 +86,6 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
     imageUrl,
     thumbnailUrl,
     mapSourceBadge,
-    rustmapsViewerUrl,
     monumentNames,
     classifiedMonuments,
     coordinateMode,

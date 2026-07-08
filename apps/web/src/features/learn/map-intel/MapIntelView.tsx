@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronLeft, Map, ShieldAlert, PlayCircle } from 'lucide-react';
+import { ChevronLeft, Map, PlayCircle } from 'lucide-react';
 import { MAP_MONUMENTS, MONUMENT_CATEGORIES } from './mapIntelData';
 import { DEEP_MONUMENT_DATA } from './mapIntelDeepData';
 import type { DeepMonumentData } from './mapIntelDeepData';
@@ -31,28 +31,55 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
     const merged: MergedMonument[] = [];
     const seenIds = new Set<string>();
 
-    const VIDEO_ALIAS_MAP: Record<string, string[]> = {
+    const VIDEO_OVERRIDES: Record<string, string[]> = {
       bandit_camp: ['https://www.youtube.com/watch?v=IP_JtslXipY', 'https://www.youtube.com/watch?v=7bKCXef5wZk'],
-      military_base: ['https://www.youtube.com/watch?v=CBZ16qttIO4'],
-      cave: ['https://www.youtube.com/watch?v=tiCpirwH_eA'],
-      rock_formation: ['https://www.youtube.com/watch?v=LrBPkQzTZIA'],
-      power_substation: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q']
+      abandoned_military_base: ['https://www.youtube.com/watch?v=CBZ16qttIO4', 'https://www.youtube.com/watch?v=4Rh3A-62CuA'],
+      military_base: ['https://www.youtube.com/watch?v=CBZ16qttIO4', 'https://www.youtube.com/watch?v=4Rh3A-62CuA'],
+      cave: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_small_easy: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_small_medium: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_small_hard: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_medium_easy: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_medium_medium: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_large_medium: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_large_hard: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      cave_large_sewers_hard: ['https://www.youtube.com/watch?v=tiCpirwH_eA', 'https://www.youtube.com/watch?v=pEKyK4xHZdU'],
+      rock_formation: ['https://www.youtube.com/watch?v=LrBPkQzTZIA', 'https://www.youtube.com/watch?v=zc0T6PAAaLM'],
+      rock_formation_tiny_god: ['https://www.youtube.com/watch?v=LrBPkQzTZIA', 'https://www.youtube.com/watch?v=zc0T6PAAaLM'],
+      rock_formation_anvil: ['https://www.youtube.com/watch?v=LrBPkQzTZIA'],
+      rock_formation_medium_god: ['https://www.youtube.com/watch?v=LrBPkQzTZIA'],
+      rock_formation_three_wall: ['https://www.youtube.com/watch?v=zc0T6PAAaLM', 'https://www.youtube.com/watch?v=LrBPkQzTZIA'],
+      rock_formation_large_god: ['https://www.youtube.com/watch?v=LrBPkQzTZIA', 'https://www.youtube.com/watch?v=zc0T6PAAaLM'],
+      power_substation: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q'],
+      power_substation_small: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q'],
+      power_substation_big: ['https://www.youtube.com/watch?v=ZqK2gTdJL9Q']
     };
 
     const HIDDEN_GENERICS = ['military_base', 'cave', 'rock_formation', 'power_substation'];
+
+    // Helper to dedupe and merge videos
+    const getVideos = (id: string, existingVideos?: string[]) => {
+      const overrides = VIDEO_OVERRIDES[id] || [];
+      const baseVids = existingVideos || [];
+      return Array.from(new Set([...baseVids, ...overrides]));
+    };
 
     // 1. Add all Deep Data
     Object.values(DEEP_MONUMENT_DATA).forEach(deepItem => {
       seenIds.add(deepItem.id);
       const baseItem = MAP_MONUMENTS.find(m => m.id === deepItem.id);
+      
+      const vids = getVideos(deepItem.id, deepItem.relatedVideos);
+      const updatedDeepItem = { ...deepItem, relatedVideos: vids };
+
       merged.push({
         id: deepItem.id,
         isDeep: true,
-        deep: deepItem,
+        deep: updatedDeepItem,
         base: baseItem,
         name: deepItem.name,
         categoryId: deepItem.categoryId,
-        needsReview: deepItem.contentQuality.needsOwnerReview
+        needsReview: deepItem.contentQuality?.needsOwnerReview === true
       });
     });
 
@@ -60,17 +87,17 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
     MAP_MONUMENTS.forEach(baseItem => {
       if (!seenIds.has(baseItem.id) && !HIDDEN_GENERICS.includes(baseItem.id)) {
         // Fallback videos for base items
-        const videos = VIDEO_ALIAS_MAP[baseItem.id];
+        const videos = getVideos(baseItem.id);
         
         merged.push({
           id: baseItem.id,
           isDeep: false,
           base: baseItem,
-          deep: videos ? { ...baseItem, relatedVideos: videos } as unknown as DeepMonumentData : undefined, 
+          deep: videos.length > 0 ? { ...baseItem, relatedVideos: videos } as unknown as DeepMonumentData : undefined, 
           // (Hack to pass videos to detail modal without a real DeepMonumentData object)
           name: baseItem.name,
           categoryId: baseItem.categoryId,
-          needsReview: !!baseItem.needsOwnerReview
+          needsReview: baseItem.needsOwnerReview === true
         });
       }
     });
@@ -99,25 +126,22 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
     return dots;
   };
 
-  return (
-    <div className="map-intel-container">
-      {/* Navigation */}
-      <div className="map-intel-nav">
-        <button className="back-btn" onClick={() => onViewChange('learn')}>
-          <ChevronLeft size={20} />
-          <span>Back to Learn</span>
-        </button>
-      </div>
+  const extractYoutubeId = (url: string) => {
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+    return match ? match[1] : null;
+  };
 
-      {/* Hero */}
-      <header className="map-intel-hero">
-        <h1 className="hero-title">Map Intel</h1>
-        <p className="hero-subtitle">Encyclopedia of Rust Monuments</p>
-        <div className="hero-stats">
-          <div className="stat-badge"><Map size={16} /> {allMergedMonuments.length} Locations</div>
-          <div className="stat-badge"><ShieldAlert size={16} /> {Object.keys(DEEP_MONUMENT_DATA).length} Deep Intel</div>
+  return (
+    <div className="map-intel-view">
+      <div className="intel-header">
+        <button className="back-btn" onClick={() => onViewChange('dashboard')}>
+          <ChevronLeft size={20} /> Dashboard
+        </button>
+        <div className="intel-header-info">
+          <h2>Map Intel</h2>
+          <p>Detailed guides, puzzles, and strategies for {allMergedMonuments.length} locations.</p>
         </div>
-      </header>
+      </div>
 
       {/* Category Filters */}
       <div className="category-filters">
@@ -146,6 +170,7 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
           const dots = getPuzzleDots(monument);
           const iconSrc = monument.isDeep && monument.deep?.imageUrl ? `/map-intel/${monument.deep.imageUrl}` : null;
           const videos = monument.deep?.relatedVideos || [];
+          const firstVideoId = videos.length > 0 ? extractYoutubeId(videos[0]) : null;
           
           return (
             <div 
@@ -154,8 +179,10 @@ export function MapIntelView({ onViewChange }: MapIntelViewProps) {
               data-category={monument.categoryId}
               onClick={() => setSelectedMonument(monument)}
             >
-              {iconSrc ? (
-                <img src={iconSrc} alt="" className="asset-tile-bg-svg" />
+              {firstVideoId ? (
+                <img src={`https://img.youtube.com/vi/${firstVideoId}/hqdefault.jpg`} alt="Video Thumbnail" className="asset-tile-bg-thumb" />
+              ) : iconSrc ? (
+                <img src={iconSrc} alt="" className="asset-tile-bg-svg-center" />
               ) : (
                 <div className="asset-tile-bg-fallback"><Map size={120} /></div>
               )}

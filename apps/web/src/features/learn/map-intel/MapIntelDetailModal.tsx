@@ -16,7 +16,7 @@ export function MapIntelDetailModal({ deep, base, onClose }: MapIntelDetailModal
   const name = deep?.name || base?.name || '';
   const categoryId = deep?.categoryId || base?.categoryId || '';
   const confidence = deep?.confidence || base?.confidence || 'uncertain';
-  const needsReview = deep ? deep.contentQuality.needsOwnerReview : base?.needsOwnerReview;
+  const needsReview = deep ? deep.contentQuality?.needsOwnerReview === true : base?.needsOwnerReview === true;
   const categoryName = MONUMENT_CATEGORIES.find(c => c.id === categoryId)?.name || 'Unknown';
 
   useEffect(() => {

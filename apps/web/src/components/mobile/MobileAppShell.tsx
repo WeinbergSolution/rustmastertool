@@ -3,6 +3,7 @@ import { MobileTopBar } from './MobileTopBar';
 import { MobileBottomNav, type MobileTab } from './MobileBottomNav';
 import { MobileMoreSheet } from './MobileMoreSheet';
 import { useInAppBack } from './useInAppBack';
+import { useMobileTabSwipe } from './useMobileTabSwipe';
 import type { ViewState } from '../AppShell';
 
 interface MobileAppShellProps {
@@ -55,6 +56,13 @@ export function MobileAppShell({ currentView, onViewChange, children }: MobileAp
       case 'learn': onViewChange('learn'); break;
     }
   };
+
+  useMobileTabSwipe({
+    currentTab: activeTab,
+    onTabChange: handleTabSelect,
+    // Disable swipe if the "More" sheet is open or if we are currently in a "More" view
+    enabled: !moreOpen && activeTab !== 'more'
+  });
 
   return (
     <div className="mobile-shell">

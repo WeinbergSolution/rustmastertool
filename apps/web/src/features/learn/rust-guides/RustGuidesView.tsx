@@ -140,7 +140,7 @@ export function RustGuidesView({ onViewChange }: RustGuidesViewProps) {
 
       {/* Video Modal */}
       {activeVideoId && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="video-modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', position: 'relative', padding: '1rem' }}>
             <button
               onClick={() => setActiveVideoId(null)}

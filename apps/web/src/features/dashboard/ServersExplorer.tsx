@@ -382,7 +382,7 @@ export function ServersExplorer() {
             
             <div style={{ marginTop: '0.5rem' }}>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Sort By</label>
-              <select className="rm-select mobile" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)} style={{ width: '100%', padding: '0.75rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}>
                 <option value="players_desc">Players: High to Low</option>
                 <option value="players_asc">Players: Low to High</option>
                 <option value="fill_desc">Fill Rate: High to Low</option>
@@ -394,7 +394,7 @@ export function ServersExplorer() {
 
             <div style={{ marginTop: '0.5rem' }}>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Minimum Players</label>
-              <select className="rm-select mobile" value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+              <select value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })} style={{ width: '100%', padding: '0.75rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}>
                 <option value="any">Any</option>
                 <option value="100">100+</option>
                 <option value="200">200+</option>
@@ -447,7 +447,7 @@ export function ServersExplorer() {
 
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Server Mode <span style={{ fontSize: '0.7rem', color: 'var(--text-disabled)', fontWeight: 400 }}>(Name/tag based)</span></label>
-                  <select className="rm-select mobile" value={filters.mode === null ? 'any' : filters.mode} onChange={e => setFilters({ ...filters, mode: e.target.value === 'any' ? null : e.target.value as any })}>
+                  <select value={filters.mode === null ? 'any' : filters.mode} onChange={e => setFilters({ ...filters, mode: e.target.value === 'any' ? null : e.target.value as any })} style={{ width: '100%', padding: '0.75rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}>
                      <option value="any">Any Mode</option>
                      <option value="vanilla">Vanilla</option>
                      <option value="pve">PvE</option>
@@ -460,7 +460,7 @@ export function ServersExplorer() {
 
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>Country <span style={{ fontSize: '0.7rem', color: 'var(--text-disabled)', fontWeight: 400 }}>(Scanned only)</span></label>
-                  <select className="rm-select mobile" value={filters.country === null ? 'any' : filters.country} onChange={e => setFilters({ ...filters, country: e.target.value === 'any' ? null : e.target.value })}>
+                  <select value={filters.country === null ? 'any' : filters.country} onChange={e => setFilters({ ...filters, country: e.target.value === 'any' ? null : e.target.value })} style={{ width: '100%', padding: '0.75rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}>
                      <option value="any">Any Country</option>
                      {Array.from(new Set(rawServers.map(s => s.country).filter(Boolean))).sort().map(c => (
                         <option key={c} value={c as string}>{c as string}</option>
@@ -579,7 +579,7 @@ export function ServersExplorer() {
                
                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sort:</label>
-                 <select className="rm-select" value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}>
+                 <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)} style={{ padding: '0.25rem 0.5rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.75rem' }}>
                    <option value="players_desc">Players: High to Low</option>
                    <option value="players_asc">Players: Low to High</option>
                    <option value="fill_desc">Fill Rate: High to Low</option>
@@ -591,7 +591,7 @@ export function ServersExplorer() {
 
                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Min Players:</label>
-                 <select className="rm-select" value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })}>
+                 <select value={filters.minPlayers === null ? 'any' : filters.minPlayers} onChange={e => setFilters({ ...filters, minPlayers: e.target.value === 'any' ? null : parseInt(e.target.value, 10) })} style={{ padding: '0.25rem 0.5rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.75rem' }}>
                    <option value="any">Any</option>
                    <option value="100">100+</option>
                    <option value="200">200+</option>
@@ -643,7 +643,7 @@ export function ServersExplorer() {
                       </label>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Mode <span style={{ fontSize: '0.65rem' }}>(Name/tag based)</span>:</label>
-                        <select className="rm-select" value={filters.mode === null ? 'any' : filters.mode} onChange={e => setFilters({ ...filters, mode: e.target.value === 'any' ? null : e.target.value as any })}>
+                        <select value={filters.mode === null ? 'any' : filters.mode} onChange={e => setFilters({ ...filters, mode: e.target.value === 'any' ? null : e.target.value as any })} style={{ padding: '0.25rem 0.5rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.75rem' }}>
                            <option value="any">Any</option>
                            <option value="vanilla">Vanilla</option>
                            <option value="pve">PvE</option>
@@ -655,7 +655,7 @@ export function ServersExplorer() {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Country <span style={{ fontSize: '0.65rem' }}>(Scanned only)</span>:</label>
-                        <select className="rm-select" value={filters.country === null ? 'any' : filters.country} onChange={e => setFilters({ ...filters, country: e.target.value === 'any' ? null : e.target.value })}>
+                        <select value={filters.country === null ? 'any' : filters.country} onChange={e => setFilters({ ...filters, country: e.target.value === 'any' ? null : e.target.value })} style={{ padding: '0.25rem 0.5rem', backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', fontSize: '0.75rem' }}>
                            <option value="any">Any</option>
                            {Array.from(new Set(rawServers.map(s => s.country).filter(Boolean))).sort().map(c => (
                               <option key={c} value={c as string}>{c as string}</option>

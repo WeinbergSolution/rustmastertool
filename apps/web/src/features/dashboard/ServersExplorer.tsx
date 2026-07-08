@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
 import { Search, AlertTriangle, Loader2, Filter, HelpCircle, Lock, Bookmark, MapPin } from 'lucide-react';
@@ -42,6 +42,13 @@ export function ServersExplorer() {
   const isMobile = useIsMobile();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [detailFocus, setDetailFocus] = useState<'map' | null>(null);
+
+  const TARGET_VISIBLE_RESULTS = 25;
+  const MAX_FILTER_SCAN_PAGES = 10;
+  const MAX_FILTER_SCAN_RESULTS = 500;
+  const [isAutoScanning, setIsAutoScanning] = useState(false);
+  const pagesScannedRef = useRef(0);
+  const currentScanIdRef = useRef<number>(0);
 
   // Mobile browser Back closes the filter sheet / server detail before leaving.
   useInAppBack({ open: filtersOpen, onClose: () => setFiltersOpen(false), enabled: isMobile });
@@ -102,20 +109,25 @@ export function ServersExplorer() {
     };
   }, [status, user]);
 
-  const fetchServers = async (isLoadMore = false, overrideQuery?: string) => {
+  const fetchServers = async (isLoadMore = false, overrideQuery?: string, isAutoScan = false) => {
     const queryToUse = overrideQuery !== undefined ? overrideQuery : searchQuery;
+    const scanId = Date.now();
+    currentScanIdRef.current = scanId;
+
     if (!isLoadMore) {
       setIsSearching(true);
       setSearchError(null);
       setHasSearched(true);
       setServers([]);
+      pagesScannedRef.current = 0;
     } else {
-      setIsLoadingMore(true);
+      if (isAutoScan) setIsAutoScanning(true);
+      else setIsLoadingMore(true);
     }
 
     try {
       const options: any = {
-        pageSize: 25,
+        pageSize: 50,
         rustType: (activeTab === 'official' || activeTab === 'community' || activeTab === 'modded') ? activeTab : undefined,
       };
 
@@ -126,10 +138,22 @@ export function ServersExplorer() {
       }
 
       const response = await searchServers(options);
+      if (currentScanIdRef.current !== scanId) return;
+
       const enrichedData = await enrichServerSummariesWithMapIdentity(response.data);
+      if (currentScanIdRef.current !== scanId) return;
       
       if (isLoadMore) {
-        setServers(prev => [...prev, ...enrichedData]);
+        setServers(prev => {
+           const newServers = [...prev];
+           for (const s of enrichedData) {
+             if (!newServers.some(existing => existing.id === s.id)) {
+               newServers.push(s);
+             }
+           }
+           return newServers;
+        });
+        pagesScannedRef.current += 1;
       } else {
         setServers(enrichedData);
       }
@@ -137,11 +161,16 @@ export function ServersExplorer() {
       setNextPageUrl(response.links?.next || null);
 
     } catch (err: any) {
-      setSearchError(err.message || 'Failed to search servers');
-      if (!isLoadMore) setServers([]);
+      if (currentScanIdRef.current === scanId) {
+        setSearchError(err.message || 'Failed to search servers');
+        if (!isLoadMore) setServers([]);
+      }
     } finally {
-      setIsSearching(false);
-      setIsLoadingMore(false);
+      if (currentScanIdRef.current === scanId) {
+        setIsSearching(false);
+        setIsLoadingMore(false);
+        setIsAutoScanning(false);
+      }
     }
   };
 
@@ -216,6 +245,24 @@ export function ServersExplorer() {
     });
   };
 
+  const hasActiveFilters = filters.hideEmpty || filters.hideFull || filters.hasQueue || filters.hasMapThumbnail || (filters.monuments && filters.monuments.length > 0);
+
+  useEffect(() => {
+    if (activeTab === 'saved') return;
+    if (!hasActiveFilters) return;
+    if (isSearching || isLoadingMore || isAutoScanning) return;
+    if (!nextPageUrl) return;
+    
+    if (
+      visibleServers.length < TARGET_VISIBLE_RESULTS &&
+      rawServers.length < MAX_FILTER_SCAN_RESULTS &&
+      pagesScannedRef.current < MAX_FILTER_SCAN_PAGES
+    ) {
+      fetchServers(true, undefined, true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleServers.length, hasActiveFilters, isSearching, isLoadingMore, isAutoScanning, nextPageUrl, activeTab, rawServers.length]);
+
   // ---- Mobile presentation (2.2-C). Same state & handlers; different layout only. ----
   if (isMobile) {
     return (
@@ -260,6 +307,13 @@ export function ServersExplorer() {
             </div>
           )}
 
+          {isAutoScanning && (
+            <div className="mobile-restore-banner" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)', border: '1px dashed var(--border-color)' }}>
+              <Loader2 size={14} className="spin" />
+              <span>Expanding search because filters reduced the result set...</span>
+            </div>
+          )}
+
           {activeTab === 'saved' && status !== 'authenticated' ? (
             <div className="mobile-servers-state">
               <Bookmark size={28} style={{ opacity: 0.3 }} />
@@ -271,8 +325,8 @@ export function ServersExplorer() {
             <div className="mobile-servers-state mobile-servers-state--error">
               <AlertTriangle size={26} /><strong>Search failed</strong><span>{searchError}</span>
             </div>
-          ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 ? (
-            <div className="mobile-servers-state">No servers found. Try adjusting your filters.</div>
+          ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 && !isAutoScanning && !isSearching && !isLoadingMore ? (
+            <div className="mobile-servers-state">No matching servers found after scanning {rawServers.length} loaded servers. Try relaxing your filters.</div>
           ) : visibleServers.length > 0 ? (
             <div className="mobile-servers-list">
               {visibleServers.map(server => (
@@ -486,10 +540,17 @@ export function ServersExplorer() {
             </div>
             
             <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'transparent', border: '1px dashed var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-disabled)', marginLeft: 'auto' }}>
-               <HelpCircle size={12} /> {visibleServers.length} shown / {rawServers.length} loaded / {serversWithMapIntel} with map intel
+               <HelpCircle size={12} /> {visibleServers.length} shown / {rawServers.length} scanned / {serversWithMapIntel} with map intel
             </div>
           </div>
         </div>
+
+        {isAutoScanning && (
+          <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-hover)', color: 'var(--text-secondary)', border: '1px dashed var(--border-color)', borderRadius: '4px', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+             <Loader2 size={16} className="spin" />
+             <span>Expanding search because filters reduced the result set...</span>
+          </div>
+        )}
 
         {/* Results */}
         {activeTab === 'saved' && status !== 'authenticated' ? (
@@ -508,9 +569,9 @@ export function ServersExplorer() {
             <strong>Search Failed</strong>
             <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>{searchError}</p>
           </div>
-        ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 ? (
+        ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 && !isAutoScanning && !isSearching && !isLoadingMore ? (
           <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
-            No servers found. Try adjusting your filters.
+            No matching servers found after scanning {rawServers.length} loaded servers. Try relaxing your filters.
           </div>
         ) : visibleServers.length > 0 ? (
           <div className="server-list" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

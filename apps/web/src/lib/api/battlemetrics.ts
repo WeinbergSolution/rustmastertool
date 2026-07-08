@@ -42,10 +42,11 @@ export interface BattleMetricsSearchResponse {
 
 export interface SearchOptions {
   query?: string
-  pageSize?: number
-  rustType?: string
-  sort?: string
+  limit?: number
   nextUrl?: string
+  status?: string
+  rustType?: 'official' | 'community' | 'modded'
+  pageSize?: number
 }
 
 export interface BattleMetricsApiError {

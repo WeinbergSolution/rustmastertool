@@ -442,14 +442,14 @@ html, body {
 .bottom-sheet {
   width: 100%;
   max-width: 640px;
-  max-height: 85vh;
+  max-height: calc(100dvh - 15vh - env(safe-area-inset-bottom));
   overflow-y: auto;
   background-color: var(--bg-panel);
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border: 1px solid var(--border-color);
   border-bottom: none;
-  padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  padding: 0.5rem 1rem calc(72px + env(safe-area-inset-bottom) + 16px);
   animation: rmSheetUp 0.2s ease;
 }
 .bottom-sheet-grabber {

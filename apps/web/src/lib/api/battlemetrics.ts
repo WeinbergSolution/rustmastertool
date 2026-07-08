@@ -25,6 +25,7 @@ export interface BattleMetricsServerSummary {
   mapIdentitySize?: number | null
   mapType?: string | null
   isCustomMap?: boolean | null
+  monumentNames?: string[] | null
 }
 
 export interface BattleMetricsServerDetail extends BattleMetricsServerSummary {

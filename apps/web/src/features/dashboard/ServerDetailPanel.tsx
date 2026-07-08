@@ -29,6 +29,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [snapshots, setSnapshots] = useState<ServerPopulationSnapshot[]>([]);
   const [isSnapshotsLoading, setIsSnapshotsLoading] = useState(false);
   const [isMapEnlarged, setIsMapEnlarged] = useState(false);
+  const [isMonumentsExpanded, setIsMonumentsExpanded] = useState(false);
   const isMobile = useIsMobile();
   const mapSectionRef = useRef<HTMLDivElement>(null);
 
@@ -284,17 +285,30 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                     )}
 
                     {details.rust_maps?.monuments && details.rust_maps.monuments.length > 0 && (
-                      <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        {details.rust_maps.monuments.slice(0, 5).map((m: string) => (
-                          <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
-                            {m}
-                          </span>
-                        ))}
-                        {details.rust_maps.monuments.length > 5 && (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
-                            +{details.rust_maps.monuments.length - 5} more
-                          </span>
-                        )}
+                      <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-panel)', borderTop: '1px solid var(--border-color)' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          {(isMonumentsExpanded ? details.rust_maps.monuments : details.rust_maps.monuments.slice(0, 5)).map((m: string) => (
+                            <span key={m} style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--text-primary)' }}>
+                              {m}
+                            </span>
+                          ))}
+                          {!isMonumentsExpanded && details.rust_maps.monuments.length > 5 && (
+                            <button 
+                              onClick={() => setIsMonumentsExpanded(true)}
+                              style={{ fontSize: '0.75rem', color: 'var(--text-muted)', backgroundColor: 'transparent', border: '1px dashed var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            >
+                              +{details.rust_maps.monuments.length - 5} more
+                            </button>
+                          )}
+                          {isMonumentsExpanded && details.rust_maps.monuments.length > 5 && (
+                            <button 
+                              onClick={() => setIsMonumentsExpanded(false)}
+                              style={{ fontSize: '0.75rem', color: 'var(--text-muted)', backgroundColor: 'transparent', border: 'none', padding: '0.25rem 0.5rem', cursor: 'pointer', textDecoration: 'underline' }}
+                            >
+                              Show less
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

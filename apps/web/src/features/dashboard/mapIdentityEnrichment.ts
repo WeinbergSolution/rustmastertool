@@ -11,7 +11,7 @@ export async function enrichServerSummariesWithMapIdentity(
   try {
     const { data, error } = await supabase
       .from('server_map_identity')
-      .select('battlemetrics_server_id, rustmaps_thumbnail_url, rustmaps_map_url, seed, world_size, map_type, is_custom_map, created_at')
+      .select('battlemetrics_server_id, rustmaps_thumbnail_url, rustmaps_map_url, seed, world_size, map_type, is_custom_map, monument_names, created_at')
       .in('battlemetrics_server_id', serverIds)
       .order('created_at', { ascending: false });
 
@@ -44,6 +44,7 @@ export async function enrichServerSummariesWithMapIdentity(
         mapIdentitySize: identity.world_size,
         mapType: identity.map_type,
         isCustomMap: identity.is_custom_map,
+        monumentNames: identity.monument_names,
       };
     });
   } catch (err) {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ServerCard } from './ServerCard';
 import { ServerDetailPanel } from './ServerDetailPanel';
-import { Search, AlertTriangle, Loader2, Filter, HelpCircle, Lock, Bookmark } from 'lucide-react';
+import { Search, AlertTriangle, Loader2, Filter, HelpCircle, Lock, Bookmark, MapPin } from 'lucide-react';
 import { searchServers, type BattleMetricsServerSummary } from '../../lib/api/battlemetrics';
 import { useAuth } from '../../lib/auth/useAuth';
 import { watchlistRepository } from '../../lib/data/watchlistRepository';
@@ -12,6 +12,7 @@ import { ServerCardMobile } from '../../components/mobile/ServerCardMobile';
 import { BottomSheet } from '../../components/mobile/BottomSheet';
 import { enrichServerSummariesWithMapIdentity } from './mapIdentityEnrichment';
 import { type ServerFilters, defaultFilters, applyClientFilters } from './serverFilters';
+import { MONUMENTS } from './monumentFilters';
 
 type TabType = 'official' | 'community' | 'modded' | 'saved' | 'history';
 
@@ -202,6 +203,18 @@ export function ServersExplorer() {
 
   const rawServers = activeTab === 'saved' ? watchedServers : servers;
   const visibleServers = useMemo(() => applyClientFilters(rawServers, filters), [rawServers, filters]);
+  const serversWithMapIntel = useMemo(() => rawServers.filter(s => s.monumentNames && s.monumentNames.length > 0).length, [rawServers]);
+
+  const toggleMonumentFilter = (monumentId: string) => {
+    setFilters(prev => {
+      const current = prev.monuments || [];
+      if (current.includes(monumentId)) {
+        return { ...prev, monuments: current.filter(id => id !== monumentId) };
+      } else {
+        return { ...prev, monuments: [...current, monumentId] };
+      }
+    });
+  };
 
   // ---- Mobile presentation (2.2-C). Same state & handlers; different layout only. ----
   if (isMobile) {
@@ -236,8 +249,9 @@ export function ServersExplorer() {
           <div className="mobile-servers-toolbar">
             <button className="mobile-filter-btn" onClick={() => setFiltersOpen(true)}>
               <Filter size={14} /> Filters
+              {filters.monuments.length > 0 && <span style={{ marginLeft: '4px', background: 'var(--accent-rust)', color: '#fff', borderRadius: '50%', padding: '0 4px', fontSize: '10px' }}>{filters.monuments.length}</span>}
             </button>
-            {visibleServers.length > 0 && <span className="mobile-servers-count">{visibleServers.length} shown ({rawServers.length} loaded)</span>}
+            {rawServers.length > 0 && <span className="mobile-servers-count">{visibleServers.length} shown / {rawServers.length} loaded / {serversWithMapIntel} with map intel</span>}
           </div>
 
           {pendingActionMsg && status === 'authenticated' && (
@@ -310,6 +324,34 @@ export function ServersExplorer() {
               Has Map Thumbnail
             </label>
           </div>
+          
+          <div style={{ padding: '0 0 1rem 0' }}>
+            <div style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={14} /> Monuments Filter</div>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Applies to loaded servers with known map intel.</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {MONUMENTS.filter(m => ['launch_site', 'power_plant', 'military_tunnels', 'train_yard', 'airfield', 'water_treatment', 'large_oil_rig', 'small_oil_rig', 'excavator', 'outpost'].includes(m.id)).map(mon => {
+                const isActive = filters.monuments?.includes(mon.id);
+                return (
+                  <button
+                    key={mon.id}
+                    onClick={() => toggleMonumentFilter(mon.id)}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '16px',
+                      fontSize: '0.75rem',
+                      border: `1px solid ${isActive ? 'var(--accent-rust)' : 'var(--border-color)'}`,
+                      backgroundColor: isActive ? 'rgba(205, 65, 43, 0.1)' : 'transparent',
+                      color: isActive ? 'var(--accent-rust)' : 'var(--text-primary)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {mon.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <hr style={{ borderColor: 'var(--border-color)', margin: '1rem 0' }}/>
           <p className="mobile-filters-note">
             Advanced backend filters (region, wipe schedule, map size) are coming soon.
@@ -415,8 +457,36 @@ export function ServersExplorer() {
               Has Map Thumbnail
             </label>
             
+            <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--border-color)', margin: '0 0.5rem' }}></div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><MapPin size={12}/> Monuments:</span>
+              <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                {MONUMENTS.filter(m => ['launch_site', 'power_plant', 'military_tunnels', 'train_yard', 'airfield', 'water_treatment', 'large_oil_rig', 'small_oil_rig', 'excavator', 'outpost'].includes(m.id)).map(mon => {
+                  const isActive = filters.monuments?.includes(mon.id);
+                  return (
+                    <button
+                      key={mon.id}
+                      onClick={() => toggleMonumentFilter(mon.id)}
+                      style={{
+                        padding: '0.15rem 0.5rem',
+                        borderRadius: '12px',
+                        fontSize: '0.7rem',
+                        border: `1px solid ${isActive ? 'var(--accent-rust)' : 'var(--border-color)'}`,
+                        backgroundColor: isActive ? 'rgba(205, 65, 43, 0.1)' : 'var(--bg-panel)',
+                        color: isActive ? 'var(--accent-rust)' : 'var(--text-secondary)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {mon.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
             <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'transparent', border: '1px dashed var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-disabled)', marginLeft: 'auto' }}>
-               <HelpCircle size={12} /> Client-side filters on loaded results.
+               <HelpCircle size={12} /> {visibleServers.length} shown / {rawServers.length} loaded / {serversWithMapIntel} with map intel
             </div>
           </div>
         </div>

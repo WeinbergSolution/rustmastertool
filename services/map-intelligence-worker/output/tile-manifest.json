@@ -1,0 +1,22 @@
+{
+  "modelVersion": "resource-density-v0.2",
+  "renderVersion": "v1.0",
+  "tileVersion": "v1.0",
+  "tileSize": 256,
+  "minZoom": 0,
+  "maxZoom": 2,
+  "resources": [
+    "generic-node-density",
+    "stone-potential",
+    "sulfur-potential",
+    "metal-ore-potential"
+  ],
+  "styles": [
+    "overlay"
+  ],
+  "tilePathTemplate": "tiles/{modelVersion}/{style}/{resource}/{z}/{x}/{y}.png",
+  "generatedTileCount": 84,
+  "generatedAt": "2026-07-09T23:09:14.4653097Z",
+  "cacheKey": "map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0",
+  "claimPolicy": "estimated density, not exact spawn positions"
+}

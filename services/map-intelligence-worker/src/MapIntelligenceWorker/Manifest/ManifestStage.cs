@@ -14,7 +14,12 @@ namespace MapIntelligenceWorker.Manifest
             string modelVersion,
             string renderVersion,
             List<string> generatedFiles,
-            string outDir) 
+            string outDir,
+            string tileManifestPath,
+            string tilePathTemplate,
+            int tileMinZoom,
+            int tileMaxZoom,
+            int generatedTileCount) 
         {
             Console.WriteLine($"[ManifestStage] Generating Manifest");
             
@@ -30,6 +35,17 @@ namespace MapIntelligenceWorker.Manifest
                 generatedAt = DateTime.UtcNow.ToString("o"),
                 cacheKey = cacheKey,
                 generatedFiles = generatedFiles,
+                tileManifestPath = Path.GetFileName(tileManifestPath),
+                tilePathTemplate = tilePathTemplate,
+                tileResources = new[] {
+                    "generic-node-density",
+                    "stone-potential",
+                    "sulfur-potential",
+                    "metal-ore-potential"
+                },
+                minZoom = tileMinZoom,
+                maxZoom = tileMaxZoom,
+                generatedTileCount = generatedTileCount,
                 layerSummary = new {
                     topology = "Decoded successfully",
                     biome = "Skipped (Topology used for Density v0.2)"

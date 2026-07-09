@@ -3,6 +3,7 @@ using System.IO;
 using MapIntelligenceWorker.Decode;
 using MapIntelligenceWorker.Density;
 using MapIntelligenceWorker.Render;
+using MapIntelligenceWorker.Tiles;
 using MapIntelligenceWorker.Manifest;
 
 namespace MapIntelligenceWorker
@@ -48,7 +49,11 @@ namespace MapIntelligenceWorker
             // 3. Render Stage
             var renderResult = RenderStage.Run(densityMatrix, outDir);
 
-            // 4. Manifest Stage
+            // 4. Tile Pyramid Stage
+            string cacheKey = $"map-intel:{saveVersion}:{seed}:{worldSize}:{decodeResult.MapSha256}:{densityMatrix.model_version}:{renderResult.RenderVersion}";
+            var tileResult = TileStage.Run(outDir, densityMatrix.model_version, renderResult.RenderVersion, cacheKey);
+
+            // 5. Manifest Stage
             ManifestStage.Run(
                 seed: seed,
                 worldSize: worldSize,
@@ -57,7 +62,12 @@ namespace MapIntelligenceWorker
                 modelVersion: densityMatrix.model_version,
                 renderVersion: renderResult.RenderVersion,
                 generatedFiles: renderResult.GeneratedFiles,
-                outDir: outDir
+                outDir: outDir,
+                tileManifestPath: tileResult.TileManifestPath,
+                tilePathTemplate: tileResult.TilePathTemplate,
+                tileMinZoom: tileResult.MinZoom,
+                tileMaxZoom: tileResult.MaxZoom,
+                generatedTileCount: tileResult.GeneratedTileCount
             );
 
             Console.WriteLine("[Worker] Pipeline completed successfully.");

@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "layer": "terrain",
+      "byteLength": 33570818,
+      "resolution_hint": 4097,
+      "sha256": "175E96BB02CAFBF3E9C6BADED4BBC521390CCDB579312D758BEE7E1923BEAC9A"
+    },
+    {
+      "layer": "height",
+      "byteLength": 33570818,
+      "resolution_hint": 4097,
+      "sha256": "FAFAECDED7EA0CB38FCA72849E7FE314F021060B79B24E9CA59E1A11B74F8E42"
+    },
+    {
+      "layer": "splat",
+      "byteLength": 33554432,
+      "resolution_hint": 4096,
+      "sha256": "7CA03D91433AA1799217DE2194E2CEDE719479B241B566344F00FFBBC54A5AB6"
+    },
+    {
+      "layer": "biome",
+      "byteLength": 20971520,
+      "resolution_hint": 3238.1723240124206,
+      "sha256": "87B00AC628892D48B8F4B6D706A8088DB381A13520853C1F4205A05BF3D1CA46"
+    },
+    {
+      "layer": "topology",
+      "byteLength": 16777216,
+      "resolution_hint": 2896.309375740099,
+      "sha256": "429E2818D78EF27E8660935B0ADAF12164367D2233983C71E9D681E42F9C7294"
+    },
+    {
+      "layer": "alpha",
+      "byteLength": 4194304,
+      "resolution_hint": 1448.1546878700494,
+      "sha256": "40592EBE5D4094BB72622E40D3009BD1B80B952F324612CEAF19EE86FD2542C7"
+    }
+  ],
+  "prefab_count": 0,
+  "path_count": 0,
+  "decode_status": "SUCCESS",
+  "ore_prefabs_found": 0
+}

@@ -10,5 +10,8 @@
     "build:web": "npm run build --workspace=apps/web",
     "typecheck:web": "npm run typecheck --workspace=apps/web",
     "db:verify:local": "node scripts/verify-supabase-local.mjs"
+  },
+  "devDependencies": {
+    "supabase": "^2.109.1"
   }
 }

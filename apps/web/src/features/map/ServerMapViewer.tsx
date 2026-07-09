@@ -4,6 +4,8 @@ import type { ServerCardData } from '../dashboard/ServerCard';
 import { parseServerToMapModel } from './serverMapModel';
 import type { ParsedServerMapModel } from './serverMapModel';
 import { MAP_LAYERS } from './mapLayerTypes';
+import type { MapLayerId } from './mapLayerTypes';
+import { RustMapsTileViewer } from './RustMapsTileViewer';
 import {
   requestRustMapsProviderMap,
   pollRustMapsProviderMap,
@@ -141,6 +143,25 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const providerImageClean = providerState === 'active' ? pickCleanMapImage(providerData) : null;
   const providerImageIcon = providerState === 'active' ? pickIconMapImage(providerData) : null;
   const providerImage = activeMapLayer === 'clean' ? providerImageClean : providerImageIcon;
+
+  const [viewerMode, setViewerMode] = useState<'image' | 'tile'>('image');
+  const [heatmapOpacity, setHeatmapOpacity] = useState(0.65);
+  const [activeTileLayers, setActiveTileLayers] = useState<Set<MapLayerId>>(new Set());
+
+  useEffect(() => {
+    if (providerData?.tileBaseUrl) {
+      setViewerMode('tile');
+    }
+  }, [providerData?.tileBaseUrl]);
+
+  const toggleTileLayer = (layerId: MapLayerId) => {
+    setActiveTileLayers(prev => {
+      const next = new Set(prev);
+      if (next.has(layerId)) next.delete(layerId);
+      else next.add(layerId);
+      return next;
+    });
+  };
 
   const canGenerate = Boolean(model?.worldSize && model?.seed);
 
@@ -334,19 +355,37 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
 
               {providerState === 'active' && (
                 <div className="rm-map-layer-toggle">
+                  {providerData?.tileBaseUrl && (
+                    <>
+                      <button 
+                        className={`rm-map-layer-btn ${viewerMode === 'tile' ? 'active' : ''}`}
+                        onClick={() => setViewerMode('tile')}
+                      >
+                        Tile Mode
+                      </button>
+                      <button 
+                        className={`rm-map-layer-btn ${viewerMode === 'image' ? 'active' : ''}`}
+                        onClick={() => setViewerMode('image')}
+                      >
+                        Image Mode
+                      </button>
+                      <div style={{ width: '1px', backgroundColor: 'var(--border-color)', margin: '0 0.25rem' }}></div>
+                    </>
+                  )}
                   <button 
-                    className={`rm-map-layer-btn ${activeMapLayer === 'clean' ? 'active' : ''}`}
-                    onClick={() => setActiveMapLayer('clean')}
+                    className={`rm-map-layer-btn ${viewerMode === 'image' && activeMapLayer === 'clean' ? 'active' : ''}`}
+                    onClick={() => { setViewerMode('image'); setActiveMapLayer('clean'); }}
+                    disabled={viewerMode === 'tile'}
                   >
-                    Clean Map
+                    Clean Image
                   </button>
                   <button 
-                    className={`rm-map-layer-btn ${activeMapLayer === 'icons' ? 'active' : ''}`}
-                    onClick={() => setActiveMapLayer('icons')}
-                    disabled={!providerData?.imageIconUrl}
+                    className={`rm-map-layer-btn ${viewerMode === 'image' && activeMapLayer === 'icons' ? 'active' : ''}`}
+                    onClick={() => { setViewerMode('image'); setActiveMapLayer('icons'); }}
+                    disabled={!providerData?.imageIconUrl || viewerMode === 'tile'}
                     title={!providerData?.imageIconUrl ? "Icon map is not available for this generated map." : undefined}
                   >
-                    Icon Map
+                    Icon Image
                   </button>
                 </div>
               )}
@@ -366,19 +405,28 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
           <div 
             className="rm-map-viewer-content"
             ref={mapWrapperRef}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-            style={{ touchAction: zoom > 1 ? 'none' : 'auto' }}
+            onPointerDown={viewerMode === 'image' ? handlePointerDown : undefined}
+            onPointerMove={viewerMode === 'image' ? handlePointerMove : undefined}
+            onPointerUp={viewerMode === 'image' ? handlePointerUp : undefined}
+            onPointerLeave={viewerMode === 'image' ? handlePointerUp : undefined}
+            style={{ touchAction: viewerMode === 'image' && zoom > 1 ? 'none' : 'auto' }}
           >
-            {imageStatus === 'loaded' && currentImageSrc && (
-              <div className="rm-map-zoom-controls">
-                <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={18} /></button>
-                <button onClick={handleResetZoom} title="Reset Zoom" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{Math.round(zoom * 100)}%</button>
-                <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={18} /></button>
-              </div>
-            )}
+            {viewerMode === 'tile' && providerData?.tileBaseUrl ? (
+              <RustMapsTileViewer
+                tileBaseUrl={providerData.tileBaseUrl}
+                activeHeatmaps={providerData.heatMaps?.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)) ?? []}
+                heatmapOpacity={heatmapOpacity}
+                undergroundOverlayUrl={activeTileLayers.has('underground') ? providerData.undergroundOverlayUrl : null}
+              />
+            ) : (
+              <>
+                {imageStatus === 'loaded' && currentImageSrc && (
+                  <div className="rm-map-zoom-controls">
+                    <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={18} /></button>
+                    <button onClick={handleResetZoom} title="Reset Zoom" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{Math.round(zoom * 100)}%</button>
+                    <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={18} /></button>
+                  </div>
+                )}
 
             {imageStatus !== 'error' && currentImageSrc ? (
               <>
@@ -411,8 +459,9 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 <p>Source unavailable or blocked.</p>
               </div>
             )}
-          </div>
-
+          </>
+        )}
+      </div>
           {/* Diagnostics only - CTA buttons moved to header */}
           {(provider?.message || showProviderDiag) && (
             <div className="rm-map-viewer-cta diagnostics-only">
@@ -436,9 +485,25 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
 
           <div className="rm-map-sidebar-section">
             <h3><Layers size={16} /> Resource Layers</h3>
-            <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
-              Interactive tile map and heatmaps require a dedicated map library (e.g., Leaflet/MapLibre). Current view uses image fallback.
-            </div>
+            
+            {viewerMode === 'image' && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
+                You are viewing the image fallback. Switch to <strong>Tile Mode</strong> (top bar) to enable interactive overlays.
+              </div>
+            )}
+
+            {viewerMode === 'tile' && (
+              <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Heatmap Opacity:</span>
+                <input 
+                  type="range" 
+                  min="0.1" max="1" step="0.05" 
+                  value={heatmapOpacity} 
+                  onChange={e => setHeatmapOpacity(parseFloat(e.target.value))} 
+                  style={{ flex: 1, accentColor: 'var(--accent-rust)' }}
+                />
+              </div>
+            )}
 
             {['Map', 'Resources', 'Wildlife', 'Spawns'].map(category => {
               const catLayers = model.availableLayers.filter(l => MAP_LAYERS[l].category === category);
@@ -449,13 +514,37 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                     {catLayers.map(layerId => {
                       const config = MAP_LAYERS[layerId];
+                      // Check if layer is actually available in providerData (if it's a heatmap)
+                      let isAvailable = true;
+                      if (category === 'Resources' || category === 'Wildlife' || category === 'Spawns') {
+                        isAvailable = providerData?.heatMaps?.some(hm => hm.name.toLowerCase() === layerId) ?? false;
+                      } else if (layerId === 'underground') {
+                        isAvailable = Boolean(providerData?.undergroundOverlayUrl);
+                      } else if (layerId === 'building_blocks') {
+                        isAvailable = Boolean(providerData?.buildingBlockAreaUrl);
+                      } else if (layerId === 'clean_tiles') {
+                        isAvailable = Boolean(providerData?.tileBaseUrl);
+                      }
+                      
+                      const canToggle = viewerMode === 'tile' && isAvailable;
+                      
+                      // Base maps in tile mode are always on, don't show checkbox for clean_tiles
+                      if (layerId === 'clean_tiles' || layerId === 'icon_image') return null;
+
                       return (
-                        <div key={layerId} className="rm-map-layer-item">
+                        <div key={layerId} className="rm-map-layer-item" style={{ opacity: isAvailable ? 1 : 0.5 }}>
                           <div className="rm-map-layer-item-info">
                             <span className="rm-map-layer-name">{config.label}</span>
-                            {config.description && <span className="rm-map-layer-desc">{config.description}</span>}
+                            {!isAvailable && <span className="rm-map-layer-desc" style={{ color: 'var(--status-warning)' }}>Not generated for this map</span>}
+                            {isAvailable && config.description && <span className="rm-map-layer-desc">{config.description}</span>}
                           </div>
-                          <input type="checkbox" disabled title="Requires interactive map extension" />
+                          <input 
+                            type="checkbox" 
+                            disabled={!canToggle} 
+                            checked={activeTileLayers.has(layerId)}
+                            onChange={() => toggleTileLayer(layerId)}
+                            style={{ accentColor: 'var(--accent-rust)' }}
+                          />
                         </div>
                       );
                     })}

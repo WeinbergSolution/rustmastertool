@@ -25,19 +25,27 @@ Direct tile URL tests for specific ore nodes (`stone/tiles/...`, `sulfur/tiles/.
 The `tileBaseUrl` enables deep, native zooming similar to Google Maps, rather than relying on standard `<img>` transforms which degrade quickly. When integrated with a map engine, this forms the true foundation for interactive map viewing in the future.
 
 ## Rendering Approach Chosen
-**Image Fallback with UI Placeholders**
-Since a map dependency is not currently installed, implementing a manual tile renderer with dynamic fetch, indexing, caching, dragging, and opacity from scratch is extremely complex and error-prone. The chosen approach is to:
-- Maintain the current functional image-based fallback (using `imageUrl` / `imageIconUrl` with local zoom transforms).
-- Build the exact UI panel architecture for Resource/Wildlife layers.
-- Display these advanced layers as placeholders disabled by default, marked with a warning note that they require a map extension.
+**Leaflet Tile & Heatmap Integration**
+We implemented interactive tile rendering utilizing Leaflet, integrated seamlessly inside `ServerMapViewer`.
+- When `tileBaseUrl` is provided, the viewer operates in **Tile Mode** using `L.CRS.Simple`.
+- Multiple confirmed heatmap layers stack transparently, controlled natively via opacity sliders.
+- A robust image fallback mode remains preserved, dynamically toggling when tiles are unavailable.
+- Mobile gestures are natively isolated (using `touch-action: none` over the map) to prevent unwanted back navigation/swipe.
 
 ## Dependency Decision
-**Do Not Install Yet.**
-To achieve true tiled mapping, the project requires a map library. We recommend evaluating:
-1. **Leaflet:** Simple, battle-tested, highly compatible with standard `/{z}/{x}/{y}` formats.
-2. **MapLibre GL JS:** Better performance, vector tile support if needed, but slightly heavier.
+**Leaflet & React-Leaflet Installed.**
+As mandated for true tiled map rendering, Leaflet was selected over MapLibre for its lightweight simplicity, battle-tested standard `/{z}/{x}/{y}` raster compatibility, and lack of arbitrary Vector/Mapbox GL overhead. 
+We installed exactly:
+- `leaflet`
+- `react-leaflet`
+- `@types/leaflet`
+No other map engines were introduced.
 
-The frontend has been prepared to accept these dependencies in the future without breaking current functionality.
+## CRS & Bounds Assumptions
+Because RustMaps tiles do not represent real-world lat/long coordinates, we implemented `L.CRS.Simple`.
+- Simple CRS maps 1 map unit to 1 pixel.
+- We utilize unbounded standard rendering out to max zoom 8 with `noWrap: true`.
+- Real-world map projections (EPSG3857) and coordinate claims are avoided.
 
 ## Data Truth Labels
 Stone, Sulfur, and Metal have been rigidly grouped under "Planned / Unconfirmed". Their tooltips clearly communicate: *"Separate ore types are not exposed by the confirmed RustMaps heatmap data yet."* This maintains honest copy and sets the correct expectation.

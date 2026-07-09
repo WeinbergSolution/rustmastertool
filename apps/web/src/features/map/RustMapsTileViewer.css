@@ -1,0 +1,16 @@
+.rm-tile-viewer {
+  width: 100%;
+  height: 100%;
+  background-color: #050505; /* Deep dark background for map container */
+  z-index: 1; /* Keep leaflet under our custom UI overlays */
+}
+
+/* Ensure Leaflet controls don't overlap our header/sidebar */
+.leaflet-control-container {
+  z-index: 10;
+}
+
+/* Isolate touch gestures on mobile so panning the map doesn't swipe the whole page back */
+.leaflet-container {
+  touch-action: none;
+}

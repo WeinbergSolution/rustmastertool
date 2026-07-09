@@ -51,11 +51,11 @@ export function PricingPage() {
             </div>
             <div className="pricing-card-features">
               <ul>
-                <li><Check size={16} /> Bessere Server Filter</li>
-                <li><Check size={16} /> Server Health Prediction</li>
-                <li><Check size={16} /> Map Intel & Build Spot Planning</li>
-                <li><Check size={16} /> Resource Density Prediction</li>
-                <li><Check size={16} /> Raid Calculator</li>
+                <li><Check size={16} /> Bessere Server Filter & Health Prediction</li>
+                <li><Check size={16} /> Map Intelligence & Build Spot Planning</li>
+                <li><Check size={16} /> Resource Density Heatmaps</li>
+                <li><Check size={16} /> Sulfur, Stone & Metal Prediction</li>
+                <li><Check size={16} /> Farm Route Planning & Raid Calculator</li>
                 <li><Check size={16} /> Erweiterte Guides</li>
               </ul>
             </div>
@@ -75,8 +75,9 @@ export function PricingPage() {
             </div>
             <div className="pricing-card-features">
               <ul>
+                <li><Check size={16} /> Alle Pro Features & Map Intelligence</li>
                 <li><Check size={16} /> Team Watchlists & Geteilte Planung</li>
-                <li><Check size={16} /> Live Map Features</li>
+                <li><Check size={16} /> Live Map Features & Farm Route Sync</li>
                 <li><Check size={16} /> Team Guides & Raid Planning</li>
                 <li><Check size={16} /> Session Review & Wipe History</li>
                 <li><Check size={16} /> Mehrere Seats</li>
@@ -98,9 +99,9 @@ export function PricingPage() {
             </div>
             <div className="pricing-card-features">
               <ul>
-                <li><Check size={16} /> Eigene Map-Generation</li>
-                <li><Check size={16} /> Deep Map Analyse</li>
-                <li><Check size={16} /> Custom Map Tools</li>
+                <li><Check size={16} /> Map Generation</li>
+                <li><Check size={16} /> Custom Map Analysis</li>
+                <li><Check size={16} /> Map Intelligence Reports</li>
                 <li><Check size={16} /> Heatmap Export</li>
                 <li><Check size={16} /> Map Creation Features</li>
               </ul>

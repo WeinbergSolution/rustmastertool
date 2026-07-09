@@ -13,11 +13,12 @@ export function LandingPage() {
         <section className="hero-section">
           <div className="hero-content">
             <h1 className="hero-title">
-              Plan smarter. Survive longer. <br />
+              Plan smarter. Farm faster. <br />
               <span className="hero-accent">Win the wipe.</span>
             </h1>
             <p className="hero-subtitle">
-              Dein Rust Command Center — vom Server-Scouting bis zur Wipe-Auswertung.
+              Dein Rust Command Center — Server Scouting, Map Analysis, Sulfur & Stone Heatmaps, Live Companion und Session Review in einer Plattform. <br/>
+              Know the map before the fight starts.
             </p>
             <div className="hero-actions">
               <a href="/auth" className="btn btn-primary">
@@ -43,11 +44,11 @@ export function LandingPage() {
                 </div>
                 <h3 className="phase-title">1. Prepare / Spielvorbereitung</h3>
                 <ul className="phase-features">
-                  <li><Crosshair size={16}/> <span>Server Intelligence & Scouting</span></li>
-                  <li><Activity size={16}/> <span>Server Health & Death Curve Prediction</span></li>
-                  <li><Map size={16}/> <span>Map Intelligence vor dem Wipe</span></li>
-                  <li><BarChart3 size={16}/> <span>Resource Density Prediction (Stone, Sulfur, Metal)</span></li>
-                  <li><Shield size={16}/> <span>Monument & Build Spot Analyse</span></li>
+                  <li><Crosshair size={16}/> <span>Server Health & Wipe Prediction</span></li>
+                  <li><Map size={16}/> <span>Map Preview vor dem Wipe</span></li>
+                  <li><Shield size={16}/> <span>Monument Analysis</span></li>
+                  <li><BarChart3 size={16}/> <span>Sulfur, Stone & Metal Potential</span></li>
+                  <li><Search size={16}/> <span>Build Spot & Farm Route Planning</span></li>
                 </ul>
               </div>
 
@@ -57,11 +58,11 @@ export function LandingPage() {
                 </div>
                 <h3 className="phase-title">2. Play / Spielbegleitung</h3>
                 <ul className="phase-features">
-                  <li><Map size={16}/> <span>Live Map & Second Screen (in development)</span></li>
+                  <li><Map size={16}/> <span>Live Companion Map (in dev)</span></li>
+                  <li><Crosshair size={16}/> <span>Team, Marker & Beds (in dev)</span></li>
                   <li><Search size={16}/> <span>Raid Calculator (coming soon)</span></li>
-                  <li><Crosshair size={16}/> <span>In-App Rust Guides & Puzzle Erklärungen</span></li>
-                  <li><Shield size={16}/> <span>Base Build Tutorials</span></li>
-                  <li><Activity size={16}/> <span>Rust+ Companion Features (planned)</span></li>
+                  <li><Shield size={16}/> <span>Monument Guides & Puzzle Tutorials</span></li>
+                  <li><Activity size={16}/> <span>Base Build Tutorials</span></li>
                 </ul>
               </div>
 
@@ -72,10 +73,9 @@ export function LandingPage() {
                 <h3 className="phase-title">3. Review / Spielaufbereitung</h3>
                 <ul className="phase-features">
                   <li><Activity size={16}/> <span>Session Tracking (coming soon)</span></li>
-                  <li><BarChart3 size={16}/> <span>Ressourcen & Zeit Auswertung</span></li>
-                  <li><Map size={16}/> <span>Damage, Events & Wege Analyse</span></li>
+                  <li><BarChart3 size={16}/> <span>Farm Review & Resource Efficiency</span></li>
+                  <li><Map size={16}/> <span>Damage, Route & Event Review</span></li>
                   <li><Shield size={16}/> <span>Learnings für den nächsten Wipe</span></li>
-                  <li><Crosshair size={16}/> <span>Wipe History & Team-Auswertung (planned)</span></li>
                 </ul>
               </div>
 
@@ -88,18 +88,23 @@ export function LandingPage() {
           <div className="section-container">
             <div className="highlight-block">
               <div className="highlight-text">
-                <h3>Map Generation & Intelligence</h3>
+                <h3>Resource Intelligence</h3>
                 <p>
-                  RustMasterTool baut langfristig eine eigene Map-Generation- und Map-Intelligence-Pipeline. 
-                  Nutzer sollen Maps erzeugen, analysieren, individualisieren und später gestalten können. 
-                  Wir nutzen professionelle Prediction-Modelle für Spawns und Nodes, um dir den strategischen 
-                  Vorteil zu geben. Keine Cheats, nur legitime Datenanalyse.
+                  Unsere Engine berechnet das geschätzte <strong>Potential für Sulfur, Stone und Metal Ore</strong> auf jeder Map. 
+                  Wir nutzen Confidence-basierte Prediction-Modelle, um die generelle <strong>Node Density</strong> 
+                  als interaktive Heatmap-Overlays darzustellen.
+                </p>
+                <p style={{ marginTop: '1rem' }}>
+                  Diese Map Intelligence ist darauf ausgelegt, dir bei der strategischen Planung deiner <strong>Farm Routes</strong> 
+                  vor dem Wipe Day zu helfen. Keine echten Positionen, keine Cheats – nur smarte Datenanalyse.
                 </p>
               </div>
               <div className="highlight-visual mock-heatmap">
-                {/* Visual placeholder for Map Intelligence */}
-                <div className="heatmap-overlay"></div>
-                <span>Resource Density Prediction</span>
+                {/* Visual placeholder for Map Intelligence / Heatmaps */}
+                <div className="mock-map-bg"></div>
+                <div className="heatmap-overlay-sulfur"></div>
+                <div className="heatmap-overlay-stone"></div>
+                <span className="mock-heatmap-label">Preview Concept / In Development</span>
               </div>
             </div>
           </div>

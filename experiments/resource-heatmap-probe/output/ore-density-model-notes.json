@@ -1,0 +1,14 @@
+{
+  "feasibility_status": "DERIVED_ESTIMATE_REQUIRED",
+  "direct_extraction": false,
+  "confidence": "HIGH",
+  "reason": "Rust procedural maps do not bake collectible resources (ores, hemp, wood) into the .map prefab list. Instead, they are spawned at runtime by the server's SpawnHandler based on map layer densities.",
+  "required_layers_for_model": [
+    "topology",
+    "biome",
+    "splat",
+    "height",
+    "water"
+  ],
+  "next_steps": "Parse the terrain layers to generate a normalized 0-1 density grid for each ore type based on known Rust spawn rules."
+}

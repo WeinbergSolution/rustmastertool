@@ -1,6 +1,7 @@
 
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import './RustMapsTileViewer.css';
 
@@ -11,63 +12,121 @@ interface RustMapsTileViewerProps {
   undergroundOverlayUrl?: string | null;
 }
 
+const TRANSPARENT_TILE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+
+function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; zIndex?: number }) {
+  const map = useMap();
+  const layerRef = useRef<L.TileLayer | null>(null);
+
+  useEffect(() => {
+    const layer = L.tileLayer(url, {
+      tileSize: 256,
+      maxNativeZoom,
+      maxZoom: 6,
+      noWrap: true,
+      bounds,
+      keepBuffer: 0,
+      opacity,
+      errorTileUrl: TRANSPARENT_TILE,
+      zIndex
+    });
+    
+    const origGetTileUrl = layer.getTileUrl.bind(layer);
+    layer.getTileUrl = function(coords: any) {
+      if (coords.x < 0 || coords.y < 0) return TRANSPARENT_TILE;
+      const maxIndex = Math.pow(2, coords.z) - 1;
+      if (coords.x > maxIndex || coords.y > maxIndex) return TRANSPARENT_TILE;
+      return origGetTileUrl(coords);
+    };
+
+    layer.addTo(map);
+    layerRef.current = layer;
+
+    return () => {
+      layer.removeFrom(map);
+    };
+  }, [map, url, bounds, maxNativeZoom, zIndex]);
+
+  useEffect(() => {
+    if (layerRef.current) {
+      layerRef.current.setOpacity(opacity);
+    }
+  }, [opacity]);
+
+  return null;
+}
+
+function MapBoundsFitter({ bounds }: { bounds: L.LatLngBounds }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setMaxBounds(bounds);
+    map.options.maxBoundsViscosity = 1.0;
+    map.fitBounds(bounds);
+  }, [map, bounds]);
+  return null;
+}
+
+const TILE_EXTENT = 256;
+
 export function RustMapsTileViewer({
   tileBaseUrl,
   activeHeatmaps,
   heatmapOpacity,
   undergroundOverlayUrl
 }: RustMapsTileViewerProps) {
-  // Use L.CRS.Simple for custom image tile coordinates.
-  // This maps coordinates directly to pixels instead of geographic lat/lng.
   const crs = L.CRS.Simple;
-  const minZoom = 1;
-  const maxZoom = 8;
+  // L.CRS.Simple maps (lat, lng) to (pixel y, pixel x), and y is mapped to -lat.
+  // To get tile coordinates (x=0 to max, y=0 to max), we need pixel y to go from 0 to +256.
+  // This means lat must go from -256 to 0.
+  const bounds = L.latLngBounds(L.latLng(-TILE_EXTENT, 0), L.latLng(0, TILE_EXTENT));
   
-  // Center roughly at 0,0. In CRS.Simple, [y, x] is used.
-  // RustMaps tile logic typically builds outward.
-  const center: L.LatLngTuple = [0, 0];
+  const minZoom = 0;
+  const maxZoom = 6;
+  const center: L.LatLngTuple = [-TILE_EXTENT / 2, TILE_EXTENT / 2];
 
   return (
     <MapContainer 
       crs={crs}
       center={center} 
-      zoom={2} 
+      zoom={0} 
       minZoom={minZoom}
       maxZoom={maxZoom}
+      zoomSnap={1}
+      zoomDelta={1}
+      wheelPxPerZoomLevel={60}
       className="rm-tile-viewer"
       attributionControl={false}
-      zoomControl={false} // Disable default zoom control if we want a custom one, or leave it. Let's disable and use our own or let Leaflet handle it natively.
+      zoomControl={true}
     >
+      <MapBoundsFitter bounds={bounds} />
+
       {/* Base Map Layer */}
-      <TileLayer
+      <SafeTileLayer
         url={`${tileBaseUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
-        maxNativeZoom={6}
-        maxZoom={8}
-        noWrap={true}
-        errorTileUrl="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" // Transparent fallback
+        bounds={bounds}
+        maxNativeZoom={5}
+        zIndex={1}
       />
       
       {/* Underground Overlay (if active) */}
       {undergroundOverlayUrl && (
-         <TileLayer
+         <SafeTileLayer
           url={`${undergroundOverlayUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
-          maxNativeZoom={6}
-          maxZoom={8}
-          noWrap={true}
-          errorTileUrl="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+          bounds={bounds}
+          maxNativeZoom={5}
+          zIndex={2}
         />
       )}
 
       {/* Heatmap Overlays */}
-      {activeHeatmaps.map(hm => (
-        <TileLayer
+      {activeHeatmaps.map((hm, i) => (
+        <SafeTileLayer
           key={hm.name}
           url={`${hm.url.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
-          maxNativeZoom={6}
-          maxZoom={8}
-          noWrap={true}
+          bounds={bounds}
           opacity={heatmapOpacity}
-          errorTileUrl="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+          maxNativeZoom={5}
+          zIndex={3 + i}
         />
       ))}
     </MapContainer>

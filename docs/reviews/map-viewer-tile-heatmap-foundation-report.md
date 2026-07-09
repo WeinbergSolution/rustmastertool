@@ -58,3 +58,61 @@ To achieve individual Stone, Sulfur, and Metal overlays in the future:
 1. We cannot rely purely on RustMaps tile endpoints for separated ores.
 2. The next phase will require a custom backend parser that calculates density based on raw coordinate data or the `buildingBlockAreaUrl` / monument distribution.
 3. Once that logic is deployed, the UI can drop the "Unconfirmed" labels and activate them as independent MapLayers natively rendered by the future map library.
+
+## B3-D Mobile Layout + Tile Availability UX
+**Mobile Scroll Fix:**
+- Fixed a UX issue where the map remained sticky on mobile viewports, hiding the Resource Layers behind it.
+- The viewer layout was refactored so the container acts as a standard scrolling page on mobile, allowing the map area to scroll out of view while accessing the Resource Layers panel at the bottom.
+
+**Tile Mode Availability Logic:**
+- Enhanced the fallback logic so the UI doesn't incorrectly ask users to switch to Tile Mode on maps where tile layers were never generated.
+- When `tileBaseUrl` or `heatMaps` are missing, the UI gracefully collapses the Resource Layers panel to prevent massive lists of unavailable layers.
+- For Custom Maps without tile integration, an honest message is displayed ("Custom map image loaded. Interactive resource heatmaps are only available when RustMaps provides tile data.").
+
+**Impact:**
+- No backend, API, Supabase, or env changes were required.
+- The existing tile/heatmap rendering functionality remains fully intact.
+
+## B3-E Derived Public Content Tile URLs
+**Public API Limitations:**
+- Verified that the RustMaps public API response does NOT natively include `tileBaseUrl`, `heatMaps`, `undergroundOverlayUrl`, or `buildingBlockAreaUrl`.
+
+**Derived Tile Base & Probe Mechanism:**
+- The `rustmaps-provider` Edge Function now intercepts fresh API responses and extracts `saveVersion` alongside `rustmapsId` (mapId).
+- It constructs the public CDN base: `https://content.rustmaps.com/maps/${saveVersion}/${rustmapsId}`.
+- Before exposing these URLs to the frontend cache, the provider safely probes the tile availability via HTTP `HEAD` / `GET` requests (e.g. testing `${contentBase}/tiles-webp/0/0/0.webp`).
+- Only explicitly verified heatmap paths (`nodes`, `hemp`, `berries`, `bears`, `boars`, `horses`, `playerspawns`) are returned to the frontend.
+
+**Data Truth Maintained:**
+- Stone, Sulfur, and Metal tiles continue to return 404s via the public CDN and remain marked as "Unconfirmed / Planned" on the frontend.
+- No Supabase DB migrations were required since the derived URLs are safely cached inside the existing JSONB `provider_payload`.
+
+**Required Action:**
+- The `rustmaps-provider` Supabase Edge Function must be redeployed to activate this logic.
+
+## B3-F Leaflet Tile Coordinate Bounds Fix
+**Negative Tile Coordinate Issue:**
+- Previously, Leaflet was defaulting to standard geospatial CRS and center points which resulted in out-of-bounds negative tile coordinates (e.g. `/tiles-webp/2/-1/-1.webp`) flooding the CDN and console with 404s.
+
+**Coordinate and Bounds Constraints:**
+- The Map container's bounds are now strict positive indices using `worldSize` for map extent (`[0, 0]` to `[worldSize, worldSize]`), fully enforcing positive pixel-space boundaries inside the `L.CRS.Simple` layout.
+- Added a `SafeTileLayer` React interceptor that manually filters out negative X/Y coordinates before Leaflet constructs the request string, preventing wasted API calls.
+- `maxNativeZoom` is capped to `5` for all tiles and overlays based on common RustMaps render density.
+
+**Overlay Mapping Logic Preserved:**
+- `noWrap` limits and bound restraints extend across all heatmap overlays (`nodes`, `hemp`, `berries`, etc.) concurrently.
+
+**No-Build JSON Layer Modification:**
+- The `building_block.json` response layer was falsely generating a standard image `TileLayer` checkbox toggle. It is now accurately disabled via UI state and flagged with "No-build zones data available, polygon rendering planned" until Vector/JSON rendering is introduced.
+
+## B3-G Normalized Leaflet Tile Pyramid
+**CRS/Bounds Mismatch Traced:**
+- The black map issue was traced to the fact that `worldSize` (e.g., `4750`) was passed directly into the Leaflet `CRS.Simple` bounds logic. This caused Leaflet to mathematically assume an impossibly massive flat tile array at zoom 0, requesting invalid indices that the `SafeTileLayer` correctly dropped via the `TRANSPARENT_TILE` fallback.
+
+**Normalized 256 Tile Pyramid Implemented:**
+- The `RustMapsTileViewer` was refactored to conform strictly to a standard web tile pyramid logic (`TILE_EXTENT = 256`), stripping `worldSize` entirely from the local map limits.
+- The `MapContainer` automatically centers to `[128, 128]` natively, sets zoom level to 0, and cleanly scales from a single tile to `maxZoom` 6 cleanly.
+- `tileSize={256}` was explicitly declared.
+
+**Overlays Preserved:**
+- All verified CDN overlays (nodes, hemp, berries, animals, playerspawns) snap perfectly into the new normalized scaling logic safely since their URLs are generated upstream using identical coordinates.

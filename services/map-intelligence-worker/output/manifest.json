@@ -5,7 +5,7 @@
   "sourceMapSha256": "c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0",
   "modelVersion": "resource-density-v0.2",
   "renderVersion": "v1.0",
-  "generatedAt": "2026-07-09T23:21:46.0090856Z",
+  "generatedAt": "2026-07-09T23:29:18.3407877Z",
   "cacheKey": "map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0",
   "generatedFiles": [
     "overview-generic-node-density.png",
@@ -18,7 +18,7 @@
     "overlay-metal-ore-potential.png"
   ],
   "tileManifestPath": "tile-manifest.json",
-  "tilePathTemplate": "tiles/{modelVersion}/{style}/{resource}/{z}/{x}/{y}.png",
+  "localTilePathTemplate": "tiles/{modelVersion}/{style}/{resource}/{z}/{x}/{y}.png",
   "tileResources": [
     "generic-node-density",
     "stone-potential",
@@ -32,12 +32,15 @@
     "topology": "Decoded successfully",
     "biome": "Skipped (Topology used for Density v0.2)"
   },
-  "storageContractVersion": "v1.0",
-  "storagePrefix": "map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0",
+  "storageContractVersion": "v1.1",
+  "bucketName": "map-intelligence",
+  "objectPrefix": "map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/",
   "publishPlanPath": "publish-plan.json",
+  "tilePathTemplate": "map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/tiles/resource-density-v0.2/overlay/{resource}/{z}/{x}/{y}.png",
+  "publicTileUrlTemplate": "{supabaseUrl}/storage/v1/object/public/map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/tiles/resource-density-v0.2/overlay/{resource}/{z}/{x}/{y}.png",
   "publicUrlTemplates": {
-    "leaflet": "{storageBaseUrl}/map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/tiles/{modelVersion}/overlay/{resource}/{z}/{x}/{y}.png",
-    "manifest": "{storageBaseUrl}/storage/v1/object/public/map-intelligence/map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/manifest.json"
+    "leaflet": "{storagePublicBaseUrl}/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/tiles/resource-density-v0.2/overlay/{resource}/{z}/{x}/{y}.png",
+    "manifest": "{supabaseUrl}/storage/v1/object/public/map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/manifest.json"
   },
   "objectCounts": {
     "total": 94,

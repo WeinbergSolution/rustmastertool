@@ -9,14 +9,14 @@ namespace MapIntelligenceWorker.Publishing
     public class PublishObject {
         public string cacheKey { get; set; }
         public string bucket { get; set; }
-        public string storagePrefix { get; set; }
+        public string objectPath { get; set; }
+        public string publicUrlTemplate { get; set; }
+        public string leafletUrlTemplate { get; set; }
         public string localFile { get; set; }
-        public string targetObjectPath { get; set; }
         public string contentType { get; set; }
         public string cacheControl { get; set; }
         public long fileSize { get; set; }
         public string sha256 { get; set; }
-        public string publicUrlTemplate { get; set; }
         public string category { get; set; }
         public string resource { get; set; }
         public string zxy { get; set; }
@@ -43,7 +43,7 @@ namespace MapIntelligenceWorker.Publishing
             Console.WriteLine("[PublishStage] Running Dry-Run Publisher");
 
             string bucket = "map-intelligence";
-            string storagePrefix = $"map-intelligence/{cacheKey}";
+            string storagePrefix = $"{cacheKey}";
             var plan = new PublishPlan {
                 bucket = bucket,
                 prefix = storagePrefix
@@ -54,19 +54,24 @@ namespace MapIntelligenceWorker.Publishing
                 
                 var fileInfo = new FileInfo(localPath);
                 string targetObjectPath = $"{storagePrefix}/{relativeTarget}";
-                string urlTemplate = $"{{storageBaseUrl}}/storage/v1/object/public/{bucket}/{targetObjectPath}";
+                string urlTemplate = $"{{supabaseUrl}}/storage/v1/object/public/{bucket}/{targetObjectPath}";
+                string leafletUrl = null;
+                
+                if (category == "tile") {
+                    leafletUrl = $"{{storagePublicBaseUrl}}/{targetObjectPath}";
+                }
 
                 var pubObj = new PublishObject {
                     cacheKey = cacheKey,
                     bucket = bucket,
-                    storagePrefix = storagePrefix,
                     localFile = localPath.Replace("\\", "/"),
-                    targetObjectPath = targetObjectPath,
+                    objectPath = targetObjectPath,
+                    publicUrlTemplate = urlTemplate,
+                    leafletUrlTemplate = leafletUrl,
                     contentType = contentType,
                     cacheControl = cacheControl,
                     fileSize = fileInfo.Length,
                     sha256 = ComputeSha256(localPath),
-                    publicUrlTemplate = urlTemplate,
                     category = category,
                     resource = resource,
                     zxy = zxy

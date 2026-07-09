@@ -25,7 +25,8 @@ namespace MapIntelligenceWorker.Manifest
             Console.WriteLine($"[ManifestStage] Generating Manifest");
             
             string cacheKey = $"map-intel:{saveVersion}:{seed}:{worldSize}:{mapSha256}:{modelVersion}:{renderVersion}";
-            string storagePrefix = $"map-intelligence/{cacheKey}";
+            string storagePrefix = $"{cacheKey}";
+            string bucketName = "map-intelligence";
 
             var manifest = new {
                 seed = seed,
@@ -38,7 +39,7 @@ namespace MapIntelligenceWorker.Manifest
                 cacheKey = cacheKey,
                 generatedFiles = generatedFiles,
                 tileManifestPath = Path.GetFileName(tileManifestPath),
-                tilePathTemplate = tilePathTemplate,
+                localTilePathTemplate = tilePathTemplate,
                 tileResources = new[] {
                     "generic-node-density",
                     "stone-potential",
@@ -52,12 +53,15 @@ namespace MapIntelligenceWorker.Manifest
                     topology = "Decoded successfully",
                     biome = "Skipped (Topology used for Density v0.2)"
                 },
-                storageContractVersion = "v1.0",
-                storagePrefix = storagePrefix,
+                storageContractVersion = "v1.1",
+                bucketName = bucketName,
+                objectPrefix = $"{cacheKey}/",
                 publishPlanPath = "publish-plan.json",
+                tilePathTemplate = $"{cacheKey}/tiles/{modelVersion}/overlay/{{resource}}/{{z}}/{{x}}/{{y}}.png",
+                publicTileUrlTemplate = $"{{supabaseUrl}}/storage/v1/object/public/{bucketName}/{cacheKey}/tiles/{modelVersion}/overlay/{{resource}}/{{z}}/{{x}}/{{y}}.png",
                 publicUrlTemplates = new {
-                    leaflet = "{storageBaseUrl}/" + storagePrefix + "/tiles/{modelVersion}/overlay/{resource}/{z}/{x}/{y}.png",
-                    manifest = "{storageBaseUrl}/storage/v1/object/public/map-intelligence/" + storagePrefix + "/manifest.json"
+                    leaflet = $"{{storagePublicBaseUrl}}/{cacheKey}/tiles/{modelVersion}/overlay/{{resource}}/{{z}}/{{x}}/{{y}}.png",
+                    manifest = $"{{supabaseUrl}}/storage/v1/object/public/{bucketName}/{cacheKey}/manifest.json"
                 },
                 objectCounts = new {
                     total = totalObjects,

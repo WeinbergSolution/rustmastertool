@@ -1,0 +1,32 @@
+{
+  "model_version": "v0.1-feasibility",
+  "target_resources": ["stone", "sulfur", "metal"],
+  "direct_extraction": false,
+  "required_layers": [
+    {
+      "name": "topology",
+      "uncompressed_size_bytes": 16777216,
+      "resolution_estimate": 4096,
+      "purpose": "Primary spawn mask (Field, Forest, Mountain, Roadside)"
+    },
+    {
+      "name": "biome",
+      "uncompressed_size_bytes": 20971520,
+      "resolution_estimate": 4096,
+      "purpose": "Spawn weight modifiers (Snow/Desert for Sulfur, Temperate for Stone)"
+    },
+    {
+      "name": "splat",
+      "uncompressed_size_bytes": 33554432,
+      "resolution_estimate": 4096,
+      "purpose": "Ground texturing (Rock, Dirt) which heavily dictates node clusters"
+    },
+    {
+      "name": "height",
+      "uncompressed_size_bytes": 33570818,
+      "resolution_estimate": 4096,
+      "purpose": "Slope calculation to exclude steep cliffs and underwater areas"
+    }
+  ],
+  "processing_pipeline": "1. Extract uncompressed byte arrays from Rust Map via Facepunch.LZ4. 2. Normalize arrays to 0-1 grid. 3. Apply Rust SpawnHandler weights. 4. Render heatmap tiles."
+}

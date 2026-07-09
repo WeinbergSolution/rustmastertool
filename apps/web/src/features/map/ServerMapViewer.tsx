@@ -144,6 +144,10 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const providerImageIcon = providerState === 'active' ? pickIconMapImage(providerData) : null;
   const providerImage = activeMapLayer === 'clean' ? providerImageClean : providerImageIcon;
 
+  const hasTileBase = Boolean(providerData?.tileBaseUrl);
+  const hasHeatMaps = Array.isArray(providerData?.heatMaps) && providerData.heatMaps.length > 0;
+  const canUseTileMode = hasTileBase;
+
   const [viewerMode, setViewerMode] = useState<'image' | 'tile'>('image');
   const [heatmapOpacity, setHeatmapOpacity] = useState(0.65);
   const [activeTileLayers, setActiveTileLayers] = useState<Set<MapLayerId>>(new Set());
@@ -355,7 +359,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
 
               {providerState === 'active' && (
                 <div className="rm-map-layer-toggle">
-                  {providerData?.tileBaseUrl && (
+                  {canUseTileMode ? (
                     <>
                       <button 
                         className={`rm-map-layer-btn ${viewerMode === 'tile' ? 'active' : ''}`}
@@ -370,23 +374,40 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                         Image Mode
                       </button>
                       <div style={{ width: '1px', backgroundColor: 'var(--border-color)', margin: '0 0.25rem' }}></div>
+                      <button 
+                        className={`rm-map-layer-btn ${viewerMode === 'image' && activeMapLayer === 'clean' ? 'active' : ''}`}
+                        onClick={() => { setViewerMode('image'); setActiveMapLayer('clean'); }}
+                        disabled={viewerMode === 'tile'}
+                      >
+                        Clean Image
+                      </button>
+                      <button 
+                        className={`rm-map-layer-btn ${viewerMode === 'image' && activeMapLayer === 'icons' ? 'active' : ''}`}
+                        onClick={() => { setViewerMode('image'); setActiveMapLayer('icons'); }}
+                        disabled={!providerData?.imageIconUrl || viewerMode === 'tile'}
+                        title={!providerData?.imageIconUrl ? "Icon map is not available for this generated map." : undefined}
+                      >
+                        Icon Image
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button 
+                        className={`rm-map-layer-btn ${activeMapLayer === 'clean' ? 'active' : ''}`}
+                        onClick={() => setActiveMapLayer('clean')}
+                      >
+                        Clean Image
+                      </button>
+                      <button 
+                        className={`rm-map-layer-btn ${activeMapLayer === 'icons' ? 'active' : ''}`}
+                        onClick={() => setActiveMapLayer('icons')}
+                        disabled={!providerData?.imageIconUrl}
+                        title={!providerData?.imageIconUrl ? "Icon map is not available for this generated map." : undefined}
+                      >
+                        Icon Image
+                      </button>
                     </>
                   )}
-                  <button 
-                    className={`rm-map-layer-btn ${viewerMode === 'image' && activeMapLayer === 'clean' ? 'active' : ''}`}
-                    onClick={() => { setViewerMode('image'); setActiveMapLayer('clean'); }}
-                    disabled={viewerMode === 'tile'}
-                  >
-                    Clean Image
-                  </button>
-                  <button 
-                    className={`rm-map-layer-btn ${viewerMode === 'image' && activeMapLayer === 'icons' ? 'active' : ''}`}
-                    onClick={() => { setViewerMode('image'); setActiveMapLayer('icons'); }}
-                    disabled={!providerData?.imageIconUrl || viewerMode === 'tile'}
-                    title={!providerData?.imageIconUrl ? "Icon map is not available for this generated map." : undefined}
-                  >
-                    Icon Image
-                  </button>
                 </div>
               )}
               
@@ -486,13 +507,34 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
           <div className="rm-map-sidebar-section">
             <h3><Layers size={16} /> Resource Layers</h3>
             
-            {viewerMode === 'image' && (
+            {viewerMode === 'image' && canUseTileMode && (
               <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
                 You are viewing the image fallback. Switch to <strong>Tile Mode</strong> (top bar) to enable interactive overlays.
               </div>
             )}
 
-            {viewerMode === 'tile' && (
+            {!canUseTileMode && providerState === 'active' && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.75rem', padding: '0.5rem', background: 'var(--bg-hover)', borderRadius: '4px', borderLeft: '3px solid var(--border-color)' }}>
+                Tile overlays are not available for this map. This map can still be viewed as a clean image.
+              </div>
+            )}
+
+            {!hasHeatMaps && providerState === 'active' && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', padding: '0.5rem', background: 'var(--bg-hover)', borderRadius: '4px' }}>
+                No generated heatmap layers available for this map.
+                {model.mapType === 'Custom' ? (
+                   <div style={{ marginTop: '0.25rem', color: 'var(--status-warning)' }}>
+                     Custom map image loaded. Interactive resource heatmaps are only available when RustMaps provides tile data.
+                   </div>
+                ) : (
+                   <div style={{ marginTop: '0.25rem', opacity: 0.8 }}>
+                     RustMaps did not provide tile heatmaps for this map response.
+                   </div>
+                )}
+              </div>
+            )}
+
+            {viewerMode === 'tile' && hasHeatMaps && (
               <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Heatmap Opacity:</span>
                 <input 
@@ -506,6 +548,8 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             )}
 
             {['Map', 'Resources', 'Wildlife', 'Spawns'].map(category => {
+              if (!hasHeatMaps && category !== 'Map') return null;
+              
               const catLayers = model.availableLayers.filter(l => MAP_LAYERS[l].category === category);
               if (catLayers.length === 0) return null;
               return (
@@ -553,23 +597,25 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
               );
             })}
 
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Planned / Unconfirmed</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                {model.disabledFutureLayers.map(layerId => {
-                  const config = MAP_LAYERS[layerId];
-                  return (
-                    <div key={layerId} className="rm-map-layer-item" style={{ opacity: 0.6 }} title={config.unconfirmedReason}>
-                      <div className="rm-map-layer-item-info">
-                        <span className="rm-map-layer-name">{config.label} <span className="rm-map-layer-future" style={{ backgroundColor: 'rgba(205, 65, 43, 0.1)', color: 'var(--accent-rust)' }}>Planned</span></span>
-                        {config.unconfirmedReason && <span className="rm-map-layer-desc">{config.unconfirmedReason}</span>}
+            {hasHeatMaps && (
+              <div style={{ marginBottom: '1rem' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Planned / Unconfirmed</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {model.disabledFutureLayers.map(layerId => {
+                    const config = MAP_LAYERS[layerId];
+                    return (
+                      <div key={layerId} className="rm-map-layer-item" style={{ opacity: 0.6 }} title={config.unconfirmedReason}>
+                        <div className="rm-map-layer-item-info">
+                          <span className="rm-map-layer-name">{config.label} <span className="rm-map-layer-future" style={{ backgroundColor: 'rgba(205, 65, 43, 0.1)', color: 'var(--accent-rust)' }}>Planned</span></span>
+                          {config.unconfirmedReason && <span className="rm-map-layer-desc">{config.unconfirmedReason}</span>}
+                        </div>
+                        <input type="checkbox" disabled />
                       </div>
-                      <input type="checkbox" disabled />
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="rm-map-sidebar-section">

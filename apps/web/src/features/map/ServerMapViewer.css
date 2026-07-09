@@ -40,11 +40,17 @@
 }
 
 .rm-map-viewer-main {
-  flex: 1;
   display: flex;
   flex-direction: column;
   background-color: #111;
   position: relative;
+  /* On mobile, this will size to its content so it can scroll out of view */
+}
+
+@media (min-width: 768px) {
+  .rm-map-viewer-main {
+    flex: 1;
+  }
 }
 
 .rm-map-viewer-header {
@@ -231,7 +237,6 @@
 }
 
 .rm-map-viewer-content {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,13 +245,14 @@
   padding: 0;
   background-color: #000;
   min-height: 300px;
-  max-height: 55svh;
+  height: 50svh; /* Fixed height on mobile to allow normal page scrolling */
 }
 
 @media (min-width: 768px) {
   .rm-map-viewer-content {
+    flex: 1;
     min-height: auto;
-    max-height: none;
+    height: auto;
   }
 }
 
@@ -304,7 +310,7 @@
   border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  /* On mobile, let it expand fully and let the container scroll */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -313,6 +319,7 @@
     width: 350px;
     border-top: none;
     border-left: 1px solid var(--border-color);
+    overflow-y: auto; /* Scroll internally only on desktop */
   }
 }
 

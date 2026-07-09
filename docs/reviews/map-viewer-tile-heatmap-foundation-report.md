@@ -58,3 +58,17 @@ To achieve individual Stone, Sulfur, and Metal overlays in the future:
 1. We cannot rely purely on RustMaps tile endpoints for separated ores.
 2. The next phase will require a custom backend parser that calculates density based on raw coordinate data or the `buildingBlockAreaUrl` / monument distribution.
 3. Once that logic is deployed, the UI can drop the "Unconfirmed" labels and activate them as independent MapLayers natively rendered by the future map library.
+
+## B3-D Mobile Layout + Tile Availability UX
+**Mobile Scroll Fix:**
+- Fixed a UX issue where the map remained sticky on mobile viewports, hiding the Resource Layers behind it.
+- The viewer layout was refactored so the container acts as a standard scrolling page on mobile, allowing the map area to scroll out of view while accessing the Resource Layers panel at the bottom.
+
+**Tile Mode Availability Logic:**
+- Enhanced the fallback logic so the UI doesn't incorrectly ask users to switch to Tile Mode on maps where tile layers were never generated.
+- When `tileBaseUrl` or `heatMaps` are missing, the UI gracefully collapses the Resource Layers panel to prevent massive lists of unavailable layers.
+- For Custom Maps without tile integration, an honest message is displayed ("Custom map image loaded. Interactive resource heatmaps are only available when RustMaps provides tile data.").
+
+**Impact:**
+- No backend, API, Supabase, or env changes were required.
+- The existing tile/heatmap rendering functionality remains fully intact.

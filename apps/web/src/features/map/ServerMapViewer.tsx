@@ -435,38 +435,55 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
         <div className="rm-map-viewer-sidebar">
 
           <div className="rm-map-sidebar-section">
-            <h3><Layers size={16} /> Layers & Overlays</h3>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              {model.availableLayers.map(layerId => {
-                const config = MAP_LAYERS[layerId];
-                return (
-                  <div key={layerId} className="rm-map-layer-item">
-                    <div className="rm-map-layer-item-info">
-                      <span className="rm-map-layer-name">{config.label}</span>
-                      <span className="rm-map-layer-desc">{config.description}</span>
-                    </div>
-                    <input type="checkbox" checked readOnly style={{ accentColor: 'var(--accent-rust)' }} />
-                  </div>
-                );
-              })}
-
-              {model.disabledFutureLayers.map(layerId => {
-                const config = MAP_LAYERS[layerId];
-                return (
-                  <div key={layerId} className="rm-map-layer-item" style={{ opacity: 0.6 }}>
-                    <div className="rm-map-layer-item-info">
-                      <span className="rm-map-layer-name">{config.label} <span className="rm-map-layer-future">Coming Later</span></span>
-                      <span className="rm-map-layer-desc">{config.description}</span>
-                    </div>
-                    <input type="checkbox" disabled />
-                  </div>
-                );
-              })}
+            <h3><Layers size={16} /> Resource Layers</h3>
+            <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
+              Interactive tile map and heatmaps require a dedicated map library (e.g., Leaflet/MapLibre). Current view uses image fallback.
             </div>
 
+            {['Map', 'Resources', 'Wildlife', 'Spawns'].map(category => {
+              const catLayers = model.availableLayers.filter(l => MAP_LAYERS[l].category === category);
+              if (catLayers.length === 0) return null;
+              return (
+                <div key={category} style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{category}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    {catLayers.map(layerId => {
+                      const config = MAP_LAYERS[layerId];
+                      return (
+                        <div key={layerId} className="rm-map-layer-item">
+                          <div className="rm-map-layer-item-info">
+                            <span className="rm-map-layer-name">{config.label}</span>
+                            {config.description && <span className="rm-map-layer-desc">{config.description}</span>}
+                          </div>
+                          <input type="checkbox" disabled title="Requires interactive map extension" />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
 
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Planned / Unconfirmed</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                {model.disabledFutureLayers.map(layerId => {
+                  const config = MAP_LAYERS[layerId];
+                  return (
+                    <div key={layerId} className="rm-map-layer-item" style={{ opacity: 0.6 }} title={config.unconfirmedReason}>
+                      <div className="rm-map-layer-item-info">
+                        <span className="rm-map-layer-name">{config.label} <span className="rm-map-layer-future" style={{ backgroundColor: 'rgba(205, 65, 43, 0.1)', color: 'var(--accent-rust)' }}>Planned</span></span>
+                        {config.unconfirmedReason && <span className="rm-map-layer-desc">{config.unconfirmedReason}</span>}
+                      </div>
+                      <input type="checkbox" disabled />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
 
+          <div className="rm-map-sidebar-section">
             <div className="rm-map-note" style={{ background: 'rgba(59, 130, 246, 0.08)', borderLeftColor: 'var(--accent-rust)' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Info size={14} /> Provider Integration

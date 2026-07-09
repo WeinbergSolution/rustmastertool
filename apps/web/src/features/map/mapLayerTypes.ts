@@ -1,31 +1,66 @@
+export type MapLayerCategory = 'Map' | 'Resources' | 'Wildlife' | 'Spawns' | 'Unconfirmed';
+
 export type MapLayerId = 
-  | 'map_image'
-  | 'monument_list';
+  | 'clean_tiles'
+  | 'icon_image'
+  | 'underground'
+  | 'building_blocks'
+  | 'nodes'
+  | 'hemp'
+  | 'berries'
+  | 'bears'
+  | 'boars'
+  | 'horses'
+  | 'player_spawns'
+  | 'stone'
+  | 'sulfur'
+  | 'metal';
 
 export interface MapLayerConfig {
   id: MapLayerId;
   label: string;
-  description: string;
-  isActive: boolean;
-  isFuture: boolean;
-  requiresCoordinates: boolean;
+  category: MapLayerCategory;
+  description?: string;
+  isPlanned?: boolean;
+  isUnconfirmed?: boolean;
+  unconfirmedReason?: string;
 }
 
 export const MAP_LAYERS: Record<MapLayerId, MapLayerConfig> = {
-  map_image: {
-    id: 'map_image',
-    label: 'Map Preview',
-    description: 'Map preview thumbnail from RustMaps',
-    isActive: true,
-    isFuture: false,
-    requiresCoordinates: false,
+  clean_tiles: { id: 'clean_tiles', label: 'Clean Tiles', category: 'Map' },
+  icon_image: { id: 'icon_image', label: 'Icon Image fallback', category: 'Map' },
+  underground: { id: 'underground', label: 'Underground', category: 'Map', isPlanned: true },
+  building_blocks: { id: 'building_blocks', label: 'No-build zones', category: 'Map', isPlanned: true },
+  
+  nodes: { id: 'nodes', label: 'Nodes', category: 'Resources' },
+  hemp: { id: 'hemp', label: 'Hemp', category: 'Resources' },
+  berries: { id: 'berries', label: 'Berries', category: 'Resources' },
+  
+  bears: { id: 'bears', label: 'Bears', category: 'Wildlife' },
+  boars: { id: 'boars', label: 'Boars', category: 'Wildlife' },
+  horses: { id: 'horses', label: 'Horses', category: 'Wildlife' },
+  
+  player_spawns: { id: 'player_spawns', label: 'Player Spawns', category: 'Spawns' },
+  
+  stone: { 
+    id: 'stone', 
+    label: 'Stone Ore Density Estimate', 
+    category: 'Unconfirmed', 
+    isPlanned: true, 
+    unconfirmedReason: 'Separate ore types are not exposed by the confirmed RustMaps heatmap data yet.' 
   },
-  monument_list: {
-    id: 'monument_list',
-    label: 'Monument List',
-    description: 'List of all known monuments on this map',
-    isActive: true,
-    isFuture: false,
-    requiresCoordinates: false,
+  sulfur: { 
+    id: 'sulfur', 
+    label: 'Sulfur Ore Density Estimate', 
+    category: 'Unconfirmed', 
+    isPlanned: true, 
+    unconfirmedReason: 'Separate ore types are not exposed by the confirmed RustMaps heatmap data yet.' 
+  },
+  metal: { 
+    id: 'metal', 
+    label: 'Metal Ore Density Estimate', 
+    category: 'Unconfirmed', 
+    isPlanned: true, 
+    unconfirmedReason: 'Separate ore types are not exposed by the confirmed RustMaps heatmap data yet.' 
   }
 };

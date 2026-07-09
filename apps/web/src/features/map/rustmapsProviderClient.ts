@@ -43,10 +43,14 @@ export interface ProviderMapData {
   rawImageUrl: string | null;
   imageIconUrl: string | null;
   thumbnailUrl: string | null;
+  tileBaseUrl: string | null;
+  undergroundOverlayUrl: string | null;
+  buildingBlockAreaUrl: string | null;
   totalMonuments: number | null;
   monuments: ProviderMonument[];
   biomePercentages: Record<string, number> | null;
   mapStats: Record<string, number | null> | null;
+  heatMaps: Array<{ name: string; url: string }> | null;
   queuePosition: number | null;
   currentStep: string | null;
 }
@@ -117,10 +121,14 @@ function normalize(raw: unknown): ProviderMapResponse {
         rawImageUrl: typeof d.rawImageUrl === 'string' ? d.rawImageUrl : null,
         imageIconUrl: typeof d.imageIconUrl === 'string' ? d.imageIconUrl : null,
         thumbnailUrl: typeof d.thumbnailUrl === 'string' ? d.thumbnailUrl : null,
+        tileBaseUrl: typeof d.tileBaseUrl === 'string' ? d.tileBaseUrl : null,
+        undergroundOverlayUrl: typeof d.undergroundOverlayUrl === 'string' ? d.undergroundOverlayUrl : null,
+        buildingBlockAreaUrl: typeof d.buildingBlockAreaUrl === 'string' ? d.buildingBlockAreaUrl : null,
         totalMonuments: typeof d.totalMonuments === 'number' ? d.totalMonuments : null,
         monuments: Array.isArray(d.monuments) ? (d.monuments as ProviderMonument[]) : [],
         biomePercentages: (d.biomePercentages as Record<string, number> | null) ?? null,
         mapStats: (d.mapStats as Record<string, number | null> | null) ?? null,
+        heatMaps: Array.isArray(d.heatMaps) ? (d.heatMaps as Array<{ name: string; url: string }>) : null,
         queuePosition: typeof d.queuePosition === 'number' ? d.queuePosition : null,
         currentStep: typeof d.currentStep === 'string' ? d.currentStep : null,
       }

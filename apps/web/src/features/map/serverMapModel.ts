@@ -64,9 +64,13 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
   // The full interactive map will be loaded inside RustMasterTool once the
   // RustMaps Provider integration lands (server-side API key + MapAPIDTO).
 
-  // Determine layers based on available data
-  const availableLayers: MapLayerId[] = ['map_image', 'monument_list'];
-  const disabledFutureLayers: MapLayerId[] = [];
+  const availableLayers: MapLayerId[] = [
+    'clean_tiles', 'icon_image', 'underground', 'building_blocks',
+    'nodes', 'hemp', 'berries',
+    'bears', 'boars', 'horses',
+    'player_spawns'
+  ];
+  const disabledFutureLayers: MapLayerId[] = ['stone', 'sulfur', 'metal'];
   
   // Coordinate mode is always 'none' in Phase 1 as DB lacks spatial data
   const coordinateMode = 'none';

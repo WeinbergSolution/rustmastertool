@@ -1,5 +1,8 @@
 import { AppShell } from './components/AppShell';
 import { SteamCallback } from './features/auth/SteamCallback';
+import { LandingPage } from './features/marketing/LandingPage';
+import { PricingPage } from './features/pricing/PricingPage';
+import { AuthPage } from './features/auth/AuthPage';
 
 function App() {
   const path = window.location.pathname;
@@ -8,6 +11,20 @@ function App() {
     return <SteamCallback />;
   }
 
+  if (path === '/' || path === '/index.html') {
+    return <LandingPage />;
+  }
+
+  if (path === '/pricing') {
+    return <PricingPage />;
+  }
+
+  if (path === '/auth') {
+    return <AuthPage />;
+  }
+
+  // Fallback to AppShell for /app and any unknown routes
+  // to maintain backward compatibility for existing users
   return (
     <AppShell />
   );

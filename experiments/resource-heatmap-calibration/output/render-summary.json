@@ -1,0 +1,12 @@
+{
+  "input_file": "density-matrix-v0.2.json",
+  "model_version": "resource-density-v0.2",
+  "note": "estimated/predicted, not exact spawn points",
+  "image_sizes": "512x512",
+  "generated_previews": [
+    "generic-node-density-preview.png",
+    "stone-potential-preview.png",
+    "sulfur-potential-preview.png",
+    "metal-ore-potential-preview.png"
+  ]
+}

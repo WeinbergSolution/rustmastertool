@@ -27,8 +27,8 @@ namespace ResourceDensityVisualRenderer
     {
         static void Main(string[] args)
         {
-            string inputPath = @"..\..\..\output\density-matrix-128.json"; // fallback
-            string outDir = @"output";
+            string inputPath = @"..\..\..\..\resource-heatmap-calibration\output\density-matrix-v0.2.json"; // fallback
+            string outDir = @"..\..\..\..\resource-heatmap-calibration\output";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -37,7 +37,7 @@ namespace ResourceDensityVisualRenderer
             }
 
             if (!File.Exists(inputPath)) {
-                inputPath = @"C:\Users\pasca\Documents\Developer Academy\DEV-Projekte\rustMasterTool\experiments\resource-density-model-v1-probe\output\density-matrix-128.json";
+                inputPath = @"C:\Users\pasca\Documents\Developer Academy\DEV-Projekte\rustMasterTool\experiments\resource-heatmap-calibration\output\density-matrix-v0.2.json";
             }
 
             Console.WriteLine($"[C5-B] Loading input matrix from: {inputPath}");
@@ -47,7 +47,7 @@ namespace ResourceDensityVisualRenderer
             Directory.CreateDirectory(outDir);
             
             int res = matrix.resolution;
-            int scale = 4; // Output 512x512
+            int scale = 2; // Output 512x512
             int outRes = res * scale;
 
             // Simple Color Gradient (Blue -> Orange -> Red -> White)

@@ -38,7 +38,7 @@ namespace ResourceDensityModelProbe
         static void Main(string[] args)
         {
             string mapPath = @"D:\RustMasterToolMapGen\output\proceduralmap.4750.1321.286.map";
-            string outPath = @"D:\RustMasterToolMapGen\experiments\resource-density-model-v1-probe\output\density-matrix-128.json";
+            string outPath = @"D:\RustMasterToolMapGen\experiments\resource-heatmap-calibration\output\density-matrix-v0.2.json";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -46,7 +46,7 @@ namespace ResourceDensityModelProbe
                 if (args[i] == "--out" && i + 1 < args.Length) outPath = args[i + 1];
             }
 
-            Console.WriteLine($"[C5-A] Loading Map: {mapPath}");
+            Console.WriteLine($"[C5-C] Loading Map: {mapPath}");
             using var fileStream = File.OpenRead(mapPath);
             fileStream.Seek(12, SeekOrigin.Begin);
             
@@ -56,11 +56,9 @@ namespace ResourceDensityModelProbe
                     using var lz4Stream = LZ4Legacy.Decode(fileStream, leaveOpen: true);
                     lz4Stream.CopyTo(ms);
                 }
-            } catch {} // ignore potential stream end issues
+            } catch {}
             
             byte[] uncompressedData = ms.ToArray();
-            Console.WriteLine($"[C5-A] Decompressed: {uncompressedData.Length} bytes");
-
             var maps = new Dictionary<string, byte[]>();
 
             using var pbStream = new MemoryStream(uncompressedData);
@@ -70,7 +68,6 @@ namespace ResourceDensityModelProbe
                 while (reader.ReadFieldHeader() > 0) {
                     if (reader.FieldNumber == 1) {
                         uint size = reader.ReadUInt32();
-                        Console.WriteLine($"[C5-A] World Size: {size}");
                     } else if (reader.FieldNumber == 2) {
                         var mapToken = reader.StartSubItem();
                         string mapName = null;
@@ -88,90 +85,70 @@ namespace ResourceDensityModelProbe
                 }
             } catch {}
 
-            Console.WriteLine($"[C5-A] Loaded layers: {string.Join(", ", maps.Keys)}");
-
-            // Build Matrix (128x128)
-            int matrixSize = 128;
+            // Build Matrix (256x256 for better visual clarity during calibration)
+            int matrixSize = 256;
             var densityMatrix = new List<object>();
 
-            // Layer details derived from sizes in C4-C
-            int GetValueAtNormalized(byte[] data, int bpp, double nx, double ny) {
+            // Topology: 2048x2048 32-bit int
+            int GetTopology(byte[] data, double nx, double ny) {
                 if (data == null || data.Length == 0) return 0;
-                int pixels = data.Length / bpp;
-                int res = (int)Math.Sqrt(pixels);
+                int res = 2048; // Hardcode known Rust topology size for 16.7MB
                 int x = (int)Math.Clamp(nx * res, 0, res - 1);
                 int y = (int)Math.Clamp(ny * res, 0, res - 1);
-                int idx = (y * res + x) * bpp;
-                
-                if (idx < 0 || idx + bpp > data.Length) return 0;
-
-                if (bpp == 1) return data[idx];
-                if (bpp == 2) return BitConverter.ToInt16(data, idx);
-                if (bpp == 4) return BitConverter.ToInt32(data, idx);
-                return 0;
+                int idx = (y * res + x) * 4;
+                if (idx < 0 || idx + 4 > data.Length) return 0;
+                return BitConverter.ToInt32(data, idx);
             }
 
             // Constants
-            int BIOME_ARID = 1;
-            int BIOME_TEMPERATE = 2;
-            int BIOME_TUNDRA = 4;
-            int BIOME_ARCTIC = 8;
-
+            int TOPOLOGY_FIELD = 1;
             int TOPOLOGY_CLIFF = 2; 
+            int TOPOLOGY_FOREST = 512;
+            int TOPOLOGY_MOUNTAIN = 4096;
+            int TOPOLOGY_TIER0 = 0x4000;
+            int TOPOLOGY_TIER1 = 0x8000;
+            int TOPOLOGY_TIER2 = 0x10000;
 
             for (int y = 0; y < matrixSize; y++)
             {
                 for (int x = 0; x < matrixSize; x++)
                 {
                     double nx = (double)x / matrixSize;
-                    double ny = (double)y / matrixSize;
+                    // Y in Rust/Unity is 0 at the bottom. We want our 2D array Y=0 to be Top.
+                    // So we read ny = 1.0 - ny from the game data.
+                    double ny = 1.0 - ((double)y / matrixSize);
 
-                    // Read topologies (assume 4 bytes per pixel)
-                    int topologyRaw = maps.ContainsKey("topology") ? GetValueAtNormalized(maps["topology"], 4, nx, ny) : 0;
+                    int topologyRaw = maps.ContainsKey("topology") ? GetTopology(maps["topology"], nx, ny) : 0;
                     
-                    // Read biomes (assume 4 bytes per pixel for safety, could be 1)
-                    int biomeRaw = maps.ContainsKey("biome") ? GetValueAtNormalized(maps["biome"], 4, nx, ny) : 0;
-                    if (maps.ContainsKey("biome") && maps["biome"].Length == 4194304) {
-                        biomeRaw = GetValueAtNormalized(maps["biome"], 1, nx, ny); // 1 byte per pixel if it's 2048x2048
-                    }
-                    
-                    // Calculate potentials based on simplistic v1 rules
+                    double genericDensity = 0.0;
                     double stonePotential = 0.0;
                     double sulfurPotential = 0.0;
                     double metalPotential = 0.0;
-                    double genericDensity = 0.1; // Base generic spawn rate
 
-                    // If it's a cliff/mountain topology, drastically increase ore potential
+                    // Rust node spawns strongly favor Cliffs, Mountains, and Forests.
+                    // Tier 0/1/2 topology also dictates spawn clusters (monuments usually have exclusions).
                     bool isCliff = (topologyRaw & TOPOLOGY_CLIFF) != 0;
-                    if (isCliff) {
-                        genericDensity += 0.6;
-                        stonePotential += 0.8;
-                        sulfurPotential += 0.5;
-                        metalPotential += 0.7;
-                    }
-
-                    // Biome weighting
-                    if ((biomeRaw & BIOME_ARCTIC) != 0) {
-                        metalPotential += 0.3;
-                        sulfurPotential += 0.1;
-                    } else if ((biomeRaw & BIOME_ARID) != 0) {
-                        sulfurPotential += 0.4;
-                        stonePotential += 0.1;
-                    } else if ((biomeRaw & BIOME_TUNDRA) != 0) {
+                    bool isMountain = (topologyRaw & TOPOLOGY_MOUNTAIN) != 0;
+                    bool isForest = (topologyRaw & TOPOLOGY_FOREST) != 0;
+                    bool isField = (topologyRaw & TOPOLOGY_FIELD) != 0;
+                    
+                    // Simple Calibration Logic
+                    if (isCliff || isMountain) {
+                        genericDensity += 0.8;
+                        stonePotential += 0.9;
+                        sulfurPotential += 0.7;
+                        metalPotential += 0.8;
+                    } else if (isForest) {
+                        genericDensity += 0.5;
+                        stonePotential += 0.4;
+                        sulfurPotential += 0.3;
                         metalPotential += 0.2;
-                        sulfurPotential += 0.2;
-                    } else {
-                        // Temperate
-                        stonePotential += 0.2;
+                    } else if (isField) {
+                        genericDensity += 0.2;
+                        stonePotential += 0.1;
                     }
 
-                    stonePotential = Math.Clamp(stonePotential, 0, 1);
-                    sulfurPotential = Math.Clamp(sulfurPotential, 0, 1);
-                    metalPotential = Math.Clamp(metalPotential, 0, 1);
-                    genericDensity = Math.Clamp(genericDensity, 0, 1);
-
-                    // Only save notable points to keep JSON small
-                    if (genericDensity > 0.15) {
+                    if (genericDensity > 0) {
                         densityMatrix.Add(new {
                             x = x,
                             y = y,
@@ -185,18 +162,18 @@ namespace ResourceDensityModelProbe
             }
 
             var outputData = new {
-                model_version = "resource-density-v0.1",
-                confidence = "ESTIMATED_PROBABILISTIC",
+                model_version = "resource-density-v0.2",
+                confidence = "CALIBRATED_ESTIMATED",
                 resolution = matrixSize,
-                description = "Honest probabilistic density model based on terrain topology and biome without direct node extraction.",
+                description = "Tuned topology weights and fixed Y-axis orientation.",
                 data = densityMatrix
             };
 
             string outDir = Path.GetDirectoryName(outPath);
             Directory.CreateDirectory(outDir);
             File.WriteAllText(outPath, JsonSerializer.Serialize(outputData, new JsonSerializerOptions { WriteIndented = true }));
-            Console.WriteLine($"[C5-A] Generated Resource Density Matrix with {densityMatrix.Count} positive nodes.");
-            Console.WriteLine($"[C5-A] Output written to {outPath}");
+            Console.WriteLine($"[C5-C] Generated Resource Density Matrix v0.2 with {densityMatrix.Count} nodes.");
+            Console.WriteLine($"[C5-C] Output written to {outPath}");
         }
     }
 }

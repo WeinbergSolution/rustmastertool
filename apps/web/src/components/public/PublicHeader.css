@@ -1,10 +1,15 @@
 .public-header {
-  background-color: #1a1b1e;
-  border-bottom: 1px solid #2d2e33;
+  background-color: #121315;
+  border-bottom: 2px solid #2d2e33;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   padding: 1rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 .public-header-content {
@@ -21,9 +26,10 @@
   gap: 0.75rem;
   text-decoration: none;
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.25rem;
   transition: opacity 0.2s;
+  letter-spacing: 1px;
 }
 
 .public-header-logo:hover {
@@ -32,6 +38,22 @@
 
 .logo-icon {
   color: #ce422b;
+}
+
+.logo-text-light {
+  font-weight: 300;
+  color: #a0a0a0;
+}
+
+.tactical-badge {
+  background-color: #ce422b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  margin-left: 0.5rem;
+  letter-spacing: 0.05em;
 }
 
 .public-header-nav {
@@ -43,8 +65,10 @@
 .nav-link {
   color: #a0a0a0;
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   transition: color 0.2s;
 }
 
@@ -59,21 +83,27 @@
 .start-free-btn {
   background-color: #ce422b;
   color: #fff !important;
-  padding: 0.5rem 1.25rem;
-  border-radius: 6px;
-  font-weight: 600;
-  transition: background-color 0.2s;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 10px rgba(206, 66, 43, 0.3);
+  border: 1px solid #e5533d;
 }
 
 .start-free-btn:hover {
   background-color: #b53823;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
   .public-header-nav {
     gap: 1rem;
   }
-  .public-header-logo .logo-text {
+  .public-header-logo .logo-text, .public-header-logo .tactical-badge {
     display: none;
   }
 }

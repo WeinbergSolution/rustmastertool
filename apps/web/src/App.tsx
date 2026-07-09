@@ -3,6 +3,7 @@ import { SteamCallback } from './features/auth/SteamCallback';
 import { LandingPage } from './features/marketing/LandingPage';
 import { PricingPage } from './features/pricing/PricingPage';
 import { AuthPage } from './features/auth/AuthPage';
+import { BetaAccessGate } from './features/auth/BetaAccessGate';
 
 function App() {
   const path = window.location.pathname;
@@ -24,9 +25,11 @@ function App() {
   }
 
   // Fallback to AppShell for /app and any unknown routes
-  // to maintain backward compatibility for existing users
+  // to maintain backward compatibility for existing users, protected by Beta Gate
   return (
-    <AppShell />
+    <BetaAccessGate>
+      <AppShell />
+    </BetaAccessGate>
   );
 }
 

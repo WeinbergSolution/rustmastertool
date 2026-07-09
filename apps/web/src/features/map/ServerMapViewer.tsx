@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle, Info, Wand2, RefreshCw } from 'lucide-react';
+import { X, Map as MapIcon, Layers, ShieldAlert, Loader2, AlertTriangle, Info, Wand2, RefreshCw, ZoomIn, ZoomOut, Maximize, Minimize, ChevronLeft } from 'lucide-react';
 import type { ServerCardData } from '../dashboard/ServerCard';
 import { parseServerToMapModel } from './serverMapModel';
 import type { ParsedServerMapModel } from './serverMapModel';
@@ -44,9 +44,31 @@ function pendingCopy(state: ProviderMapState, currentStep: string | null): strin
 export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const [model, setModel] = useState<ParsedServerMapModel | null>(null);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapWrapperRef = useRef<HTMLDivElement>(null);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+  const lastPanPos = useRef({ x: 0, y: 0 });
+
+  const handleClose = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+    onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   useEffect(() => {
     setModel(parseServerToMapModel(server));
-    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
     window.addEventListener('keydown', handleKeyDown);
     const origOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -54,7 +76,57 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = origOverflow;
     };
-  }, [server, onClose]);
+  }, [server, handleClose]);
+
+  // Zoom & Pan Handlers
+  const handleZoomIn = () => setZoom(z => Math.min(5, z + 0.5));
+  const handleZoomOut = () => setZoom(z => Math.max(1, z - 0.5));
+  const handleResetZoom = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
+
+  useEffect(() => {
+    const wrapper = mapWrapperRef.current;
+    if (!wrapper) return;
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (e.deltaY < 0) handleZoomIn();
+      else handleZoomOut();
+    };
+    wrapper.addEventListener('wheel', handleWheel, { passive: false });
+    return () => wrapper.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (zoom <= 1) return;
+    isDragging.current = true;
+    lastPanPos.current = { x: e.clientX, y: e.clientY };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastPanPos.current.x;
+    const dy = e.clientY - lastPanPos.current.y;
+    lastPanPos.current = { x: e.clientX, y: e.clientY };
+    // Clamp pan roughly so image doesn't disappear completely
+    setPan(p => ({ 
+      x: Math.max(-1000 * zoom, Math.min(1000 * zoom, p.x + dx)), 
+      y: Math.max(-1000 * zoom, Math.min(1000 * zoom, p.y + dy)) 
+    }));
+  };
+  const handlePointerUp = (e: React.PointerEvent) => {
+    isDragging.current = false;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  const toggleFullscreen = async () => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      await containerRef.current.requestFullscreen().catch(() => {});
+    } else {
+      await document.exitFullscreen().catch(() => {});
+    }
+  };
+  const canFullscreen = document.fullscreenEnabled;
+
 
   // --- Provider generation state -------------------------------------------
   const [provider, setProvider] = useState<ProviderMapResponse | null>(null);
@@ -235,26 +307,31 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   };
 
   return (
-    <div className="rm-map-viewer-overlay" onClick={onClose}>
-      <div className="rm-map-viewer-container" onClick={(e) => e.stopPropagation()}>
+    <div className="rm-map-viewer-overlay" onClick={handleClose}>
+      <div className="rm-map-viewer-container" ref={containerRef} onClick={(e) => e.stopPropagation()}>
 
         {/* Main Map Area */}
         <div className="rm-map-viewer-main">
           <div className="rm-map-viewer-header">
-            <div className="rm-map-viewer-title">
-              <h2><MapIcon size={20} /> {model.serverName}</h2>
-              <div className="rm-map-viewer-meta">
-                <span>Type: {model.mapType}</span>
-                {model.worldSize && <span>Size: {model.worldSize}</span>}
-                <span className="rm-map-viewer-badge">{displayBadge}</span>
-                {providerState === 'active' && (
-                  <span style={{ color: 'var(--text-muted)' }}>
-                    &middot; {activeMapLayer === 'clean' ? 'Clean RustMaps image' : 'Icon overlay active'}
-                  </span>
-                )}
+            <div className="rm-map-viewer-title-row">
+              <button className="rm-map-mobile-back" onClick={handleClose} aria-label="Go back">
+                <ChevronLeft size={24} />
+              </button>
+              <div className="rm-map-viewer-title">
+                <h2><MapIcon size={20} className="desktop-only-icon" /> {model.serverName}</h2>
+                <div className="rm-map-viewer-meta">
+                  <span>Type: {model.mapType}</span>
+                  {model.worldSize && <span>Size: {model.worldSize}</span>}
+                  <span className="rm-map-viewer-badge">{displayBadge}</span>
+                </div>
               </div>
             </div>
+
             <div className="rm-map-viewer-header-controls">
+              <div className="rm-map-header-cta">
+                {renderCta()}
+              </div>
+
               {providerState === 'active' && (
                 <div className="rm-map-layer-toggle">
                   <button 
@@ -273,13 +350,36 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                   </button>
                 </div>
               )}
-              <button className="rm-map-viewer-close" onClick={onClose} aria-label="Close Map">
+              
+              {canFullscreen && (
+                <button className="rm-map-viewer-icon-btn desktop-only" onClick={toggleFullscreen} aria-label="Toggle Fullscreen" title="Toggle Fullscreen">
+                  {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                </button>
+              )}
+
+              <button className="rm-map-viewer-close desktop-only" onClick={handleClose} aria-label="Close Map">
                 <X size={24} />
               </button>
             </div>
           </div>
 
-          <div className="rm-map-viewer-content">
+          <div 
+            className="rm-map-viewer-content"
+            ref={mapWrapperRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            style={{ touchAction: zoom > 1 ? 'none' : 'auto' }}
+          >
+            {imageStatus === 'loaded' && currentImageSrc && (
+              <div className="rm-map-zoom-controls">
+                <button onClick={handleZoomOut} title="Zoom Out"><ZoomOut size={18} /></button>
+                <button onClick={handleResetZoom} title="Reset Zoom" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{Math.round(zoom * 100)}%</button>
+                <button onClick={handleZoomIn} title="Zoom In"><ZoomIn size={18} /></button>
+              </div>
+            )}
+
             {imageStatus !== 'error' && currentImageSrc ? (
               <>
                 {imageStatus === 'loading' && (
@@ -294,7 +394,14 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                   className="rm-map-viewer-image"
                   onLoad={() => setImageStatus('loaded')}
                   onError={handleImageError}
-                  style={{ display: imageStatus === 'loaded' ? 'block' : 'none' }}
+                  draggable={false}
+                  style={{ 
+                    display: imageStatus === 'loaded' ? 'block' : 'none',
+                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                    transformOrigin: 'center',
+                    cursor: zoom > 1 ? (isDragging.current ? 'grabbing' : 'grab') : 'default',
+                    transition: isDragging.current ? 'none' : 'transform 0.15s ease-out'
+                  }}
                 />
               </>
             ) : (
@@ -306,21 +413,22 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             )}
           </div>
 
-          {/* Internal generation CTA — no external redirect. */}
-          <div className="rm-map-viewer-cta">
-            {renderCta()}
-            {provider?.message && providerState !== 'active' && !['provider_success_without_data', 'active_lookup_required', 'provider_lookup_failed'].includes(providerState!) && (
-              <span className="rm-map-provider-cta-note">{provider.message}</span>
-            )}
-            {showProviderDiag && provider?.providerMessage && (
-              <span className="rm-map-cta-provider-msg">Provider: {provider.providerMessage.slice(0, 200)}</span>
-            )}
-            {showProviderDiag && provider?.requestDebug && (
-              <span className="rm-map-cta-debug">
-                debug · {provider.requestDebug.method} {provider.requestDebug.endpoint} · status {provider.providerStatus ?? '—'} · seed {provider.requestDebug.seed} · size {provider.requestDebug.worldSize} · body [{provider.requestDebug.sentBodyKeys.join(', ')}]
-              </span>
-            )}
-          </div>
+          {/* Diagnostics only - CTA buttons moved to header */}
+          {(provider?.message || showProviderDiag) && (
+            <div className="rm-map-viewer-cta diagnostics-only">
+              {provider?.message && providerState !== 'active' && !['provider_success_without_data', 'active_lookup_required', 'provider_lookup_failed'].includes(providerState!) && (
+                <span className="rm-map-provider-cta-note">{provider.message}</span>
+              )}
+              {showProviderDiag && provider?.providerMessage && (
+                <span className="rm-map-cta-provider-msg">Provider: {provider.providerMessage.slice(0, 200)}</span>
+              )}
+              {showProviderDiag && provider?.requestDebug && (
+                <span className="rm-map-cta-debug">
+                  debug · {provider.requestDebug.method} {provider.requestDebug.endpoint} · status {provider.providerStatus ?? '—'} · seed {provider.requestDebug.seed} · size {provider.requestDebug.worldSize} · body [{provider.requestDebug.sentBodyKeys.join(', ')}]
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Sidebar Area */}

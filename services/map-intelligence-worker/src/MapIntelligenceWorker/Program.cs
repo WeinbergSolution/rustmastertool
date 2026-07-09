@@ -18,7 +18,8 @@ namespace MapIntelligenceWorker
             int worldSize = 0;
             int saveVersion = 0;
             string outDir = "output";
-            bool publishDryRun = false;
+            string publishMode = "dry-run";
+            bool confirmRealUpload = false;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -27,7 +28,8 @@ namespace MapIntelligenceWorker
                 if (args[i] == "--world-size" && i + 1 < args.Length) int.TryParse(args[i + 1], out worldSize);
                 if (args[i] == "--save-version" && i + 1 < args.Length) int.TryParse(args[i + 1], out saveVersion);
                 if (args[i] == "--out" && i + 1 < args.Length) outDir = args[i + 1];
-                if (args[i] == "--publish-dry-run" && i + 1 < args.Length) bool.TryParse(args[i + 1], out publishDryRun);
+                if (args[i] == "--publish-mode" && i + 1 < args.Length) publishMode = args[i + 1];
+                if (args[i] == "--confirm-real-upload") confirmRealUpload = true;
             }
 
             if (string.IsNullOrEmpty(mapPath) || !File.Exists(mapPath)) {
@@ -56,14 +58,32 @@ namespace MapIntelligenceWorker
             string cacheKey = $"map-intel:{saveVersion}:{seed}:{worldSize}:{decodeResult.MapSha256}:{densityMatrix.model_version}:{renderResult.RenderVersion}";
             var tileResult = TileStage.Run(outDir, densityMatrix.model_version, renderResult.RenderVersion, cacheKey);
 
-            // 5. Publish Stage (Dry Run)
+            // 5. Publish Stage (Generate Plan)
             int totalObjects = 0;
-            if (publishDryRun) {
-                var plan = PublishStage.RunDryRun(outDir, cacheKey, densityMatrix.model_version);
-                totalObjects = plan.totalObjects;
+            var plan = PublishStage.RunDryRun(outDir, cacheKey, densityMatrix.model_version);
+            totalObjects = plan.totalObjects;
+
+            // 6. Validation Stage
+            if (publishMode == "validate" || publishMode == "supabase") {
+                var validationResult = PublishPlanValidator.Validate(plan, publishMode, confirmRealUpload, outDir);
+                if (!validationResult.readyForRealUpload && publishMode == "supabase") {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("[Worker] FATAL: Validation failed. Cannot proceed with Supabase upload.");
+                    Console.ResetColor();
+                    Environment.Exit(1);
+                }
             }
 
-            // 6. Manifest Stage
+            // 7. Publish Execution
+            if (publishMode == "supabase") {
+                var publisher = new SupabaseStoragePublisher();
+                publisher.PublishAsync(plan, confirmRealUpload).Wait();
+            } else {
+                var publisher = new NoopStoragePublisher();
+                publisher.PublishAsync(plan, confirmRealUpload).Wait();
+            }
+
+            // 8. Manifest Stage
             ManifestStage.Run(
                 seed: seed,
                 worldSize: worldSize,

@@ -1,0 +1,56 @@
+{
+  "seed": 1321,
+  "worldSize": 4750,
+  "saveVersion": 286,
+  "sourceMapSha256": "c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0",
+  "modelVersion": "resource-density-v0.2",
+  "renderVersion": "v1.0",
+  "generatedAt": "2026-07-09T23:21:46.0090856Z",
+  "cacheKey": "map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0",
+  "generatedFiles": [
+    "overview-generic-node-density.png",
+    "overlay-generic-node-density.png",
+    "overview-stone-potential.png",
+    "overlay-stone-potential.png",
+    "overview-sulfur-potential.png",
+    "overlay-sulfur-potential.png",
+    "overview-metal-ore-potential.png",
+    "overlay-metal-ore-potential.png"
+  ],
+  "tileManifestPath": "tile-manifest.json",
+  "tilePathTemplate": "tiles/{modelVersion}/{style}/{resource}/{z}/{x}/{y}.png",
+  "tileResources": [
+    "generic-node-density",
+    "stone-potential",
+    "sulfur-potential",
+    "metal-ore-potential"
+  ],
+  "minZoom": 0,
+  "maxZoom": 2,
+  "generatedTileCount": 84,
+  "layerSummary": {
+    "topology": "Decoded successfully",
+    "biome": "Skipped (Topology used for Density v0.2)"
+  },
+  "storageContractVersion": "v1.0",
+  "storagePrefix": "map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0",
+  "publishPlanPath": "publish-plan.json",
+  "publicUrlTemplates": {
+    "leaflet": "{storageBaseUrl}/map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/tiles/{modelVersion}/overlay/{resource}/{z}/{x}/{y}.png",
+    "manifest": "{storageBaseUrl}/storage/v1/object/public/map-intelligence/map-intelligence/map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/manifest.json"
+  },
+  "objectCounts": {
+    "total": 94,
+    "tiles": 84,
+    "previews": 8,
+    "manifests": 2
+  },
+  "resourceOutputs": [
+    "generic-node-density",
+    "stone-potential",
+    "sulfur-potential",
+    "metal-ore-potential"
+  ],
+  "warnings": [],
+  "claimPolicy": "estimated density, not exact spawn positions"
+}

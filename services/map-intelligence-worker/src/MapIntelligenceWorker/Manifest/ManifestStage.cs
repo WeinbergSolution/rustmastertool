@@ -19,11 +19,13 @@ namespace MapIntelligenceWorker.Manifest
             string tilePathTemplate,
             int tileMinZoom,
             int tileMaxZoom,
-            int generatedTileCount) 
+            int generatedTileCount,
+            int totalObjects = 0) 
         {
             Console.WriteLine($"[ManifestStage] Generating Manifest");
             
             string cacheKey = $"map-intel:{saveVersion}:{seed}:{worldSize}:{mapSha256}:{modelVersion}:{renderVersion}";
+            string storagePrefix = $"map-intelligence/{cacheKey}";
 
             var manifest = new {
                 seed = seed,
@@ -49,6 +51,19 @@ namespace MapIntelligenceWorker.Manifest
                 layerSummary = new {
                     topology = "Decoded successfully",
                     biome = "Skipped (Topology used for Density v0.2)"
+                },
+                storageContractVersion = "v1.0",
+                storagePrefix = storagePrefix,
+                publishPlanPath = "publish-plan.json",
+                publicUrlTemplates = new {
+                    leaflet = "{storageBaseUrl}/" + storagePrefix + "/tiles/{modelVersion}/overlay/{resource}/{z}/{x}/{y}.png",
+                    manifest = "{storageBaseUrl}/storage/v1/object/public/map-intelligence/" + storagePrefix + "/manifest.json"
+                },
+                objectCounts = new {
+                    total = totalObjects,
+                    tiles = generatedTileCount,
+                    previews = 8,
+                    manifests = 2
                 },
                 resourceOutputs = new[] {
                     "generic-node-density",

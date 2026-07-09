@@ -4,6 +4,7 @@ using MapIntelligenceWorker.Decode;
 using MapIntelligenceWorker.Density;
 using MapIntelligenceWorker.Render;
 using MapIntelligenceWorker.Tiles;
+using MapIntelligenceWorker.Publishing;
 using MapIntelligenceWorker.Manifest;
 
 namespace MapIntelligenceWorker
@@ -17,6 +18,7 @@ namespace MapIntelligenceWorker
             int worldSize = 0;
             int saveVersion = 0;
             string outDir = "output";
+            bool publishDryRun = false;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -25,6 +27,7 @@ namespace MapIntelligenceWorker
                 if (args[i] == "--world-size" && i + 1 < args.Length) int.TryParse(args[i + 1], out worldSize);
                 if (args[i] == "--save-version" && i + 1 < args.Length) int.TryParse(args[i + 1], out saveVersion);
                 if (args[i] == "--out" && i + 1 < args.Length) outDir = args[i + 1];
+                if (args[i] == "--publish-dry-run" && i + 1 < args.Length) bool.TryParse(args[i + 1], out publishDryRun);
             }
 
             if (string.IsNullOrEmpty(mapPath) || !File.Exists(mapPath)) {
@@ -53,7 +56,14 @@ namespace MapIntelligenceWorker
             string cacheKey = $"map-intel:{saveVersion}:{seed}:{worldSize}:{decodeResult.MapSha256}:{densityMatrix.model_version}:{renderResult.RenderVersion}";
             var tileResult = TileStage.Run(outDir, densityMatrix.model_version, renderResult.RenderVersion, cacheKey);
 
-            // 5. Manifest Stage
+            // 5. Publish Stage (Dry Run)
+            int totalObjects = 0;
+            if (publishDryRun) {
+                var plan = PublishStage.RunDryRun(outDir, cacheKey, densityMatrix.model_version);
+                totalObjects = plan.totalObjects;
+            }
+
+            // 6. Manifest Stage
             ManifestStage.Run(
                 seed: seed,
                 worldSize: worldSize,
@@ -67,7 +77,8 @@ namespace MapIntelligenceWorker
                 tilePathTemplate: tileResult.TilePathTemplate,
                 tileMinZoom: tileResult.MinZoom,
                 tileMaxZoom: tileResult.MaxZoom,
-                generatedTileCount: tileResult.GeneratedTileCount
+                generatedTileCount: tileResult.GeneratedTileCount,
+                totalObjects: totalObjects
             );
 
             Console.WriteLine("[Worker] Pipeline completed successfully.");

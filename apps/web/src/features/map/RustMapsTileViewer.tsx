@@ -75,11 +75,14 @@ export function RustMapsTileViewer({
   undergroundOverlayUrl
 }: RustMapsTileViewerProps) {
   const crs = L.CRS.Simple;
-  const bounds = L.latLngBounds(L.latLng(0, 0), L.latLng(TILE_EXTENT, TILE_EXTENT));
+  // L.CRS.Simple maps (lat, lng) to (pixel y, pixel x), and y is mapped to -lat.
+  // To get tile coordinates (x=0 to max, y=0 to max), we need pixel y to go from 0 to +256.
+  // This means lat must go from -256 to 0.
+  const bounds = L.latLngBounds(L.latLng(-TILE_EXTENT, 0), L.latLng(0, TILE_EXTENT));
   
   const minZoom = 0;
   const maxZoom = 6;
-  const center: L.LatLngTuple = [TILE_EXTENT / 2, TILE_EXTENT / 2];
+  const center: L.LatLngTuple = [-TILE_EXTENT / 2, TILE_EXTENT / 2];
 
   return (
     <MapContainer 

@@ -104,3 +104,15 @@ To achieve individual Stone, Sulfur, and Metal overlays in the future:
 
 **No-Build JSON Layer Modification:**
 - The `building_block.json` response layer was falsely generating a standard image `TileLayer` checkbox toggle. It is now accurately disabled via UI state and flagged with "No-build zones data available, polygon rendering planned" until Vector/JSON rendering is introduced.
+
+## B3-G Normalized Leaflet Tile Pyramid
+**CRS/Bounds Mismatch Traced:**
+- The black map issue was traced to the fact that `worldSize` (e.g., `4750`) was passed directly into the Leaflet `CRS.Simple` bounds logic. This caused Leaflet to mathematically assume an impossibly massive flat tile array at zoom 0, requesting invalid indices that the `SafeTileLayer` correctly dropped via the `TRANSPARENT_TILE` fallback.
+
+**Normalized 256 Tile Pyramid Implemented:**
+- The `RustMapsTileViewer` was refactored to conform strictly to a standard web tile pyramid logic (`TILE_EXTENT = 256`), stripping `worldSize` entirely from the local map limits.
+- The `MapContainer` automatically centers to `[128, 128]` natively, sets zoom level to 0, and cleanly scales from a single tile to `maxZoom` 6 cleanly.
+- `tileSize={256}` was explicitly declared.
+
+**Overlays Preserved:**
+- All verified CDN overlays (nodes, hemp, berries, animals, playerspawns) snap perfectly into the new normalized scaling logic safely since their URLs are generated upstream using identical coordinates.

@@ -66,12 +66,7 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
 
   // Determine layers based on available data
   const availableLayers: MapLayerId[] = ['map_image', 'monument_list'];
-  const disabledFutureLayers: MapLayerId[] = [
-    'heatmap_population_future', 
-    'heatmap_death_curve_future', 
-    'build_spots_future', 
-    'routes_future'
-  ];
+  const disabledFutureLayers: MapLayerId[] = [];
   
   // Coordinate mode is always 'none' in Phase 1 as DB lacks spatial data
   const coordinateMode = 'none';

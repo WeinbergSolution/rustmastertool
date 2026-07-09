@@ -7,7 +7,8 @@ import { MAP_LAYERS } from './mapLayerTypes';
 import {
   requestRustMapsProviderMap,
   pollRustMapsProviderMap,
-  pickProviderImage,
+  pickCleanMapImage,
+  pickIconMapImage,
   isPendingProviderState,
   type ProviderMapResponse,
   type ProviderMapState,
@@ -61,9 +62,13 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const [pollTimedOut, setPollTimedOut] = useState(false);
   const pollStartRef = useRef(0);
 
+  const [activeMapLayer, setActiveMapLayer] = useState<'clean' | 'icons'>('clean');
+
   const providerState = provider?.state ?? null;
   const providerData = provider?.data ?? null;
-  const providerImage = providerState === 'active' ? pickProviderImage(providerData) : null;
+  const providerImageClean = providerState === 'active' ? pickCleanMapImage(providerData) : null;
+  const providerImageIcon = providerState === 'active' ? pickIconMapImage(providerData) : null;
+  const providerImage = activeMapLayer === 'clean' ? providerImageClean : providerImageIcon;
 
   const canGenerate = Boolean(model?.worldSize && model?.seed);
 
@@ -242,11 +247,36 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 <span>Type: {model.mapType}</span>
                 {model.worldSize && <span>Size: {model.worldSize}</span>}
                 <span className="rm-map-viewer-badge">{displayBadge}</span>
+                {providerState === 'active' && (
+                  <span style={{ color: 'var(--text-muted)' }}>
+                    &middot; {activeMapLayer === 'clean' ? 'Clean RustMaps image' : 'Icon overlay active'}
+                  </span>
+                )}
               </div>
             </div>
-            <button className="rm-map-viewer-close" onClick={onClose} aria-label="Close Map">
-              <X size={24} />
-            </button>
+            <div className="rm-map-viewer-header-controls">
+              {providerState === 'active' && (
+                <div className="rm-map-layer-toggle">
+                  <button 
+                    className={`rm-map-layer-btn ${activeMapLayer === 'clean' ? 'active' : ''}`}
+                    onClick={() => setActiveMapLayer('clean')}
+                  >
+                    Clean Map
+                  </button>
+                  <button 
+                    className={`rm-map-layer-btn ${activeMapLayer === 'icons' ? 'active' : ''}`}
+                    onClick={() => setActiveMapLayer('icons')}
+                    disabled={!providerData?.imageIconUrl}
+                    title={!providerData?.imageIconUrl ? "Icon map is not available for this generated map." : undefined}
+                  >
+                    Icon Map
+                  </button>
+                </div>
+              )}
+              <button className="rm-map-viewer-close" onClick={onClose} aria-label="Close Map">
+                <X size={24} />
+              </button>
+            </div>
           </div>
 
           <div className="rm-map-viewer-content">
@@ -327,12 +357,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
               })}
             </div>
 
-            <div className="rm-map-note">
-              <div style={{ fontWeight: 'bold', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <AlertTriangle size={14} /> Interactive markers
-              </div>
-              Interactive markers require validated coordinate projection.
-            </div>
+
 
             <div className="rm-map-note" style={{ background: 'rgba(59, 130, 246, 0.08)', borderLeftColor: 'var(--accent-rust)' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -382,7 +407,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             )}
             {providerState === 'active' && (providerData?.totalMonuments ?? 0) > 0 && (
               <div style={{ fontSize: '0.7rem', color: 'var(--text-disabled)', marginTop: '0.5rem' }}>
-                RustMaps Provider returned {providerData?.totalMonuments} monuments with coordinates. Interactive markers unlock after validated coordinate projection.
+                RustMaps Provider returned {providerData?.totalMonuments} monuments.
               </div>
             )}
           </div>

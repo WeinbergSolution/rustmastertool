@@ -78,8 +78,14 @@ export function isPendingProviderState(state: ProviderMapState): boolean {
   return PENDING_STATES.includes(state);
 }
 
-/** Pick the best available generated image, in priority order. */
-export function pickProviderImage(data: ProviderMapData | null): string | null {
+/** Pick the clean map image, in priority order. */
+export function pickCleanMapImage(data: ProviderMapData | null): string | null {
+  if (!data) return null;
+  return data.imageUrl || data.rawImageUrl || data.thumbnailUrl || data.imageIconUrl || null;
+}
+
+/** Pick the icon map image, in priority order. */
+export function pickIconMapImage(data: ProviderMapData | null): string | null {
   if (!data) return null;
   return data.imageIconUrl || data.imageUrl || data.rawImageUrl || data.thumbnailUrl || null;
 }

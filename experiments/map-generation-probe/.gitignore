@@ -1,0 +1,6 @@
+server/
+steamcmd/
+output/*.map
+output/*.sav
+output/*.db
+*.log

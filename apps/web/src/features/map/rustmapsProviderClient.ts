@@ -38,6 +38,7 @@ export interface ProviderMapData {
   seed: number | null;
   worldSize: number | null;
   rustmapsId: string | null;
+  saveVersion: number | null;
   mapUrl: string | null;
   imageUrl: string | null;
   rawImageUrl: string | null;
@@ -116,6 +117,7 @@ function normalize(raw: unknown): ProviderMapResponse {
         seed: typeof d.seed === 'number' ? d.seed : null,
         worldSize: typeof d.worldSize === 'number' ? d.worldSize : null,
         rustmapsId: typeof d.rustmapsId === 'string' ? d.rustmapsId : null,
+        saveVersion: typeof d.saveVersion === 'number' ? d.saveVersion : null,
         mapUrl: typeof d.mapUrl === 'string' ? d.mapUrl : null,
         imageUrl: typeof d.imageUrl === 'string' ? d.imageUrl : null,
         rawImageUrl: typeof d.rawImageUrl === 'string' ? d.rawImageUrl : null,

@@ -7,6 +7,7 @@ export type ParsedServerMapModel = {
   mapType?: string;
   worldSize?: number;
   seed?: number;
+  saveVersion?: number;
   hasCustomMap?: boolean;
   imageUrl?: string;
   thumbnailUrl?: string;

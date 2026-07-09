@@ -128,6 +128,7 @@ function toResponse(ok: boolean, state: ProviderState, cacheKey: string, row: an
       mapStats: row?.map_stats ?? null,
       queuePosition: row?.queue_position ?? null,
       currentStep: row?.current_step ?? null,
+      saveVersion: payload?.saveVersion ?? null,
       tileBaseUrl: payload?.tileBaseUrl ?? null,
       heatMaps: payload?.heatMaps ?? [],
       undergroundOverlayUrl: payload?.undergroundOverlayUrl ?? null,

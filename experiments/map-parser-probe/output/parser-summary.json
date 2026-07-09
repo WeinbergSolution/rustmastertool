@@ -1,0 +1,19 @@
+{
+  "status": "SUCCESS",
+  "level": "B",
+  "file": "D:\\RustMasterToolMapGen\\output\\proceduralmap.4750.1321.286.map",
+  "originalSize": 47100648,
+  "decompressedSize": null,
+  "foundLayers": [
+    "terrain",
+    "height",
+    "topology",
+    "water",
+    "splat",
+    "biome",
+    "alpha"
+  ],
+  "prefabMentions": 0,
+  "pathMentions": 2,
+  "monumentMentions": 0
+}

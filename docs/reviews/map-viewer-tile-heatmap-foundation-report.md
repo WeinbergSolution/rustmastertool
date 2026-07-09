@@ -72,3 +72,20 @@ To achieve individual Stone, Sulfur, and Metal overlays in the future:
 **Impact:**
 - No backend, API, Supabase, or env changes were required.
 - The existing tile/heatmap rendering functionality remains fully intact.
+
+## B3-E Derived Public Content Tile URLs
+**Public API Limitations:**
+- Verified that the RustMaps public API response does NOT natively include `tileBaseUrl`, `heatMaps`, `undergroundOverlayUrl`, or `buildingBlockAreaUrl`.
+
+**Derived Tile Base & Probe Mechanism:**
+- The `rustmaps-provider` Edge Function now intercepts fresh API responses and extracts `saveVersion` alongside `rustmapsId` (mapId).
+- It constructs the public CDN base: `https://content.rustmaps.com/maps/${saveVersion}/${rustmapsId}`.
+- Before exposing these URLs to the frontend cache, the provider safely probes the tile availability via HTTP `HEAD` / `GET` requests (e.g. testing `${contentBase}/tiles-webp/0/0/0.webp`).
+- Only explicitly verified heatmap paths (`nodes`, `hemp`, `berries`, `bears`, `boars`, `horses`, `playerspawns`) are returned to the frontend.
+
+**Data Truth Maintained:**
+- Stone, Sulfur, and Metal tiles continue to return 404s via the public CDN and remain marked as "Unconfirmed / Planned" on the frontend.
+- No Supabase DB migrations were required since the derived URLs are safely cached inside the existing JSONB `provider_payload`.
+
+**Required Action:**
+- The `rustmaps-provider` Supabase Edge Function must be redeployed to activate this logic.

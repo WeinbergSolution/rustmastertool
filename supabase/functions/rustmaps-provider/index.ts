@@ -108,6 +108,7 @@ function normalizeMapDto(dto: any) {
 
 // Shape a cache row into the unified client response.
 function toResponse(ok: boolean, state: ProviderState, cacheKey: string, row: any, message?: string) {
+  const payload = row?.provider_payload;
   return {
     ok,
     state,
@@ -127,9 +128,62 @@ function toResponse(ok: boolean, state: ProviderState, cacheKey: string, row: an
       mapStats: row?.map_stats ?? null,
       queuePosition: row?.queue_position ?? null,
       currentStep: row?.current_step ?? null,
+      tileBaseUrl: payload?.tileBaseUrl ?? null,
+      heatMaps: payload?.heatMaps ?? [],
+      undergroundOverlayUrl: payload?.undergroundOverlayUrl ?? null,
+      buildingBlockAreaUrl: payload?.buildingBlockAreaUrl ?? null,
     },
     message: message ?? null,
   };
+}
+
+async function verifyTileUrls(saveVersion: number, rustmapsId: string) {
+  const contentBase = `https://content.rustmaps.com/maps/${saveVersion}/${rustmapsId}`;
+  
+  const probe = async (url: string) => {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      let res = await fetch(url, { method: "HEAD", signal: controller.signal });
+      if (res.status === 405 || res.status === 403 || res.status === 500) {
+        res = await fetch(url, { method: "GET", signal: controller.signal });
+        if (res.body && res.body.cancel) await res.body.cancel().catch(() => {});
+      }
+      clearTimeout(timeout);
+      return res.status === 200;
+    } catch {
+      return false;
+    }
+  };
+
+  const hasBase = await probe(`${contentBase}/tiles-webp/0/0/0.webp`);
+  let tileBaseUrl = null;
+  if (hasBase) tileBaseUrl = `${contentBase}/tiles-webp/{z}/{x}/{y}.webp`;
+
+  const candidateHeatmaps = [
+    { name: "Nodes", path: "nodes" },
+    { name: "Hemp", path: "hemp" },
+    { name: "Berries", path: "berries" },
+    { name: "Bears", path: "bears" },
+    { name: "Boars", path: "boars" },
+    { name: "Horses", path: "horses" },
+    { name: "PlayerSpawns", path: "playerspawns" }
+  ];
+
+  const heatMaps = [];
+  for (const hm of candidateHeatmaps) {
+    if (await probe(`${contentBase}/${hm.path}/tiles/0/0/0.webp`)) {
+      heatMaps.push({ name: hm.name, url: `${contentBase}/${hm.path}/tiles/` });
+    }
+  }
+
+  const hasUnderground = await probe(`${contentBase}/tunnel/tiles/0/0/0.webp`);
+  const undergroundOverlayUrl = hasUnderground ? `${contentBase}/tunnel/tiles/` : null;
+
+  const hasBuildingBlocks = await probe(`${contentBase}/building_block.json`);
+  const buildingBlockAreaUrl = hasBuildingBlocks ? `${contentBase}/building_block.json` : null;
+
+  return { tileBaseUrl, heatMaps, undergroundOverlayUrl, buildingBlockAreaUrl };
 }
 
 serve(async (req) => {
@@ -296,7 +350,15 @@ serve(async (req) => {
     const { status, data, text } = await callProvider(path);
 
     if (status === 200 && data?.data) {
-      const { patch, state } = dtoToPatch(data.data, base);
+      const d = data.data;
+      if (d.saveVersion && (d.id || d.mapId) && !d.tileBaseUrl) {
+        const tiles = await verifyTileUrls(d.saveVersion, d.id || d.mapId);
+        d.tileBaseUrl = tiles.tileBaseUrl;
+        d.heatMaps = tiles.heatMaps;
+        d.undergroundOverlayUrl = tiles.undergroundOverlayUrl;
+        d.buildingBlockAreaUrl = tiles.buildingBlockAreaUrl;
+      }
+      const { patch, state } = dtoToPatch(d, base);
       const updated = await upsertCache(cacheKey, patch);
       return json(toResponse(true, state, cacheKey, updated ?? row));
     }
@@ -416,7 +478,15 @@ serve(async (req) => {
     });
 
     if ((created.status === 200 || created.status === 201) && created.data?.data) {
-      const { patch, state } = dtoToPatch(created.data.data, base);
+      const d = created.data.data;
+      if (d.saveVersion && (d.id || d.mapId) && !d.tileBaseUrl) {
+        const tiles = await verifyTileUrls(d.saveVersion, d.id || d.mapId);
+        d.tileBaseUrl = tiles.tileBaseUrl;
+        d.heatMaps = tiles.heatMaps;
+        d.undergroundOverlayUrl = tiles.undergroundOverlayUrl;
+        d.buildingBlockAreaUrl = tiles.buildingBlockAreaUrl;
+      }
+      const { patch, state } = dtoToPatch(d, base);
       const updated = await upsertCache(cacheKey, patch);
       const pendingMsg = state === "active" ? undefined : "Map generation started.";
       return json(toResponse(true, state, cacheKey, updated ?? existing, pendingMsg));

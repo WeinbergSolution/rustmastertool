@@ -1,0 +1,22 @@
+{
+  "input_model": "density-matrix-v0.2.json",
+  "model_version": "resource-density-v0.2",
+  "note": "predicted/estimated, not exact spawn points",
+  "image_sizes": "512x512",
+  "render_style": "Gaussian Blur Mask with Thermal/Alpha remap",
+  "settings": {
+    "blur_radius": 3.5,
+    "interpolation": "Bilinear/Gaussian",
+    "alpha_clamped": true
+  },
+  "generated_previews": [
+    "overview-generic-node-density.png",
+    "overlay-generic-node-density.png",
+    "overview-stone-potential.png",
+    "overlay-stone-potential.png",
+    "overview-sulfur-potential.png",
+    "overlay-sulfur-potential.png",
+    "overview-metal-ore-potential.png",
+    "overlay-metal-ore-potential.png"
+  ]
+}

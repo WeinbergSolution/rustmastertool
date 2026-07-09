@@ -1,0 +1,7 @@
+{
+  "decode_status": "FAILED",
+  "error": "SecurityException - ECall methods must be packaged into a system module.",
+  "reason": "WorldSerialization.Load invokes Unity internal methods (ECalls) or native LZ4 bindings which cannot be executed outside of the Unity Engine runtime.",
+  "layers": [],
+  "prefab_count": 0
+}

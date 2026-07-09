@@ -570,7 +570,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                         isAvailable = Boolean(providerData?.tileBaseUrl);
                       }
                       
-                      const canToggle = viewerMode === 'tile' && isAvailable;
+                      const canToggle = viewerMode === 'tile' && isAvailable && layerId !== 'building_blocks';
                       
                       // Base maps in tile mode are always on, don't show checkbox for clean_tiles
                       if (layerId === 'clean_tiles' || layerId === 'icon_image') return null;
@@ -580,7 +580,8 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                           <div className="rm-map-layer-item-info">
                             <span className="rm-map-layer-name">{config.label}</span>
                             {!isAvailable && <span className="rm-map-layer-desc" style={{ color: 'var(--status-warning)' }}>Not generated for this map</span>}
-                            {isAvailable && config.description && <span className="rm-map-layer-desc">{config.description}</span>}
+                            {isAvailable && layerId === 'building_blocks' && <span className="rm-map-layer-desc" style={{ color: 'var(--status-warning)' }}>No-build zones data available, polygon rendering planned</span>}
+                            {isAvailable && layerId !== 'building_blocks' && config.description && <span className="rm-map-layer-desc">{config.description}</span>}
                           </div>
                           <input 
                             type="checkbox" 

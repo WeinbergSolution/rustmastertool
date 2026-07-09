@@ -89,3 +89,18 @@ To achieve individual Stone, Sulfur, and Metal overlays in the future:
 
 **Required Action:**
 - The `rustmaps-provider` Supabase Edge Function must be redeployed to activate this logic.
+
+## B3-F Leaflet Tile Coordinate Bounds Fix
+**Negative Tile Coordinate Issue:**
+- Previously, Leaflet was defaulting to standard geospatial CRS and center points which resulted in out-of-bounds negative tile coordinates (e.g. `/tiles-webp/2/-1/-1.webp`) flooding the CDN and console with 404s.
+
+**Coordinate and Bounds Constraints:**
+- The Map container's bounds are now strict positive indices using `worldSize` for map extent (`[0, 0]` to `[worldSize, worldSize]`), fully enforcing positive pixel-space boundaries inside the `L.CRS.Simple` layout.
+- Added a `SafeTileLayer` React interceptor that manually filters out negative X/Y coordinates before Leaflet constructs the request string, preventing wasted API calls.
+- `maxNativeZoom` is capped to `5` for all tiles and overlays based on common RustMaps render density.
+
+**Overlay Mapping Logic Preserved:**
+- `noWrap` limits and bound restraints extend across all heatmap overlays (`nodes`, `hemp`, `berries`, etc.) concurrently.
+
+**No-Build JSON Layer Modification:**
+- The `building_block.json` response layer was falsely generating a standard image `TileLayer` checkbox toggle. It is now accurately disabled via UI state and flagged with "No-build zones data available, polygon rendering planned" until Vector/JSON rendering is introduced.

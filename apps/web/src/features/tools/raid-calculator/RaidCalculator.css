@@ -1,0 +1,226 @@
+.raid-calculator {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+
+.raid-calc-header h2 {
+  font-family: 'Russo One', sans-serif;
+  color: var(--tactical-text);
+  margin: 0;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
+
+.raid-calc-header .subtitle {
+  color: var(--tactical-text-dim);
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+}
+
+.raid-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .raid-calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.targets-panel h3, .cart-panel h3, .costs-summary h4 {
+  font-family: 'Russo One', sans-serif;
+  color: var(--tactical-text);
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.costs-summary h4 {
+  font-size: 0.9rem;
+  margin: 1.5rem 0 0.75rem 0;
+  color: #ff9900;
+  border-bottom: 1px solid rgba(255, 153, 0, 0.2);
+  padding-bottom: 0.25rem;
+}
+
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.target-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem;
+  position: relative;
+}
+
+.target-icon {
+  font-size: 2rem;
+}
+
+.target-name {
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.target-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ff5e4a;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.cart-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.cart-header h3 {
+  margin: 0;
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  color: var(--tactical-text-dim);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.clear-btn:hover {
+  color: #ff5e4a;
+  background: rgba(255, 94, 74, 0.1);
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--tactical-border);
+}
+
+.cart-item-icon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+}
+
+.cart-item-name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart-item-controls button {
+  background: var(--tactical-border);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-item-controls button:hover {
+  background: var(--tactical-primary);
+}
+
+.cart-item-controls .qty {
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+.empty-cart {
+  color: var(--tactical-text-dim);
+  text-align: center;
+  padding: 2rem 0;
+  font-style: italic;
+}
+
+.combo-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.combo-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.combo-item .qty {
+  font-weight: bold;
+  color: #fff;
+}
+
+.resource-costs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.resource-item {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border-left: 2px solid #ff9900;
+  font-size: 0.85rem;
+}
+
+.resource-item .icon {
+  margin-right: 0.5rem;
+}
+
+.resource-item .name {
+  flex: 1;
+  color: var(--tactical-text-dim);
+}
+
+.resource-item .amount {
+  font-weight: bold;
+  color: #fff;
+}

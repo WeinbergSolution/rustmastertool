@@ -1,0 +1,224 @@
+.ri-page {
+  background-color: #0d0f12;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ri-main {
+  flex: 1;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ri-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.ri-title {
+  font-size: 2.5rem;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.ri-title span {
+  color: #ce422b;
+}
+
+.ri-subtitle {
+  font-size: 1.1rem;
+  color: #8a9ba8;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(206, 66, 43, 0.1);
+  border: 1px solid rgba(206, 66, 43, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  color: #ce422b;
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+.ri-console {
+  background-color: #15181e;
+  border: 1px solid #2a303c;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.ri-tabs {
+  display: flex;
+  background-color: #0a0c0f;
+  border-bottom: 1px solid #2a303c;
+}
+
+.ri-tab {
+  flex: 1;
+  padding: 1.2rem 1rem;
+  background: none;
+  border: none;
+  color: #8a9ba8;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.ri-tab:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.ri-tab.active {
+  color: #ce422b;
+  border-bottom-color: #ce422b;
+  background-color: #15181e;
+}
+
+.ri-preview-panel {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+}
+
+.ri-image-container {
+  position: relative;
+  background-color: #0a0c0f;
+  border: 1px solid #2a303c;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.ri-image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ri-tactical-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(206, 66, 43, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(206, 66, 43, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.ri-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ri-legend {
+  background-color: #0a0c0f;
+  border: 1px solid #2a303c;
+  padding: 1.5rem;
+  border-radius: 4px;
+}
+
+.ri-legend h4 {
+  color: #fff;
+  text-transform: uppercase;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #2a303c;
+  padding-bottom: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+  color: #8a9ba8;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+}
+
+.color-high { background-color: rgba(255, 50, 50, 0.8); }
+.color-medium { background-color: rgba(255, 165, 0, 0.8); }
+.color-low { background-color: rgba(50, 150, 255, 0.5); }
+
+.ri-info {
+  font-size: 0.85rem;
+  color: #8a9ba8;
+  line-height: 1.6;
+}
+
+.ri-cta-box {
+  background-color: rgba(206, 66, 43, 0.05);
+  border: 1px solid rgba(206, 66, 43, 0.2);
+  padding: 1.5rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.ri-cta-box h4 {
+  color: #ce422b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.ri-cta-box p {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  margin-bottom: 1.5rem;
+}
+
+.ri-cta-btn {
+  display: inline-block;
+  background-color: #ce422b;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+.ri-cta-btn:hover {
+  background-color: #e54e35;
+}
+
+@media (max-width: 900px) {
+  .ri-preview-panel {
+    grid-template-columns: 1fr;
+  }
+}

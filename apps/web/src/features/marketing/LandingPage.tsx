@@ -142,12 +142,15 @@ export function LandingPage() {
                   This Map Intelligence is designed to help you strategically plan your <strong>Farm Routes</strong> 
                   before wipe day even starts. No exact coordinates, no cheats – just smart data analysis and probability.
                 </p>
+                <div style={{ marginTop: '2rem' }}>
+                  <a href="/resource-intelligence" className="btn btn-primary tactical-btn">
+                    Preview Resource Maps <ChevronRight size={18} />
+                  </a>
+                </div>
               </div>
               <div className="highlight-visual mock-heatmap">
                 {/* Visual placeholder for Map Intelligence / Heatmaps */}
-                <div className="mock-map-bg"></div>
-                <div className="heatmap-overlay-sulfur"></div>
-                <div className="heatmap-overlay-stone"></div>
+                <div className="mock-map-bg" style={{ backgroundImage: "url('/demo/map-intelligence/overview-sulfur-potential.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.6, position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}></div>
                 
                 <div className="tactical-overlay-lines"></div>
                 <div className="tactical-crosshair"></div>

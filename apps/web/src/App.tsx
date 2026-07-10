@@ -4,6 +4,7 @@ import { LandingPage } from './features/marketing/LandingPage';
 import { PricingPage } from './features/pricing/PricingPage';
 import { AuthPage } from './features/auth/AuthPage';
 import { BetaAccessGate } from './features/auth/BetaAccessGate';
+import { ResourceIntelligencePage } from './features/marketing/ResourceIntelligencePage';
 
 function App() {
   const path = window.location.pathname;
@@ -22,6 +23,10 @@ function App() {
 
   if (path === '/auth') {
     return <AuthPage />;
+  }
+
+  if (path === '/resource-intelligence') {
+    return <ResourceIntelligencePage />;
   }
 
   // Fallback to AppShell for /app and any unknown routes

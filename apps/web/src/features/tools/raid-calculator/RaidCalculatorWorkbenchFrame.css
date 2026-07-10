@@ -4,7 +4,10 @@
   align-items: center;
   height: 100%;
   width: 100%;
-  background: radial-gradient(circle at 50% 50%, #1a1714 0%, #0a0908 100%);
+  background-color: #0a0908;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 2rem;
 }
 

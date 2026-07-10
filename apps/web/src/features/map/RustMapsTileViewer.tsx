@@ -14,6 +14,7 @@ interface RustMapsTileViewerProps {
   serverWorldSize?: number;
 }
 
+// Force Vercel rebuild 2
 function formatTileUrl(url: string) {
   if (!url) return '';
   if (url.includes('{z}')) return url;

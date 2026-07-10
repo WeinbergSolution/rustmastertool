@@ -23,7 +23,7 @@ export function LandingPage() {
             </p>
             <div className="hero-actions">
               <a href="/auth" className="btn btn-primary tactical-btn">
-                Request Beta Key <ChevronRight size={18} />
+                Enter Command Center <ChevronRight size={18} />
               </a>
               <a href="/pricing" className="btn btn-secondary tactical-btn-outline">
                 View Arsenal

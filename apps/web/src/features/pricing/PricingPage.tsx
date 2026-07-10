@@ -36,7 +36,7 @@ export function PricingPage() {
             </div>
             <div className="pricing-card-action">
               <a href="/auth" className="btn btn-primary tactical-btn w-full justify-center">
-                <ShieldAlert size={16} /> Request Beta Key
+                <ShieldAlert size={16} /> Enter Command Center
               </a>
             </div>
           </div>

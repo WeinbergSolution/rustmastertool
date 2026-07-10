@@ -75,31 +75,24 @@ export function BetaAccessGate({ children }: BetaAccessGateProps) {
         </div>
         
         <div className="beta-gate-content">
-          <div className="beta-gate-warning" style={{marginBottom: '1rem', border: '1px dashed #ff9900', background: 'rgba(255, 153, 0, 0.1)', color: '#ff9900'}}>
-            <strong>DEV TEST BYPASS AVAILABLE</strong>
-            <p style={{fontSize: '0.8rem', marginTop: '4px'}}>Enter code 1337 below to bypass authentication for local testing.</p>
-          </div>
-
           {!session ? (
             <div className="beta-gate-unauth">
-              <p>You must be identified before accessing the Command Center.</p>
               <div className="beta-gate-warning">
-                <strong>AUTHENTICATION REQUIRED</strong>
-                <p>Create an account or sign in before activating your beta key.</p>
+                <strong>Authentication required</strong>
+                <p>Sign in with Steam or enter a bypass code to continue.</p>
               </div>
               <a href="/auth" className="btn btn-primary tactical-btn w-full justify-center">
-                <LogIn size={18} /> Sign In to Proceed
+                <LogIn size={18} /> Sign In with Steam
               </a>
               
               <div style={{marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--tactical-border)'}}>
-                <p style={{fontSize: '0.85rem', color: 'var(--tactical-text-dim)', marginBottom: '0.5rem'}}>DEV ONLY: Test Bypass</p>
                 <div className="key-input-group">
                   <Key className="key-icon" size={20} />
                   <input 
-                    type="text" 
+                    type="password" 
                     value={keyInput} 
                     onChange={(e) => setKeyInput(e.target.value)} 
-                    placeholder="Enter bypass code"
+                    placeholder="Bypass Code"
                     className="beta-key-input"
                   />
                 </div>
@@ -107,9 +100,9 @@ export function BetaAccessGate({ children }: BetaAccessGateProps) {
                 <button 
                   onClick={handleActivate} 
                   className="btn tactical-btn w-full justify-center"
-                  style={{marginTop: '0.5rem', background: 'rgba(255, 153, 0, 0.2)', border: '1px solid #ff9900', color: '#ff9900'}}
+                  style={{marginTop: '0.5rem', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--tactical-border)', color: 'var(--tactical-text)'}}
                 >
-                  ACTIVATE DEV BYPASS
+                  ENTER BYPASS
                 </button>
               </div>
             </div>
@@ -117,17 +110,17 @@ export function BetaAccessGate({ children }: BetaAccessGateProps) {
             <div className="beta-gate-auth">
               <p>Identity verified: <strong>{session.user.email}</strong></p>
               <div className="beta-gate-warning">
-                <strong>BETA KEY REQUIRED</strong>
-                <p>Enter your 4-digit access code to unlock the Command Center.</p>
+                <strong>Beta access required</strong>
+                <p>Your account does not have beta access yet.</p>
               </div>
               
               <div className="key-input-group">
                 <Key className="key-icon" size={20} />
                 <input 
-                  type="text" 
+                  type="password" 
                   value={keyInput} 
                   onChange={(e) => setKeyInput(e.target.value)} 
-                  placeholder="XXXX"
+                  placeholder="Bypass Code"
                   className="beta-key-input"
                   maxLength={10}
                 />
@@ -137,10 +130,11 @@ export function BetaAccessGate({ children }: BetaAccessGateProps) {
               
               <button 
                 onClick={handleActivate} 
-                className="btn btn-primary tactical-btn w-full justify-center"
+                className="btn tactical-btn w-full justify-center"
+                style={{background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--tactical-border)', color: 'var(--tactical-text)'}}
                 disabled={isActivating}
               >
-                {isActivating ? <Loader2 className="spinner" size={18} /> : 'ACTIVATE BETA'}
+                {isActivating ? <Loader2 className="spinner" size={18} /> : 'ENTER BYPASS'}
               </button>
             </div>
           )}

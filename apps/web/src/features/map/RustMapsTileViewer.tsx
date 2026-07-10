@@ -1,12 +1,13 @@
 
-import { MapContainer, useMap } from 'react-leaflet';
+import { MapContainer, useMap, ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
 import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import './RustMapsTileViewer.css';
 
 interface RustMapsTileViewerProps {
-  tileBaseUrl: string;
+  tileBaseUrl?: string;
+  fallbackImageUrl?: string | null;
   activeHeatmaps: Array<{ name: string; url: string }>;
   heatmapOpacity: number;
   undergroundOverlayUrl?: string | null;
@@ -70,6 +71,7 @@ const TILE_EXTENT = 256;
 
 export function RustMapsTileViewer({
   tileBaseUrl,
+  fallbackImageUrl,
   activeHeatmaps,
   heatmapOpacity,
   undergroundOverlayUrl
@@ -101,12 +103,20 @@ export function RustMapsTileViewer({
       <MapBoundsFitter bounds={bounds} />
 
       {/* Base Map Layer */}
-      <SafeTileLayer
-        url={`${tileBaseUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
-        bounds={bounds}
-        maxNativeZoom={5}
-        zIndex={1}
-      />
+      {tileBaseUrl ? (
+        <SafeTileLayer
+          url={`${tileBaseUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
+          bounds={bounds}
+          maxNativeZoom={5}
+          zIndex={1}
+        />
+      ) : fallbackImageUrl ? (
+        <ImageOverlay
+          url={fallbackImageUrl}
+          bounds={bounds}
+          zIndex={1}
+        />
+      ) : null}
       
       {/* Underground Overlay (if active) */}
       {undergroundOverlayUrl && (

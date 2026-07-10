@@ -150,7 +150,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const [mapIntelLayers, setMapIntelLayers] = useState<Array<{ name: string; url: string }>>([]);
 
   const hasTileBase = Boolean(providerData?.tileBaseUrl);
-  const canUseTileMode = hasTileBase;
+  const canUseTileMode = hasTileBase || mapIntelLayers.length > 0;
 
   const hasHeatMaps = (Array.isArray(providerData?.heatMaps) && providerData.heatMaps.length > 0) || mapIntelLayers.length > 0;
 
@@ -159,10 +159,10 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const [activeTileLayers, setActiveTileLayers] = useState<Set<MapLayerId>>(new Set());
 
   useEffect(() => {
-    if (providerData?.tileBaseUrl) {
+    if (providerData?.tileBaseUrl || mapIntelLayers.length > 0) {
       setViewerMode('tile');
     }
-  }, [providerData?.tileBaseUrl]);
+  }, [providerData?.tileBaseUrl, mapIntelLayers.length > 0]);
 
   useEffect(() => {
     if (viewerMode === 'tile' && mapIntelStatus === 'idle') {
@@ -466,15 +466,16 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             onPointerLeave={viewerMode === 'image' ? handlePointerUp : undefined}
             style={{ touchAction: viewerMode === 'image' && zoom > 1 ? 'none' : 'auto' }}
           >
-            {viewerMode === 'tile' && providerData?.tileBaseUrl ? (
+            {viewerMode === 'tile' && canUseTileMode ? (
               <RustMapsTileViewer
-                tileBaseUrl={providerData.tileBaseUrl}
+                tileBaseUrl={providerData?.tileBaseUrl || undefined}
+                fallbackImageUrl={providerImage}
                 activeHeatmaps={[
-                  ...(providerData.heatMaps?.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)) ?? []),
+                  ...(providerData?.heatMaps?.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)) ?? []),
                   ...(mapIntelLayers.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)))
                 ]}
                 heatmapOpacity={heatmapOpacity}
-                undergroundOverlayUrl={activeTileLayers.has('underground') ? providerData.undergroundOverlayUrl : null}
+                undergroundOverlayUrl={activeTileLayers.has('underground') ? providerData?.undergroundOverlayUrl : null}
               />
             ) : (
               <>

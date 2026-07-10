@@ -13,9 +13,15 @@ interface RustMapsTileViewerProps {
   undergroundOverlayUrl?: string | null;
 }
 
+function formatTileUrl(url: string) {
+  if (!url) return '';
+  if (url.includes('{z}')) return url;
+  return `${url.replace(/\/$/, '')}/{z}/{x}/{y}.webp`;
+}
+
 const TRANSPARENT_TILE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
-function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; zIndex?: number }) {
+function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex, onError }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; zIndex?: number; onError?: () => void }) {
   const map = useMap();
   const layerRef = useRef<L.TileLayer | null>(null);
 
@@ -32,6 +38,12 @@ function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex }: 
       zIndex
     });
     
+    if (onError) {
+      layer.on('tileerror', () => {
+        onError();
+      });
+    }
+
     const origGetTileUrl = layer.getTileUrl.bind(layer);
     layer.getTileUrl = function(coords: any) {
       if (coords.x < 0 || coords.y < 0) return TRANSPARENT_TILE;
@@ -44,9 +56,10 @@ function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex }: 
     layerRef.current = layer;
 
     return () => {
+      layer.off('tileerror');
       layer.removeFrom(map);
     };
-  }, [map, url, bounds, maxNativeZoom, zIndex]);
+  }, [map, url, bounds, maxNativeZoom, zIndex, onError]);
 
   useEffect(() => {
     if (layerRef.current) {
@@ -69,6 +82,8 @@ function MapBoundsFitter({ bounds }: { bounds: L.LatLngBounds }) {
 
 const TILE_EXTENT = 256;
 
+import { useState } from 'react';
+
 export function RustMapsTileViewer({
   tileBaseUrl,
   fallbackImageUrl,
@@ -77,6 +92,7 @@ export function RustMapsTileViewer({
   undergroundOverlayUrl
 }: RustMapsTileViewerProps) {
   const crs = L.CRS.Simple;
+  const [baseTilesFailed, setBaseTilesFailed] = useState(false);
   // L.CRS.Simple maps (lat, lng) to (pixel y, pixel x), and y is mapped to -lat.
   // To get tile coordinates (x=0 to max, y=0 to max), we need pixel y to go from 0 to +256.
   // This means lat must go from -256 to 0.
@@ -103,12 +119,13 @@ export function RustMapsTileViewer({
       <MapBoundsFitter bounds={bounds} />
 
       {/* Base Map Layer */}
-      {tileBaseUrl ? (
+      {tileBaseUrl && !baseTilesFailed ? (
         <SafeTileLayer
-          url={`${tileBaseUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
+          url={formatTileUrl(tileBaseUrl)}
           bounds={bounds}
           maxNativeZoom={5}
           zIndex={1}
+          onError={() => setBaseTilesFailed(true)}
         />
       ) : fallbackImageUrl ? (
         <ImageOverlay
@@ -121,7 +138,7 @@ export function RustMapsTileViewer({
       {/* Underground Overlay (if active) */}
       {undergroundOverlayUrl && (
          <SafeTileLayer
-          url={`${undergroundOverlayUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
+          url={formatTileUrl(undergroundOverlayUrl)}
           bounds={bounds}
           maxNativeZoom={5}
           zIndex={2}
@@ -132,7 +149,7 @@ export function RustMapsTileViewer({
       {activeHeatmaps.map((hm, i) => (
         <SafeTileLayer
           key={hm.name}
-          url={`${hm.url.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
+          url={formatTileUrl(hm.url)}
           bounds={bounds}
           opacity={heatmapOpacity}
           maxNativeZoom={5}

@@ -32,7 +32,12 @@ export const MAP_LAYERS: Record<MapLayerId, MapLayerConfig> = {
   underground: { id: 'underground', label: 'Underground', category: 'Map', isPlanned: true },
   building_blocks: { id: 'building_blocks', label: 'No-build zones', category: 'Map', isPlanned: true },
   
-  nodes: { id: 'nodes', label: 'Nodes', category: 'Resources' },
+  nodes: { 
+    id: 'nodes', 
+    label: 'Generic Nodes (Potential)', 
+    category: 'Resources',
+    description: 'Estimated areas, not exact spawn positions.'
+  },
   hemp: { id: 'hemp', label: 'Hemp', category: 'Resources' },
   berries: { id: 'berries', label: 'Berries', category: 'Resources' },
   
@@ -44,23 +49,20 @@ export const MAP_LAYERS: Record<MapLayerId, MapLayerConfig> = {
   
   stone: { 
     id: 'stone', 
-    label: 'Stone Ore Density Estimate', 
-    category: 'Unconfirmed', 
-    isPlanned: true, 
-    unconfirmedReason: 'Separate ore types are not exposed by the confirmed RustMaps heatmap data yet.' 
+    label: 'Stone Ore Potential (Estimated)', 
+    category: 'Resources', 
+    description: 'Estimated heatmap based on topology and biome data. Not exact spawn positions.' 
   },
   sulfur: { 
     id: 'sulfur', 
-    label: 'Sulfur Ore Density Estimate', 
-    category: 'Unconfirmed', 
-    isPlanned: true, 
-    unconfirmedReason: 'Separate ore types are not exposed by the confirmed RustMaps heatmap data yet.' 
+    label: 'Sulfur Ore Potential (Estimated)', 
+    category: 'Resources', 
+    description: 'Estimated heatmap based on topology and biome data. Not exact spawn positions.' 
   },
   metal: { 
     id: 'metal', 
-    label: 'Metal Ore Density Estimate', 
-    category: 'Unconfirmed', 
-    isPlanned: true, 
-    unconfirmedReason: 'Separate ore types are not exposed by the confirmed RustMaps heatmap data yet.' 
+    label: 'Metal Ore Potential (Estimated)', 
+    category: 'Resources', 
+    description: 'Estimated heatmap based on topology and biome data. Not exact spawn positions.' 
   }
 };

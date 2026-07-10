@@ -69,9 +69,10 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
     'clean_tiles', 'icon_image', 'underground', 'building_blocks',
     'nodes', 'hemp', 'berries',
     'bears', 'boars', 'horses',
-    'player_spawns'
+    'player_spawns',
+    'stone', 'sulfur', 'metal'
   ];
-  const disabledFutureLayers: MapLayerId[] = ['stone', 'sulfur', 'metal'];
+  const disabledFutureLayers: MapLayerId[] = [];
   
   // Coordinate mode is always 'none' in Phase 1 as DB lacks spatial data
   const coordinateMode = 'none';

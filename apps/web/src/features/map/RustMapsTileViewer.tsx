@@ -1,7 +1,7 @@
 
 import { MapContainer, useMap, ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import './RustMapsTileViewer.css';
 
@@ -23,13 +23,14 @@ function formatTileUrl(url: string) {
 
 const TRANSPARENT_TILE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
-function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex, onError }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; zIndex?: number; onError?: () => void }) {
+function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, minNativeZoom = 0, zIndex, onError, tileSize = 256 }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; minNativeZoom?: number; zIndex?: number; onError?: () => void; tileSize?: number }) {
   const map = useMap();
   const layerRef = useRef<L.TileLayer | null>(null);
 
   useEffect(() => {
     const layer = L.tileLayer(url, {
-      tileSize: 256,
+      tileSize,
+      minNativeZoom,
       maxNativeZoom,
       maxZoom: 6,
       noWrap: true,
@@ -53,7 +54,7 @@ function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex, on
       layer.off('tileerror');
       layer.removeFrom(map);
     };
-  }, [map, url, bounds, maxNativeZoom, zIndex, onError]);
+  }, [map, url, bounds, maxNativeZoom, minNativeZoom, zIndex, opacity, onError, tileSize]);
 
   useEffect(() => {
     if (layerRef.current) {
@@ -101,24 +102,15 @@ export function RustMapsTileViewer({
   undergroundOverlayUrl,
   serverWorldSize = 4000
 }: RustMapsTileViewerProps) {
-  const scale = 256 / serverWorldSize;
-  const crs = useMemo(() => {
-    return L.extend({}, L.CRS.Simple, {
-      transformation: new L.Transformation(scale, 0, -scale, 0)
-    });
-  }, [scale]);
-
   const [baseTilesFailed, setBaseTilesFailed] = useState(false);
   
   // Leaflet CRS.Simple maps bounds to raw units.
-  // With our custom CRS scaling, the 4000x4000 unit world maps to exactly 256x256 pixels at zoom 0.
-  // This perfectly aligns with standard Slippy Map tile pyramids where zoom=0 is exactly 1 tile!
   const bounds = L.latLngBounds(L.latLng(-serverWorldSize, 0), L.latLng(0, serverWorldSize));
   const center: L.LatLngTuple = [-serverWorldSize / 2, serverWorldSize / 2];
 
   return (
     <MapContainer 
-      crs={crs}
+      crs={L.CRS.Simple}
       center={center} 
       zoom={0} 
       minZoom={-5}
@@ -138,6 +130,7 @@ export function RustMapsTileViewer({
           url={formatTileUrl(tileBaseUrl)}
           bounds={bounds}
           maxNativeZoom={5}
+          minNativeZoom={0}
           zIndex={1}
           onError={() => setBaseTilesFailed(true)}
         />
@@ -155,6 +148,7 @@ export function RustMapsTileViewer({
           url={formatTileUrl(undergroundOverlayUrl)}
           bounds={bounds}
           maxNativeZoom={5}
+          minNativeZoom={0}
           zIndex={2}
         />
       )}

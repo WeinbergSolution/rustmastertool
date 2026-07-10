@@ -3,10 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MapIntelligenceWorker.Publishing
 {
+    public class UploadResult
+    {
+        public bool uploadAttempted { get; set; }
+        public int objectCount { get; set; }
+        public int uploadedObjectCount { get; set; }
+        public int failedObjectCount { get; set; }
+        public int skippedObjectCount { get; set; }
+        public string bucket { get; set; }
+        public string objectPrefix { get; set; }
+        public long totalBytes { get; set; }
+        public List<string> firstUploadedObjects { get; set; } = new List<string>();
+        public List<string> publicUrlSamples { get; set; } = new List<string>();
+        public List<string> errors { get; set; } = new List<string>();
+        public List<string> warnings { get; set; } = new List<string>();
+        public string uploadedAt { get; set; }
+    }
+
     public class SupabaseStoragePublisher : IStoragePublisher
     {
         private static readonly HttpClient _httpClient = new HttpClient();
@@ -44,6 +62,15 @@ namespace MapIntelligenceWorker.Publishing
             // Mock Implementation to prepare the HTTP request
             int uploadedCount = 0;
             int failedCount = 0;
+            
+            var result = new UploadResult {
+                uploadAttempted = true,
+                objectCount = plan.totalObjects,
+                bucket = "map-intelligence",
+                objectPrefix = plan.prefix,
+                totalBytes = plan.totalBytes,
+                uploadedAt = DateTime.UtcNow.ToString("o")
+            };
 
             foreach (var obj in plan.objects)
             {
@@ -66,26 +93,44 @@ namespace MapIntelligenceWorker.Publishing
                     
                     // Supabase Cache-Control is currently set via metadata in multi-part or as header
                     // For standard REST endpoint, Cache-Control header works.
-                    fileContent.Headers.Add("Cache-Control", obj.cacheControl);
+                    request.Headers.TryAddWithoutValidation("Cache-Control", obj.cacheControl);
                     
                     request.Content = fileContent;
 
-                    // Console.WriteLine($"[SupabaseStoragePublisher] Preparing POST {uploadUrl}");
-                    
-                    // In Phase C6-D1 we DO NOT SEND the request.
-                    // var response = await _httpClient.SendAsync(request);
-                    // if (!response.IsSuccessStatusCode) { ... }
-
-                    uploadedCount++;
+                    // Execute request
+                    var response = await _httpClient.SendAsync(request);
+                    if (!response.IsSuccessStatusCode) { 
+                        string errContent = await response.Content.ReadAsStringAsync();
+                        string errorMsg = $"[SupabaseStoragePublisher] HTTP {response.StatusCode} for {obj.objectPath}: {errContent}";
+                        Console.WriteLine(errorMsg);
+                        result.errors.Add(errorMsg);
+                        failedCount++;
+                    } else {
+                        uploadedCount++;
+                        if (result.firstUploadedObjects.Count < 5) {
+                            result.firstUploadedObjects.Add(obj.objectPath);
+                        }
+                        if (result.publicUrlSamples.Count < 5) {
+                            result.publicUrlSamples.Add(obj.publicUrlTemplate.Replace("{supabaseUrl}", "SUPABASE_URL"));
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[SupabaseStoragePublisher] Error preparing upload for {obj.objectPath}: {ex.Message}");
+                    string errorMsg = $"[SupabaseStoragePublisher] Error preparing upload for {obj.objectPath}: {ex.Message}";
+                    Console.WriteLine(errorMsg);
+                    result.errors.Add(errorMsg);
                     failedCount++;
                 }
             }
 
-            Console.WriteLine($"[SupabaseStoragePublisher] Completed mock preparation. Uploaded: {uploadedCount}, Failed: {failedCount}.");
+            result.uploadedObjectCount = uploadedCount;
+            result.failedObjectCount = failedCount;
+
+            string outPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "output", "publisher-upload-result.json");
+            File.WriteAllText(outPath, JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
+
+            Console.WriteLine($"[SupabaseStoragePublisher] Completed real upload. Uploaded: {uploadedCount}, Failed: {failedCount}. Wrote result to {outPath}");
         }
     }
 }

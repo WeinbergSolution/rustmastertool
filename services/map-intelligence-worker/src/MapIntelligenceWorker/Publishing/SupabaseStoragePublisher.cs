@@ -163,7 +163,10 @@ namespace MapIntelligenceWorker.Publishing
             result.uploadedObjectCount = uploadedCount;
             result.failedObjectCount = failedCount;
 
-            string outPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "output", "publisher-upload-result.json");
+            string outPath = Path.Combine("services", "map-intelligence-worker", "output", "publisher-upload-result.json");
+            if (!Directory.Exists(Path.GetDirectoryName(outPath))) {
+                outPath = Path.Combine(Directory.GetCurrentDirectory(), "output", "publisher-upload-result.json");
+            }
             File.WriteAllText(outPath, JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
 
             Console.WriteLine($"[SupabaseStoragePublisher] Completed real upload. Uploaded: {uploadedCount}, Failed: {failedCount}. Wrote result to {outPath}");

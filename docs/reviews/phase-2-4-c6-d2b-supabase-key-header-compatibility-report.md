@@ -1,38 +1,43 @@
-# Phase 2.4-C6-D2B — Supabase Key Header Compatibility Fix Report
+# Phase 2.4-C6-D2B — Supabase Key Header Compatibility Fix Report (Updated)
 
-## Executive Verdict: BLOCKED
+## Executive Verdict: BLOCKED (404 Bucket not found)
 
-Das Format des bereitgestellten API-Keys konnte weder als Legacy JWT (`eyJ...`) noch als Supabase Secret (`sb_secret_...`) identifiziert werden. Der Vorgang wurde daher blockiert, um fehlerhafte Uploads und Autorisierungsfehler bei Supabase zu vermeiden.
+Der Authentifizierungsfehler (`403 Unauthorized`) wurde erfolgreich behoben! Der bereitgestellte API-Key wurde korrekt erkannt und akzeptiert. Allerdings ist der Upload gescheitert, da der Ziel-Bucket in Supabase noch nicht existiert.
 
 ## Test Summary
 
 - **Branch:** `experiment/map-intelligence-supabase-publisher`
-- **Commit Hash:** `[Wird nach Commit erzeugt, Head aktuell b87168f]`
-- **Vorheriger Fehler:** `JWS Protected Header is invalid`
-- **Erkannte Ursache:** Der verwendete `SUPABASE_SERVICE_ROLE_KEY` in der lokalen Umgebung entsprach keinem gängigen Supabase Key Format. Das System verhindert nun von vornherein Uploads mit unbekannten oder potenziell defekten Token (z. B. abgeschnittenen Strings oder fehlerhaften Präfixen), die zu `403 Unauthorized` führen.
+- **Commit Hash:** `[Wird nach Commit erzeugt]`
+- **Vorheriger Fehler:** `JWS Protected Header is invalid` (403)
+- **Aktueller Fehler:** `Bucket not found` (404)
+- **Erkannte Ursache:** Der HTTP 403 Fehler ist behoben. Der Key wird nun als valider Legacy JWT Service Role Key erkannt und mit den korrekten Headern (`Authorization: Bearer` und `apikey`) gesendet. Supabase akzeptiert die Authentifizierung, meldet jedoch `404 Not Found`, da der Bucket `map-intelligence` im Projekt noch nicht erstellt wurde. (Wie vorgegeben, wurde keine Bucket-Erstellung im Code durchgeführt).
 
 ## Key Format Detection
 
 - **supabaseSecretKeyPresent:** `false`
 - **supabaseServiceRoleKeyPresent:** `true`
-- **selectedKeyFormat:** `Unknown`
-- **authorizationBearerUsed:** `false`
-- **apikeyHeaderUsed:** `false` (Upload wurde vor HTTP-Request abgebrochen)
+- **selectedKeyFormat:** `LegacyJwtServiceRole`
+- **authorizationBearerUsed:** `true`
+- **apikeyHeaderUsed:** `true`
+- **MAP_INTELLIGENCE_BUCKET defaulted:** `true`
 
 ## Upload Ergebnis
 
-- **Upload Attempted:** `false` (Validation schlug mit `FATAL` fehl)
+- **Upload Attempted:** `true`
+- **Upload Erfolgreich:** `nein`
 - **uploadedObjectCount:** 0
-- **failedObjectCount:** 0 (94 invalid aufgrund Validation-Blockers)
+- **failedObjectCount:** 94
 - **bucket:** `map-intelligence`
 - **objectPrefix:** `map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0`
+- **Public/private Zugriff:** Konnte nicht geprüft werden, da der Bucket nicht existiert.
 - **Secret Values Logged:** `false`
+
+## Detaillierte Fehler-Responses (Auszug)
+
+Alle 94 Objekte scheiterten mit der exakt selben Supabase Response:
+`{"statusCode":"404","error":"Bucket not found","message":"Bucket not found"}`
 
 ## Nächster Schritt
 
 **Bucket/Policy/Auth Fix:**
-Bevor wir zu C7-B Frontend Leaflet Overlay Integration übergehen können, muss der Key in der `.env.local` überprüft werden. Er muss entweder:
-1. Ein valider Legacy JWT Service Role Key sein (beginnt mit `eyJ...`).
-2. Ein valider Supabase Secret Key sein (beginnt mit `sb_secret_...`, kann wahlweise auch als `SUPABASE_SECRET_KEY` gesetzt werden).
-
-Sobald der Key korrigiert ist, kann der Smoke Test erneut durchgeführt werden.
+Der Storage-Code für die Authentifizierung funktioniert nun korrekt. Als nächstes muss der Bucket `map-intelligence` in Supabase (z. B. via Dashboard oder Terraform/Migrations) erstellt werden, bevor ein weiterer Upload-Test (C6-D2C) durchgeführt werden kann.

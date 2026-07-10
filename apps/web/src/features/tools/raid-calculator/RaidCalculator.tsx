@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { TARGETS, RAID_COSTS, RAID_TOOLS, RESOURCES } from './raidCalculatorData';
 import type { RaidTargetId, RaidToolId, ResourceId } from './raidCalculatorData';
 import './RaidCalculator.css';
-import { Trash2, CheckSquare, Square } from 'lucide-react';
+import { Trash2, CheckSquare, Square, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function RaidCalculator() {
   const [cart, setCart] = useState<Record<RaidTargetId, number>>({} as any);
+  const [targetPage, setTargetPage] = useState(0);
 
   const addToCart = (id: RaidTargetId) => {
     setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
@@ -68,7 +69,9 @@ export function RaidCalculator() {
   // For the display grid, we can just show the first 6 targets as the image shows, or all of them.
   // The image shows: Stone Wall, Metal Door, Armored Door, Garage Door, Sheet Metal Wall, High External Stone Wall.
   // We have slightly different targets, so we just map the ones we have.
-  const displayTargets = TARGETS; 
+  const itemsPerPage = 6;
+  const totalTargetPages = Math.ceil(TARGETS.length / itemsPerPage);
+  const displayTargets = TARGETS.slice(targetPage * itemsPerPage, (targetPage + 1) * itemsPerPage);
 
   // For the explosives list, we show C4, Rockets, Satchels, Explo Ammo, Beancan
   const explosivesList: RaidToolId[] = ['c4', 'rocket', 'satchel', 'explo', 'beancan'];
@@ -82,7 +85,7 @@ export function RaidCalculator() {
       <div className="raid-header">
         <div className="header-left">
           <div className="rust-logo-placeholder"></div>
-          <h2>RUST <span>RAID CALCULATOR</span></h2>
+          <h2>RAID CALCULATOR</h2>
         </div>
         <div className="header-right">
           <div className="stats-col">
@@ -105,6 +108,8 @@ export function RaidCalculator() {
           <div className="col-header">
             <h3>TARGET STRUCTURES</h3>
             <div className="header-actions">
+              <button className="icon-btn" disabled={targetPage === 0} onClick={() => setTargetPage(p => p - 1)}><ChevronLeft size={14} /></button>
+              <button className="icon-btn" disabled={targetPage >= totalTargetPages - 1} onClick={() => setTargetPage(p => p + 1)}><ChevronRight size={14} /></button>
               <button className="icon-btn" onClick={clearCart} title="Clear"><Trash2 size={14} /></button>
             </div>
           </div>
@@ -163,7 +168,6 @@ export function RaidCalculator() {
                 <div key={toolId} className="explosive-row">
                   <div className="ex-icon-box">
                     <span className="ex-icon">{tool?.icon}</span>
-                    <span className="ex-static-qty">x{qty}</span>
                   </div>
                   <div className="ex-details">
                     <div className="ex-name">{tool?.name}</div>
@@ -206,7 +210,6 @@ export function RaidCalculator() {
             <h4 className="sub-title">RE Raid Path:</h4>
             <textarea className="raid-path-input" placeholder="Text Raid Path..."></textarea>
           </div>
-          <button className="btn-berechnen">BERECHNEN</button>
         </div>
       </div>
     </div>

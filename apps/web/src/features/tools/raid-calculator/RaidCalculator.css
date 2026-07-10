@@ -16,11 +16,14 @@
   font-size: 1.15cqw; /* Slightly smaller to fit better */
 }
 
-/* Scrollbar for the main container */
-.raid-calculator::-webkit-scrollbar { width: 0.6em; }
-.raid-calculator::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 0.3em; }
-.raid-calculator::-webkit-scrollbar-thumb { background: #557224; border-radius: 0.3em; }
-.raid-calculator::-webkit-scrollbar-thumb:hover { background: #7ab536; }
+/* Hide all scrollbars to make it look clean like a game UI */
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Scrollbar for the main container (hidden as requested, but keep logical code) */
+.raid-calculator {
+  scrollbar-width: none;
+}
 
 /* HEADER */
 .raid-header {
@@ -65,11 +68,6 @@
   letter-spacing: 0.05em;
   line-height: 1;
 }
-.header-left h2 span {
-  font-family: 'Russo One', sans-serif;
-  color: #c4c4c4;
-  margin-left: 0.5em;
-}
 
 .header-right {
   display: flex;
@@ -106,11 +104,11 @@
   background-color: #557224;
   color: #fff;
   font-family: 'Russo One', sans-serif;
-  font-size: 1.8em;
-  padding: 0.3em 0.5em;
+  font-size: 1.2em; /* Smaller as requested */
+  padding: 0.2em 0.4em;
   border-radius: 0.2em;
-  border: 0.15em solid #7ab536;
-  box-shadow: 0 0.3em 0.8em rgba(0,0,0,0.5);
+  border: 0.1em solid #7ab536;
+  box-shadow: 0 0.2em 0.5em rgba(0,0,0,0.5);
   line-height: 1;
 }
 
@@ -118,7 +116,7 @@
 .raid-columns {
   display: grid;
   grid-template-columns: 1.15fr 1fr 1fr;
-  gap: 1.2em;
+  gap: 0.8em; /* Reduced gap as requested */
   height: 100%;
   min-height: 0; /* Important for preventing overflow in flex/grid children */
 }
@@ -149,6 +147,11 @@
   letter-spacing: 0.05em;
 }
 
+.header-actions {
+  display: flex;
+  gap: 0.25em;
+}
+
 .icon-btn {
   background: #cd412b;
   color: white;
@@ -160,7 +163,12 @@
   align-items: center;
   justify-content: center;
 }
-.icon-btn:hover {
+.icon-btn:disabled {
+  background: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+.icon-btn:hover:not(:disabled) {
   background: #e54c4c;
 }
 
@@ -419,29 +427,9 @@
   font-size: 0.9em;
   min-height: 2em; /* Ensure it doesn't collapse to 0 */
 }
+.raid-path-input::-webkit-resizer {
+  display: none;
+}
 .raid-path-input:focus {
   border-color: #555;
-}
-
-.btn-berechnen {
-  background: linear-gradient(180deg, #8bc34a 0%, #689f38 100%);
-  color: white;
-  border: 0.15em solid #558b2f;
-  border-radius: 0.3em;
-  padding: 0.6em;
-  font-family: 'Russo One', sans-serif;
-  font-size: 1.1em;
-  cursor: pointer;
-  text-transform: uppercase;
-  text-shadow: 0.05em 0.05em 0.1em rgba(0,0,0,0.5);
-  box-shadow: 0 0.2em 0.4em rgba(0,0,0,0.3);
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-.btn-berechnen:hover {
-  background: linear-gradient(180deg, #9ccc65 0%, #7cb342 100%);
-  transform: translateY(-0.05em);
-}
-.btn-berechnen:active {
-  transform: translateY(0.05em);
 }

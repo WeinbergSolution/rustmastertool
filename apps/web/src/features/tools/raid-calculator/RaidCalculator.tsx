@@ -207,8 +207,8 @@ export function RaidCalculator() {
             </div>
           </div>
           <div className="raid-path-section">
-            <h4 className="sub-title">RE Raid Path:</h4>
-            <textarea className="raid-path-input" placeholder="Text Raid Path..."></textarea>
+            <h4 className="sub-title">Raid Path:</h4>
+            <textarea className="raid-path-input" placeholder="Enter Raid Path..."></textarea>
           </div>
         </div>
       </div>

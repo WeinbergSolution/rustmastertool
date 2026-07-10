@@ -3,6 +3,9 @@ export const MAP_INTEL_BUCKET = 'map-intelligence';
 export interface MapIntelManifest {
   pipelineVersion: string;
   generatedAt: string;
+  saveVersion?: number;
+  seed?: number;
+  worldSize?: number;
 }
 
 export interface MapIntelTileManifest {
@@ -33,10 +36,22 @@ export async function loadMapIntelligenceManifests(supabaseUrl: string, objectPr
     const manifest: MapIntelManifest = await manifestRes.json();
     const tileManifest: MapIntelTileManifest = await tileManifestRes.json();
 
+    // Extract identity from prefix if not explicitly present in manifest
+    // prefix format: map-intel:{saveVersion}:{seed}:{worldSize}:{hash}:...
+    const parts = prefix.split(':');
+    const extractedSaveVersion = manifest.saveVersion ?? (parts.length > 3 ? parseInt(parts[1], 10) : null);
+    const extractedSeed = manifest.seed ?? (parts.length > 3 ? parseInt(parts[2], 10) : null);
+    const extractedWorldSize = manifest.worldSize ?? (parts.length > 3 ? parseInt(parts[3], 10) : null);
+
     return {
       baseUrl,
       manifest,
-      tileManifest
+      tileManifest,
+      identity: {
+        saveVersion: extractedSaveVersion,
+        seed: extractedSeed,
+        worldSize: extractedWorldSize
+      }
     };
   } catch (error) {
     console.error("Failed to load Map Intelligence manifests", error);

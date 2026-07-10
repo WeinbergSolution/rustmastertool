@@ -41,6 +41,7 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
   const mapType = server.mapType || (isCustomMap ? 'Custom' : server.mapName) || 'Unknown';
   const worldSize = server.mapIdentitySize || server.worldSize;
   const seed = server.mapIdentitySeed || server.worldSeed;
+  const saveVersion = server.mapIdentitySaveVersion || server.saveVersion || null;
   
   const monumentNames = server.monumentNames || [];
   
@@ -83,6 +84,7 @@ export function parseServerToMapModel(server: ServerCardData): ParsedServerMapMo
     mapType,
     worldSize,
     seed,
+    saveVersion,
     hasCustomMap: isCustomMap,
     imageUrl,
     thumbnailUrl,

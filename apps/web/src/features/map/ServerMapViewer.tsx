@@ -148,7 +148,8 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   // --- Map Intelligence Layers -----------------------------------------------
   const [mapIntelStatus, setMapIntelStatus] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
   const [mapIntelLayers, setMapIntelLayers] = useState<Array<{ name: string; url: string; maxNativeZoom: number }>>([]);
-  const isDemoSmokeTest = mapIntelLayers.length > 0 && (model?.seed !== 1321 || model?.worldSize !== 4750);
+  const [isMapIntelMatched, setIsMapIntelMatched] = useState(true);
+  const isDemoSmokeTest = mapIntelLayers.length > 0 && model?.seed === 1321 && model?.worldSize === 4750;
 
   const hasTileBase = Boolean(providerData?.tileBaseUrl);
   const canUseTileMode = hasTileBase || mapIntelLayers.length > 0;
@@ -178,6 +179,20 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
       loadMapIntelligenceManifests(import.meta.env.VITE_SUPABASE_URL || '', smokePrefix)
         .then(res => {
           if (res) {
+            // Identity Guard
+            const reqSaveVersion = model?.saveVersion;
+            const reqSeed = model?.seed;
+            const reqWorldSize = model?.worldSize;
+            
+            const isMatched = (
+              res.identity.seed === reqSeed &&
+              res.identity.worldSize === reqWorldSize &&
+              // Only check saveVersion if we know it for both, else rely on seed + worldSize
+              (res.identity.saveVersion === null || reqSaveVersion === undefined || reqSaveVersion === null || res.identity.saveVersion === reqSaveVersion)
+            );
+            
+            setIsMapIntelMatched(isMatched);
+
             // Check tileManifest.layers, fallback if missing
             const resourceNames = res.tileManifest.resources || res.tileManifest.layers || ['sulfur', 'stone', 'metal', 'nodes'];
             
@@ -197,7 +212,10 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
               };
             });
             
-            setMapIntelLayers(layers);
+            // Only add layers to active array if they match the current map!
+            if (isMatched) {
+              setMapIntelLayers(layers);
+            }
             setMapIntelStatus('loaded');
           } else {
             setMapIntelStatus('error');
@@ -207,7 +225,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
           setMapIntelStatus('error');
         });
     }
-  }, [viewerMode, mapIntelStatus]);
+  }, [viewerMode, mapIntelStatus, model?.seed, model?.worldSize, model?.saveVersion]);
 
 
   const toggleTileLayer = (layerId: MapLayerId) => {
@@ -565,8 +583,14 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             <h3><Layers size={16} /> Resource Layers</h3>
             
             {isDemoSmokeTest && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--status-success)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(52, 199, 89, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-success)' }}>
+                <strong>Smoke test demo loaded</strong> — Heatmaps successfully matched to seed 1321 / size 4750.
+              </div>
+            )}
+            
+            {mapIntelStatus === 'loaded' && !isMapIntelMatched && (
               <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
-                <strong>Demo heatmap from seed 1321 / worldSize 4750</strong> — not matched to this server map.
+                <strong>Deep map intelligence not generated for this map yet.</strong>
               </div>
             )}
             

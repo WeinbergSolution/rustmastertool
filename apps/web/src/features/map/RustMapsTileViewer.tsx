@@ -8,7 +8,7 @@ import './RustMapsTileViewer.css';
 interface RustMapsTileViewerProps {
   tileBaseUrl?: string;
   fallbackImageUrl?: string | null;
-  activeHeatmaps: Array<{ name: string; url: string }>;
+  activeHeatmaps: Array<{ name: string; url: string; maxNativeZoom?: number }>;
   heatmapOpacity: number;
   undergroundOverlayUrl?: string | null;
   serverWorldSize?: number;
@@ -157,7 +157,7 @@ export function RustMapsTileViewer({
           url={formatTileUrl(hm.url)}
           bounds={bounds}
           opacity={heatmapOpacity}
-          maxNativeZoom={5}
+          maxNativeZoom={hm.maxNativeZoom ?? 5}
           zIndex={3 + i}
         />
       ))}

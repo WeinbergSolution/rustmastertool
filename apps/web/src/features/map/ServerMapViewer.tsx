@@ -147,7 +147,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
 
   // --- Map Intelligence Layers -----------------------------------------------
   const [mapIntelStatus, setMapIntelStatus] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
-  const [mapIntelLayers, setMapIntelLayers] = useState<Array<{ name: string; url: string }>>([]);
+  const [mapIntelLayers, setMapIntelLayers] = useState<Array<{ name: string; url: string; maxNativeZoom: number }>>([]);
   const isDemoSmokeTest = mapIntelLayers.length > 0 && (model?.seed !== 1321 || model?.worldSize !== 4750);
 
   const hasTileBase = Boolean(providerData?.tileBaseUrl);
@@ -179,11 +179,24 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
         .then(res => {
           if (res) {
             // Check tileManifest.layers, fallback if missing
-            const layerNames = res.tileManifest.layers || ['sulfur', 'stone', 'metal', 'nodes'];
-            const layers = layerNames.map((name: string) => ({
-              name,
-              url: buildMapIntelligenceTileUrl(res.baseUrl, name)
-            }));
+            const resourceNames = res.tileManifest.resources || res.tileManifest.layers || ['sulfur', 'stone', 'metal', 'nodes'];
+            
+            const resourceToUiId: Record<string, string> = {
+              'generic-node-density': 'nodes',
+              'stone-potential': 'stone',
+              'sulfur-potential': 'sulfur',
+              'metal-ore-potential': 'metal'
+            };
+
+            const layers = resourceNames.map((resource: string) => {
+              const name = resourceToUiId[resource] || resource;
+              return {
+                name,
+                url: buildMapIntelligenceTileUrl(res.baseUrl, resource),
+                maxNativeZoom: res.tileManifest.maxZoom ?? 2
+              };
+            });
+            
             setMapIntelLayers(layers);
             setMapIntelStatus('loaded');
           } else {

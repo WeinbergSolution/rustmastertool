@@ -6,9 +6,12 @@ export interface MapIntelManifest {
 }
 
 export interface MapIntelTileManifest {
-  pipelineVersion: string;
+  pipelineVersion?: string;
   generatedAt: string;
-  layers: string[];
+  layers?: string[];
+  resources?: string[];
+  minZoom?: number;
+  maxZoom?: number;
 }
 
 export async function loadMapIntelligenceManifests(supabaseUrl: string, objectPrefix: string) {

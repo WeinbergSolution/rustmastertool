@@ -11,6 +11,7 @@ interface RustMapsTileViewerProps {
   activeHeatmaps: Array<{ name: string; url: string }>;
   heatmapOpacity: number;
   undergroundOverlayUrl?: string | null;
+  serverWorldSize?: number;
 }
 
 function formatTileUrl(url: string) {
@@ -75,12 +76,27 @@ function MapBoundsFitter({ bounds }: { bounds: L.LatLngBounds }) {
   useEffect(() => {
     map.setMaxBounds(bounds);
     map.options.maxBoundsViscosity = 1.0;
-    map.fitBounds(bounds);
+    
+    // Fit bounds robustly against container resizes
+    const fit = () => {
+      map.invalidateSize();
+      map.fitBounds(bounds);
+    };
+    
+    fit();
+    setTimeout(fit, 100);
+    setTimeout(fit, 500);
+    
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => fit());
+    observer.observe(container);
+    
+    return () => {
+      observer.disconnect();
+    };
   }, [map, bounds]);
   return null;
 }
-
-const TILE_EXTENT = 256;
 
 import { useState } from 'react';
 
@@ -89,22 +105,22 @@ export function RustMapsTileViewer({
   fallbackImageUrl,
   activeHeatmaps,
   heatmapOpacity,
-  undergroundOverlayUrl
+  undergroundOverlayUrl,
+  serverWorldSize = 4000
 }: RustMapsTileViewerProps) {
   const crs = L.CRS.Simple;
   const [baseTilesFailed, setBaseTilesFailed] = useState(false);
-  // L.CRS.Simple maps (lat, lng) to (pixel y, pixel x), and y is mapped to -lat.
-  // To get tile coordinates (x=0 to max, y=0 to max), we need pixel y to go from 0 to +256.
-  // This means lat must go from -256 to 0.
-  const bounds = L.latLngBounds(L.latLng(-TILE_EXTENT, 0), L.latLng(0, TILE_EXTENT));
-  const center: L.LatLngTuple = [-TILE_EXTENT / 2, TILE_EXTENT / 2];
+  // Leaflet CRS.Simple maps bounds to raw units.
+  // Since RustMaps z=0 tiles are sliced at native resolution, the bounds must equal the world size.
+  const bounds = L.latLngBounds(L.latLng(-serverWorldSize, 0), L.latLng(0, serverWorldSize));
+  const center: L.LatLngTuple = [-serverWorldSize / 2, serverWorldSize / 2];
 
   return (
     <MapContainer 
       crs={crs}
       center={center} 
       zoom={0} 
-      minZoom={-3}
+      minZoom={-5}
       maxZoom={6}
       zoomSnap={0}
       zoomDelta={0.5}

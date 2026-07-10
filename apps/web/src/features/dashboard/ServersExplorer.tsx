@@ -58,17 +58,17 @@ export function ServersExplorer() {
   const pagesScannedRef = useRef(0);
   const currentScanIdRef = useRef<number>(0);
 
-  // Mobile browser Back closes the filter sheet / server detail before leaving.
-  useInAppBack({ open: filtersOpen, onClose: () => setFiltersOpen(false), enabled: isMobile });
+  // Browser Back should close layers instead of leaving /app (both Desktop & Mobile).
+  useInAppBack({ open: filtersOpen, onClose: () => setFiltersOpen(false), enabled: true });
   useInAppBack({
     open: selectedServerId !== null,
     onClose: () => { setSelectedServerId(null); setDetailFocus(null); },
-    enabled: isMobile,
+    enabled: true,
   });
   useInAppBack({
     open: selectedMapServer !== null,
     onClose: () => setSelectedMapServer(null),
-    enabled: isMobile,
+    enabled: true,
   });
 
   useEffect(() => { window.sessionStorage.setItem('serverExplorer.tab', activeTab); }, [activeTab]);

@@ -1,20 +1,29 @@
 
-import { MapContainer, useMap } from 'react-leaflet';
+import { MapContainer, useMap, ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import './RustMapsTileViewer.css';
 
 interface RustMapsTileViewerProps {
-  tileBaseUrl: string;
-  activeHeatmaps: Array<{ name: string; url: string }>;
+  tileBaseUrl?: string;
+  fallbackImageUrl?: string | null;
+  activeHeatmaps: Array<{ name: string; url: string; maxNativeZoom?: number }>;
   heatmapOpacity: number;
   undergroundOverlayUrl?: string | null;
+  serverWorldSize?: number;
+}
+
+// Force Vercel rebuild 2
+function formatTileUrl(url: string) {
+  if (!url) return '';
+  if (url.includes('{z}')) return url;
+  return `${url.replace(/\/$/, '')}/{z}/{x}/{y}.webp`;
 }
 
 const TRANSPARENT_TILE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
-function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; zIndex?: number }) {
+function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex, onError }: { url: string; opacity?: number; bounds: L.LatLngBounds; maxNativeZoom?: number; zIndex?: number; onError?: () => void }) {
   const map = useMap();
   const layerRef = useRef<L.TileLayer | null>(null);
 
@@ -31,21 +40,20 @@ function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex }: 
       zIndex
     });
     
-    const origGetTileUrl = layer.getTileUrl.bind(layer);
-    layer.getTileUrl = function(coords: any) {
-      if (coords.x < 0 || coords.y < 0) return TRANSPARENT_TILE;
-      const maxIndex = Math.pow(2, coords.z) - 1;
-      if (coords.x > maxIndex || coords.y > maxIndex) return TRANSPARENT_TILE;
-      return origGetTileUrl(coords);
-    };
+    if (onError) {
+      layer.on('tileerror', () => {
+        onError();
+      });
+    }
 
     layer.addTo(map);
     layerRef.current = layer;
 
     return () => {
+      layer.off('tileerror');
       layer.removeFrom(map);
     };
-  }, [map, url, bounds, maxNativeZoom, zIndex]);
+  }, [map, url, bounds, maxNativeZoom, zIndex, onError]);
 
   useEffect(() => {
     if (layerRef.current) {
@@ -61,38 +69,62 @@ function MapBoundsFitter({ bounds }: { bounds: L.LatLngBounds }) {
   useEffect(() => {
     map.setMaxBounds(bounds);
     map.options.maxBoundsViscosity = 1.0;
-    map.fitBounds(bounds);
+    
+    // Fit bounds robustly against container resizes
+    const fit = () => {
+      map.invalidateSize();
+      map.fitBounds(bounds);
+    };
+    
+    fit();
+    setTimeout(fit, 100);
+    setTimeout(fit, 500);
+    
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => fit());
+    observer.observe(container);
+    
+    return () => {
+      observer.disconnect();
+    };
   }, [map, bounds]);
   return null;
 }
 
-const TILE_EXTENT = 256;
+
 
 export function RustMapsTileViewer({
   tileBaseUrl,
+  fallbackImageUrl,
   activeHeatmaps,
   heatmapOpacity,
-  undergroundOverlayUrl
+  undergroundOverlayUrl,
+  serverWorldSize = 4000
 }: RustMapsTileViewerProps) {
-  const crs = L.CRS.Simple;
-  // L.CRS.Simple maps (lat, lng) to (pixel y, pixel x), and y is mapped to -lat.
-  // To get tile coordinates (x=0 to max, y=0 to max), we need pixel y to go from 0 to +256.
-  // This means lat must go from -256 to 0.
-  const bounds = L.latLngBounds(L.latLng(-TILE_EXTENT, 0), L.latLng(0, TILE_EXTENT));
+  const scale = 256 / serverWorldSize;
+  const crs = useMemo(() => {
+    return L.extend({}, L.CRS.Simple, {
+      transformation: new L.Transformation(scale, 0, -scale, 0)
+    });
+  }, [scale]);
+
+  const [baseTilesFailed, setBaseTilesFailed] = useState(false);
   
-  const minZoom = 0;
-  const maxZoom = 6;
-  const center: L.LatLngTuple = [-TILE_EXTENT / 2, TILE_EXTENT / 2];
+  // Leaflet CRS.Simple maps bounds to raw units.
+  // With our custom CRS scaling, the 4000x4000 unit world maps to exactly 256x256 pixels at zoom 0.
+  // This perfectly aligns with standard Slippy Map tile pyramids where zoom=0 is exactly 1 tile!
+  const bounds = L.latLngBounds(L.latLng(-serverWorldSize, 0), L.latLng(0, serverWorldSize));
+  const center: L.LatLngTuple = [-serverWorldSize / 2, serverWorldSize / 2];
 
   return (
     <MapContainer 
       crs={crs}
       center={center} 
       zoom={0} 
-      minZoom={minZoom}
-      maxZoom={maxZoom}
-      zoomSnap={1}
-      zoomDelta={1}
+      minZoom={-5}
+      maxZoom={6}
+      zoomSnap={0}
+      zoomDelta={0.5}
       wheelPxPerZoomLevel={60}
       className="rm-tile-viewer"
       attributionControl={false}
@@ -101,17 +133,26 @@ export function RustMapsTileViewer({
       <MapBoundsFitter bounds={bounds} />
 
       {/* Base Map Layer */}
-      <SafeTileLayer
-        url={`${tileBaseUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
-        bounds={bounds}
-        maxNativeZoom={5}
-        zIndex={1}
-      />
+      {tileBaseUrl && !baseTilesFailed ? (
+        <SafeTileLayer
+          url={formatTileUrl(tileBaseUrl)}
+          bounds={bounds}
+          maxNativeZoom={5}
+          zIndex={1}
+          onError={() => setBaseTilesFailed(true)}
+        />
+      ) : fallbackImageUrl ? (
+        <ImageOverlay
+          url={fallbackImageUrl}
+          bounds={bounds}
+          zIndex={1}
+        />
+      ) : null}
       
       {/* Underground Overlay (if active) */}
       {undergroundOverlayUrl && (
          <SafeTileLayer
-          url={`${undergroundOverlayUrl.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
+          url={formatTileUrl(undergroundOverlayUrl)}
           bounds={bounds}
           maxNativeZoom={5}
           zIndex={2}
@@ -122,10 +163,10 @@ export function RustMapsTileViewer({
       {activeHeatmaps.map((hm, i) => (
         <SafeTileLayer
           key={hm.name}
-          url={`${hm.url.replace(/\/$/, '')}/{z}/{x}/{y}.webp`}
+          url={formatTileUrl(hm.url)}
           bounds={bounds}
           opacity={heatmapOpacity}
-          maxNativeZoom={5}
+          maxNativeZoom={hm.maxNativeZoom ?? 5}
           zIndex={3 + i}
         />
       ))}

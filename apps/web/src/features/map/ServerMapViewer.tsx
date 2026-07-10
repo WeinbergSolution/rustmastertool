@@ -15,6 +15,7 @@ import {
   type ProviderMapResponse,
   type ProviderMapState,
 } from './rustmapsProviderClient';
+import { loadMapIntelligenceManifests, buildMapIntelligenceTileUrl } from './mapIntelligenceStorage';
 import './ServerMapViewer.css';
 
 interface ServerMapViewerProps {
@@ -144,19 +145,70 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const providerImageIcon = providerState === 'active' ? pickIconMapImage(providerData) : null;
   const providerImage = activeMapLayer === 'clean' ? providerImageClean : providerImageIcon;
 
+  // --- Map Intelligence Layers -----------------------------------------------
+  const [mapIntelStatus, setMapIntelStatus] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
+  const [mapIntelLayers, setMapIntelLayers] = useState<Array<{ name: string; url: string; maxNativeZoom: number }>>([]);
+  const isDemoSmokeTest = mapIntelLayers.length > 0 && (model?.seed !== 1321 || model?.worldSize !== 4750);
+
   const hasTileBase = Boolean(providerData?.tileBaseUrl);
-  const hasHeatMaps = Array.isArray(providerData?.heatMaps) && providerData.heatMaps.length > 0;
-  const canUseTileMode = hasTileBase;
+  const canUseTileMode = hasTileBase || mapIntelLayers.length > 0;
+
+  const hasHeatMaps = (Array.isArray(providerData?.heatMaps) && providerData.heatMaps.length > 0) || mapIntelLayers.length > 0;
 
   const [viewerMode, setViewerMode] = useState<'image' | 'tile'>('image');
   const [heatmapOpacity, setHeatmapOpacity] = useState(0.65);
   const [activeTileLayers, setActiveTileLayers] = useState<Set<MapLayerId>>(new Set());
 
+  const hasAutoSwitchedToTile = useRef(false);
   useEffect(() => {
-    if (providerData?.tileBaseUrl) {
+    // Only auto-switch to tile mode if the map is actually generated/active
+    // and only do it once to prevent stealing focus.
+    if (providerState === 'active' && canUseTileMode && !hasAutoSwitchedToTile.current) {
       setViewerMode('tile');
+      hasAutoSwitchedToTile.current = true;
     }
-  }, [providerData?.tileBaseUrl]);
+  }, [providerState, canUseTileMode]);
+
+  useEffect(() => {
+    if (mapIntelStatus === 'idle') {
+      setMapIntelStatus('loading');
+      // Temporary hardcoded smoke test prefix as requested:
+      const smokePrefix = 'map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0';
+      
+      loadMapIntelligenceManifests(import.meta.env.VITE_SUPABASE_URL || '', smokePrefix)
+        .then(res => {
+          if (res) {
+            // Check tileManifest.layers, fallback if missing
+            const resourceNames = res.tileManifest.resources || res.tileManifest.layers || ['sulfur', 'stone', 'metal', 'nodes'];
+            
+            const resourceToUiId: Record<string, string> = {
+              'generic-node-density': 'nodes',
+              'stone-potential': 'stone',
+              'sulfur-potential': 'sulfur',
+              'metal-ore-potential': 'metal'
+            };
+
+            const layers = resourceNames.map((resource: string) => {
+              const name = resourceToUiId[resource] || resource;
+              return {
+                name,
+                url: buildMapIntelligenceTileUrl(res.baseUrl, resource),
+                maxNativeZoom: res.tileManifest.maxZoom ?? 2
+              };
+            });
+            
+            setMapIntelLayers(layers);
+            setMapIntelStatus('loaded');
+          } else {
+            setMapIntelStatus('error');
+          }
+        })
+        .catch(() => {
+          setMapIntelStatus('error');
+        });
+    }
+  }, [viewerMode, mapIntelStatus]);
+
 
   const toggleTileLayer = (layerId: MapLayerId) => {
     setActiveTileLayers(prev => {
@@ -432,12 +484,17 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
             onPointerLeave={viewerMode === 'image' ? handlePointerUp : undefined}
             style={{ touchAction: viewerMode === 'image' && zoom > 1 ? 'none' : 'auto' }}
           >
-            {viewerMode === 'tile' && providerData?.tileBaseUrl ? (
+            {viewerMode === 'tile' && canUseTileMode ? (
               <RustMapsTileViewer
-                tileBaseUrl={providerData.tileBaseUrl}
-                activeHeatmaps={providerData.heatMaps?.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)) ?? []}
+                tileBaseUrl={providerData?.tileBaseUrl || undefined}
+                fallbackImageUrl={providerImage}
+                activeHeatmaps={[
+                  ...(providerData?.heatMaps?.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)) ?? []),
+                  ...(mapIntelLayers.filter(hm => activeTileLayers.has(hm.name.toLowerCase() as MapLayerId)))
+                ]}
                 heatmapOpacity={heatmapOpacity}
-                undergroundOverlayUrl={activeTileLayers.has('underground') ? providerData.undergroundOverlayUrl : null}
+                undergroundOverlayUrl={activeTileLayers.has('underground') ? providerData?.undergroundOverlayUrl : null}
+                serverWorldSize={model?.worldSize}
               />
             ) : (
               <>
@@ -507,6 +564,18 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
           <div className="rm-map-sidebar-section">
             <h3><Layers size={16} /> Resource Layers</h3>
             
+            {isDemoSmokeTest && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
+                <strong>Demo heatmap from seed 1321 / worldSize 4750</strong> — not matched to this server map.
+              </div>
+            )}
+            
+            {mapIntelStatus === 'error' && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--status-error)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(205, 65, 43, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-error)' }}>
+                Map intelligence unavailable. Standard provider data will be used if available.
+              </div>
+            )}
+
             {viewerMode === 'image' && canUseTileMode && (
               <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
                 You are viewing the image fallback. Switch to <strong>Tile Mode</strong> (top bar) to enable interactive overlays.
@@ -561,7 +630,9 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                       // Check if layer is actually available in providerData (if it's a heatmap)
                       let isAvailable = true;
                       if (category === 'Resources' || category === 'Wildlife' || category === 'Spawns') {
-                        isAvailable = providerData?.heatMaps?.some(hm => hm.name.toLowerCase() === layerId) ?? false;
+                        const inProvider = providerData?.heatMaps?.some(hm => hm.name.toLowerCase() === layerId) ?? false;
+                        const inMapIntel = mapIntelLayers.some(hm => hm.name.toLowerCase() === layerId);
+                        isAvailable = inProvider || inMapIntel;
                       } else if (layerId === 'underground') {
                         isAvailable = Boolean(providerData?.undergroundOverlayUrl);
                       } else if (layerId === 'building_blocks') {

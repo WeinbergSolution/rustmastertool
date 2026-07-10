@@ -68,7 +68,7 @@ export function RaidCalculator() {
   // For the display grid, we can just show the first 6 targets as the image shows, or all of them.
   // The image shows: Stone Wall, Metal Door, Armored Door, Garage Door, Sheet Metal Wall, High External Stone Wall.
   // We have slightly different targets, so we just map the ones we have.
-  const displayTargets = TARGETS.slice(0, 6); 
+  const displayTargets = TARGETS; 
 
   // For the explosives list, we show C4, Rockets, Satchels, Explo Ammo, Beancan
   const explosivesList: RaidToolId[] = ['c4', 'rocket', 'satchel', 'explo', 'beancan'];

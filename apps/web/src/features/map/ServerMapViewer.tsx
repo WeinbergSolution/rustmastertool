@@ -166,7 +166,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   }, [providerData?.tileBaseUrl, mapIntelLayers.length > 0]);
 
   useEffect(() => {
-    if (viewerMode === 'tile' && mapIntelStatus === 'idle') {
+    if (mapIntelStatus === 'idle') {
       setMapIntelStatus('loading');
       // Temporary hardcoded smoke test prefix as requested:
       const smokePrefix = 'map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0';
@@ -477,6 +477,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
                 ]}
                 heatmapOpacity={heatmapOpacity}
                 undergroundOverlayUrl={activeTileLayers.has('underground') ? providerData?.undergroundOverlayUrl : null}
+                serverWorldSize={model?.worldSize}
               />
             ) : (
               <>

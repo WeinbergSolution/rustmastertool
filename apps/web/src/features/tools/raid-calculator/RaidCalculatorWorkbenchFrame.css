@@ -5,36 +5,30 @@
   height: 100%;
   width: 100%;
   background-color: #0a0908;
-  background-size: cover;
+  padding: 1rem;
+}
+
+.workbench-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1600px;
+  aspect-ratio: 16 / 9;
+  background-image: url('../../../assets/Gemini_Generated_Image_4ana8h4ana8h4ana.png');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  padding: 2rem;
 }
 
-.workbench-monitor-bezel {
-  width: 100%;
-  max-width: 1200px;
-  aspect-ratio: 16/9;
-  background: #111;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 
-    inset 0 0 20px rgba(0,0,0,0.8),
-    0 10px 40px rgba(0,0,0,0.8),
-    0 0 0 2px #2a2622,
-    0 0 0 4px #1a1714;
-  position: relative;
-}
-
-/* Simulation of the curved CRT screen */
-.workbench-screen {
-  width: 100%;
-  height: 100%;
-  background-color: #0a0908;
-  border-radius: 8px;
-  position: relative;
+.workbench-screen-overlay {
+  position: absolute;
+  top: 17%; 
+  left: 24.5%;
+  width: 51%;
+  height: 56.5%;
+  background-color: rgba(30, 33, 28, 0.95);
+  border-radius: 4px;
   overflow: hidden;
-  box-shadow: inset 0 0 100px rgba(0,0,0,0.9);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
 }
 
 .screen-scanlines {
@@ -43,8 +37,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), 
-              linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06));
+  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.15) 50%), 
+              linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03));
   background-size: 100% 4px, 3px 100%;
   pointer-events: none;
   z-index: 10;
@@ -57,5 +51,21 @@
   right: 0;
   bottom: 0;
   z-index: 5;
-  background-color: rgba(34, 30, 26, 0.85);
+}
+
+@media (max-width: 1024px) {
+  .workbench-image-wrapper {
+    background-image: none;
+    aspect-ratio: auto;
+    height: 100%;
+  }
+  .workbench-screen-overlay {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+  }
 }

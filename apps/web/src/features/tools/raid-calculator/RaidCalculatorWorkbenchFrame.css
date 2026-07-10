@@ -21,10 +21,10 @@
 
 .workbench-screen-overlay {
   position: absolute;
-  top: 17%; 
-  left: 24.5%;
-  width: 51%;
-  height: 56.5%;
+  top: 16%; 
+  left: 22.5%;
+  width: 55%;
+  height: 53.5%;
   background-color: rgba(30, 33, 28, 0.95);
   border-radius: 4px;
   overflow: hidden;

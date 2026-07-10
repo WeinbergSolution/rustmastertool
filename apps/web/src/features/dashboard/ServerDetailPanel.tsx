@@ -7,6 +7,8 @@ import { LineChart as LineChartIcon } from 'lucide-react';
 import { useIsMobile } from '../../components/mobile/useIsMobile';
 import { classifyMonument, type MonumentClassification } from '../learn/map-intel/monumentClassification';
 import { MAP_MONUMENTS, MONUMENT_CATEGORIES, type MonumentCategoryId } from '../learn/map-intel/mapIntelData';
+import { findMapIntelEntryByCanonicalId, type MapIntelLookupResult } from '../learn/map-intel/mapIntelLookup';
+import { MapIntelDetailModal } from '../learn/map-intel/MapIntelDetailModal';
 import { detectTeamLimit } from './serverFilters';
 
 interface ServerDetailPanelProps {
@@ -34,6 +36,7 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
   const [isMapEnlarged, setIsMapEnlarged] = useState(false);
   const [isMonumentsExpanded, setIsMonumentsExpanded] = useState(false);
   const [selectedMonument, setSelectedMonument] = useState<MonumentClassification | null>(null);
+  const [selectedMapIntel, setSelectedMapIntel] = useState<MapIntelLookupResult | null>(null);
   const isMobile = useIsMobile();
   const mapSectionRef = useRef<HTMLDivElement>(null);
 
@@ -298,8 +301,18 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
                               <button
                                 key={m}
                                 type="button"
-                                onClick={() => setSelectedMonument(cls)}
-                                title={known ? `${cls.category.replace('_', ' ')}${cls.needsOwnerReview ? ' · needs review' : ''}` : 'Not yet classified'}
+                                onClick={() => {
+                                  if (cls.canonicalId) {
+                                    const intel = findMapIntelEntryByCanonicalId(cls.canonicalId);
+                                    if (intel && (intel.base || intel.deep)) {
+                                      setSelectedMapIntel(intel);
+                                      return;
+                                    }
+                                  }
+                                  // Fallback to old modal
+                                  setSelectedMonument(cls);
+                                }}
+                                title={known ? `Open Map Intel / Details for ${m}` : 'Not yet classified'}
                                 style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: known ? 'var(--text-primary)' : 'var(--text-muted)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontStyle: known ? 'normal' : 'italic' }}
                               >
                                 <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: monumentCategoryColor(cls.category), display: 'inline-block', flexShrink: 0 }} />
@@ -618,6 +631,14 @@ export function ServerDetailPanel({ serverId, isWatched, onClose, onToggleWatch,
 
       {selectedMonument && (
         <MonumentInfoModal classification={selectedMonument} onClose={() => setSelectedMonument(null)} />
+      )}
+
+      {selectedMapIntel && (
+        <MapIntelDetailModal 
+          base={selectedMapIntel.base}
+          deep={selectedMapIntel.deep}
+          onClose={() => setSelectedMapIntel(null)} 
+        />
       )}
     </div>
   );

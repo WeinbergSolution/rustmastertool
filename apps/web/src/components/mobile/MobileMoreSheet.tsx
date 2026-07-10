@@ -28,6 +28,7 @@ const ACCOUNT_ROWS: Row[] = [
 
 // Secondary tools that are live but not primary bottom-nav features.
 const TOOL_ROWS: Row[] = [
+  { icon: Calculator, label: 'Raid Calculator', view: 'raid_calculator' },
   { icon: LineChart, label: 'Server Pulse', view: 'server_pulse', note: 'Population & analytics' },
   { icon: BookOpen, label: 'Learning', view: 'learn', note: 'Base designs & guides' },
 ];
@@ -35,7 +36,6 @@ const TOOL_ROWS: Row[] = [
 // Roadmap rows navigate to honest "coming soon" roadmap views — never dead buttons.
 const ROADMAP_ROWS: Row[] = [
   { icon: MapPin, label: 'Live Map', view: 'live_map', gated: true, note: 'Requires Rust+ pairing' },
-  { icon: Calculator, label: 'Raid Calculator', view: 'raid_calculator', gated: true, note: 'Coming soon' },
   { icon: BookOpen, label: 'Session Battle Log', view: 'session_battle_log', gated: true, note: 'Coming soon' },
   { icon: Filter, label: 'Saved Filters', view: 'filter_profiles', gated: true, note: 'Coming to server search' },
   { icon: MapIcon, label: 'Map Intel', view: 'map_intel', gated: true, note: 'Coming to server detail' },

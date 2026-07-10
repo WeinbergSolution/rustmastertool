@@ -37,6 +37,9 @@ export type ViewState =
 
 export function AppShell() {
   const [currentView, setCurrentView] = useState<ViewState>(() => {
+    const path = window.location.pathname;
+    if (path === '/app/tools/raid-calculator') return 'raid_calculator';
+    
     const savedView = window.sessionStorage.getItem('serverExplorer.view');
     return (savedView as ViewState) || 'dashboard';
   });

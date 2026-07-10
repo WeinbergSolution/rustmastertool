@@ -97,9 +97,6 @@ export function RustMapsTileViewer({
   // To get tile coordinates (x=0 to max, y=0 to max), we need pixel y to go from 0 to +256.
   // This means lat must go from -256 to 0.
   const bounds = L.latLngBounds(L.latLng(-TILE_EXTENT, 0), L.latLng(0, TILE_EXTENT));
-  
-  const minZoom = 0;
-  const maxZoom = 6;
   const center: L.LatLngTuple = [-TILE_EXTENT / 2, TILE_EXTENT / 2];
 
   return (
@@ -107,10 +104,10 @@ export function RustMapsTileViewer({
       crs={crs}
       center={center} 
       zoom={0} 
-      minZoom={minZoom}
-      maxZoom={maxZoom}
-      zoomSnap={1}
-      zoomDelta={1}
+      minZoom={-3}
+      maxZoom={6}
+      zoomSnap={0}
+      zoomDelta={0.5}
       wheelPxPerZoomLevel={60}
       className="rm-tile-viewer"
       attributionControl={false}

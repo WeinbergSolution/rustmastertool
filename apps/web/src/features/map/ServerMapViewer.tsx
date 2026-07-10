@@ -148,6 +148,7 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   // --- Map Intelligence Layers -----------------------------------------------
   const [mapIntelStatus, setMapIntelStatus] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
   const [mapIntelLayers, setMapIntelLayers] = useState<Array<{ name: string; url: string }>>([]);
+  const isDemoSmokeTest = mapIntelLayers.length > 0 && (model?.seed !== 1321 || model?.worldSize !== 4750);
 
   const hasTileBase = Boolean(providerData?.tileBaseUrl);
   const canUseTileMode = hasTileBase || mapIntelLayers.length > 0;
@@ -544,6 +545,12 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
 
           <div className="rm-map-sidebar-section">
             <h3><Layers size={16} /> Resource Layers</h3>
+            
+            {isDemoSmokeTest && (
+              <div style={{ fontSize: '0.75rem', color: 'var(--status-warning)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(210, 153, 34, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-warning)' }}>
+                <strong>Demo heatmap from seed 1321 / worldSize 4750</strong> — not matched to this server map.
+              </div>
+            )}
             
             {mapIntelStatus === 'error' && (
               <div style={{ fontSize: '0.75rem', color: 'var(--status-error)', marginBottom: '0.75rem', padding: '0.5rem', background: 'rgba(205, 65, 43, 0.1)', borderRadius: '4px', borderLeft: '3px solid var(--status-error)' }}>

@@ -45,7 +45,26 @@ namespace MapIntelligenceWorker.Publishing
             };
 
             result.envPresence["supabaseUrlPresent"] = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SUPABASE_URL"));
-            result.envPresence["serviceRoleKeyPresent"] = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SUPABASE_SERVICE_ROLE_KEY"));
+            
+            string secretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY");
+            string serviceRoleKey = Environment.GetEnvironmentVariable("SUPABASE_SERVICE_ROLE_KEY");
+            
+            bool secretKeyPresent = !string.IsNullOrEmpty(secretKey);
+            bool serviceRoleKeyPresent = !string.IsNullOrEmpty(serviceRoleKey);
+            
+            string rawKey = !string.IsNullOrEmpty(secretKey) ? secretKey : serviceRoleKey;
+            string keyFormat = "Unknown";
+            if (!string.IsNullOrEmpty(rawKey)) {
+                if (rawKey.StartsWith("eyJ")) keyFormat = "LegacyJwtServiceRole";
+                else if (rawKey.StartsWith("sb_secret_")) keyFormat = "SupabaseSecretKey";
+            }
+            
+            result.envPresence["supabaseSecretKeyPresent"] = secretKeyPresent;
+            result.envPresence["supabaseServiceRoleKeyPresent"] = serviceRoleKeyPresent;
+            result.envPresence["selectedKeyFormat_isLegacy"] = keyFormat == "LegacyJwtServiceRole";
+            result.envPresence["selectedKeyFormat_isSbSecret"] = keyFormat == "SupabaseSecretKey";
+            result.envPresence["selectedKeyFormat_isUnknown"] = keyFormat == "Unknown";
+            
             result.envPresence["bucketPresent"] = Environment.GetEnvironmentVariable("MAP_INTELLIGENCE_BUCKET") == "map-intelligence";
 
             foreach (var obj in plan.objects)
@@ -139,7 +158,7 @@ namespace MapIntelligenceWorker.Publishing
                 }
             }
 
-            result.readyForRealUpload = result.invalidObjectCount == 0 && result.objectCount > 0;
+            result.readyForRealUpload = result.invalidObjectCount == 0 && result.objectCount > 0 && result.envPresence["supabaseUrlPresent"] && (secretKeyPresent || serviceRoleKeyPresent) && keyFormat != "Unknown";
 
             string outPath = Path.Combine(outDir, "publisher-validation.json");
             File.WriteAllText(outPath, JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));

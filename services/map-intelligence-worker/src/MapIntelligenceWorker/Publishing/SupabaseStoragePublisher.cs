@@ -23,6 +23,10 @@ namespace MapIntelligenceWorker.Publishing
         public List<string> errors { get; set; } = new List<string>();
         public List<string> warnings { get; set; } = new List<string>();
         public string uploadedAt { get; set; }
+        public string selectedKeyFormat { get; set; }
+        public bool authorizationBearerUsed { get; set; }
+        public bool apikeyHeaderUsed { get; set; }
+        public bool secretValuesLogged { get; set; }
     }
 
     public class SupabaseStoragePublisher : IStoragePublisher
@@ -34,12 +38,23 @@ namespace MapIntelligenceWorker.Publishing
             Console.WriteLine($"[SupabaseStoragePublisher] Initializing upload for {plan.totalObjects} objects.");
 
             string supabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL");
+            string secretKey = Environment.GetEnvironmentVariable("SUPABASE_SECRET_KEY");
             string serviceRoleKey = Environment.GetEnvironmentVariable("SUPABASE_SERVICE_ROLE_KEY");
 
+            string activeKey = !string.IsNullOrEmpty(secretKey) ? secretKey : serviceRoleKey;
+            
             bool urlPresent = !string.IsNullOrEmpty(supabaseUrl);
-            bool keyPresent = !string.IsNullOrEmpty(serviceRoleKey);
+            bool secretKeyPresent = !string.IsNullOrEmpty(secretKey);
+            bool serviceRoleKeyPresent = !string.IsNullOrEmpty(serviceRoleKey);
+            bool keyPresent = !string.IsNullOrEmpty(activeKey);
 
-            Console.WriteLine($"[SupabaseStoragePublisher] Environment Check - SUPABASE_URL present: {urlPresent}, SUPABASE_SERVICE_ROLE_KEY present: {keyPresent}");
+            string keyFormat = "Unknown";
+            if (keyPresent) {
+                if (activeKey.StartsWith("eyJ")) keyFormat = "LegacyJwtServiceRole";
+                else if (activeKey.StartsWith("sb_secret_")) keyFormat = "SupabaseSecretKey";
+            }
+
+            Console.WriteLine($"[SupabaseStoragePublisher] Environment Check - SUPABASE_URL present: {urlPresent}, SUPABASE_SECRET_KEY present: {secretKeyPresent}, SUPABASE_SERVICE_ROLE_KEY present: {serviceRoleKeyPresent}, Format: {keyFormat}");
 
             if (!confirmRealUpload)
             {
@@ -56,8 +71,16 @@ namespace MapIntelligenceWorker.Publishing
                 Console.ResetColor();
                 Environment.Exit(1);
             }
+            
+            if (keyFormat == "Unknown")
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[SupabaseStoragePublisher] ERROR: Unsupported Supabase server key format. Expected legacy JWT service_role or sb_secret key.");
+                Console.ResetColor();
+                Environment.Exit(1);
+            }
 
-            Console.WriteLine($"[SupabaseStoragePublisher] Ready for REAL UPLOAD. (Simulated in this phase, no requests will be sent.)");
+            Console.WriteLine($"[SupabaseStoragePublisher] Ready for REAL UPLOAD. Using format: {keyFormat}");
 
             // Mock Implementation to prepare the HTTP request
             int uploadedCount = 0;
@@ -69,7 +92,11 @@ namespace MapIntelligenceWorker.Publishing
                 bucket = "map-intelligence",
                 objectPrefix = plan.prefix,
                 totalBytes = plan.totalBytes,
-                uploadedAt = DateTime.UtcNow.ToString("o")
+                uploadedAt = DateTime.UtcNow.ToString("o"),
+                selectedKeyFormat = keyFormat,
+                authorizationBearerUsed = keyFormat == "LegacyJwtServiceRole",
+                apikeyHeaderUsed = true,
+                secretValuesLogged = false
             };
 
             foreach (var obj in plan.objects)
@@ -81,7 +108,16 @@ namespace MapIntelligenceWorker.Publishing
                     string uploadUrl = $"{supabaseUrl.TrimEnd('/')}/storage/v1/object/{obj.bucket}/{obj.objectPath}";
 
                     using var request = new HttpRequestMessage(HttpMethod.Post, uploadUrl);
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", serviceRoleKey);
+                    
+                    if (keyFormat == "LegacyJwtServiceRole")
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", activeKey);
+                        request.Headers.Add("apikey", activeKey);
+                    }
+                    else if (keyFormat == "SupabaseSecretKey")
+                    {
+                        request.Headers.Add("apikey", activeKey);
+                    }
                     
                     // Upsert header specific to Supabase Storage
                     request.Headers.Add("x-upsert", "true");

@@ -45,14 +45,6 @@ function SafeTileLayer({ url, opacity = 1, bounds, maxNativeZoom = 5, zIndex, on
       });
     }
 
-    const origGetTileUrl = layer.getTileUrl.bind(layer);
-    layer.getTileUrl = function(coords: any) {
-      if (coords.x < 0 || coords.y < 0) return TRANSPARENT_TILE;
-      const maxIndex = Math.pow(2, coords.z) - 1;
-      if (coords.x > maxIndex || coords.y > maxIndex) return TRANSPARENT_TILE;
-      return origGetTileUrl(coords);
-    };
-
     layer.addTo(map);
     layerRef.current = layer;
 

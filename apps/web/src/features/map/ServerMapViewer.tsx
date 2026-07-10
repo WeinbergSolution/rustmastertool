@@ -159,11 +159,15 @@ export function ServerMapViewer({ server, onClose }: ServerMapViewerProps) {
   const [heatmapOpacity, setHeatmapOpacity] = useState(0.65);
   const [activeTileLayers, setActiveTileLayers] = useState<Set<MapLayerId>>(new Set());
 
+  const hasAutoSwitchedToTile = useRef(false);
   useEffect(() => {
-    if (providerData?.tileBaseUrl || mapIntelLayers.length > 0) {
+    // Only auto-switch to tile mode if the map is actually generated/active
+    // and only do it once to prevent stealing focus.
+    if (providerState === 'active' && canUseTileMode && !hasAutoSwitchedToTile.current) {
       setViewerMode('tile');
+      hasAutoSwitchedToTile.current = true;
     }
-  }, [providerData?.tileBaseUrl, mapIntelLayers.length > 0]);
+  }, [providerState, canUseTileMode]);
 
   useEffect(() => {
     if (mapIntelStatus === 'idle') {

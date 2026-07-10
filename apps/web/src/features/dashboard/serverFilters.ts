@@ -11,7 +11,7 @@ export interface ServerFilters {
   minPlayers: number | null;
   country: string | null;
   secure: boolean;
-  mode: 'vanilla' | 'pve' | 'roleplay' | 'creative' | 'softcore' | 'hardcore' | 'combat' | null;
+  mode: 'vanilla' | 'pve' | 'pvp' | 'roleplay' | 'creative' | 'softcore' | 'hardcore' | 'combat' | null;
   
   // NEW FILTERS
   maxWipeAgeHours: number | null;
@@ -72,8 +72,18 @@ function matchesMode(s: BattleMetricsServerSummary, mode: string): boolean {
   if (mode === 'pve') {
     return s.pve === true || nameLow.includes('pve') || tags.includes('pve');
   }
+  if (mode === 'pvp') {
+    // Heuristic: If it's explicitly PvE, it's not PvP.
+    // Otherwise, most Rust servers are PvP by default, but we can look for explicit tags or assume true if not PvE.
+    if (s.pve === true || nameLow.includes('pve') || tags.includes('pve')) return false;
+    return true; // Soft heuristic: Rust is PvP by default
+  }
   if (mode === 'vanilla') {
-    return nameLow.includes('vanilla') || tags.includes('vanilla');
+    // Heuristic: Explicit vanilla tag, OR it's an Official server, OR it has no multiplier tags
+    const hasVanillaTag = nameLow.includes('vanilla') || tags.includes('vanilla');
+    const isOfficial = tags.includes('official');
+    const hasModdedTags = /\b(2x|3x|5x|10x|100x|1000x|pve|creative|battlefield|aim|ukn)\b/.test(`${nameLow} ${tags.join(' ')}`);
+    return hasVanillaTag || isOfficial || !hasModdedTags;
   }
   if (mode === 'roleplay') {
     return nameLow.includes('roleplay') || nameLow.includes(' rp ') || tags.includes('roleplay');

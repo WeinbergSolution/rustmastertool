@@ -1,7 +1,7 @@
 
 import { MapContainer, useMap, ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import './RustMapsTileViewer.css';
 
@@ -90,7 +90,7 @@ function MapBoundsFitter({ bounds }: { bounds: L.LatLngBounds }) {
   return null;
 }
 
-import { useState } from 'react';
+
 
 export function RustMapsTileViewer({
   tileBaseUrl,
@@ -100,10 +100,18 @@ export function RustMapsTileViewer({
   undergroundOverlayUrl,
   serverWorldSize = 4000
 }: RustMapsTileViewerProps) {
-  const crs = L.CRS.Simple;
+  const scale = 256 / serverWorldSize;
+  const crs = useMemo(() => {
+    return L.extend({}, L.CRS.Simple, {
+      transformation: new L.Transformation(scale, 0, -scale, 0)
+    });
+  }, [scale]);
+
   const [baseTilesFailed, setBaseTilesFailed] = useState(false);
+  
   // Leaflet CRS.Simple maps bounds to raw units.
-  // Since RustMaps z=0 tiles are sliced at native resolution, the bounds must equal the world size.
+  // With our custom CRS scaling, the 4000x4000 unit world maps to exactly 256x256 pixels at zoom 0.
+  // This perfectly aligns with standard Slippy Map tile pyramids where zoom=0 is exactly 1 tile!
   const bounds = L.latLngBounds(L.latLng(-serverWorldSize, 0), L.latLng(0, serverWorldSize));
   const center: L.LatLngTuple = [-serverWorldSize / 2, serverWorldSize / 2];
 

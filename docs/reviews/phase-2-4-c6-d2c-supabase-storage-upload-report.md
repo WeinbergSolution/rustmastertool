@@ -1,21 +1,22 @@
-# Phase 2.4-C6-D2C — Supabase Storage Upload Report
+# Phase 2.4-C6-D2C — Supabase Storage Upload Report (Versuch 2)
 
 ## Executive Verdict: FAILED (404 Bucket not found)
 
-Obwohl der Bucket `map-intelligence` manuell im Dashboard angelegt wurde, meldet Supabase für den Upload weiterhin den Fehler `404 Bucket not found`. 
+Trotz manuellem Abgleich des Projekts und des Keys meldet die Supabase Storage API beim Upload weiterhin konsequent `404 Bucket not found` für alle 94 angefragten Upload-Objekte.
 
-Ein direkter API-Check (Abruf aller verfügbaren Buckets mit dem konfigurierten `SUPABASE_SERVICE_ROLE_KEY` für die URL aus `.env.local`) liefert exakt **0** verfügbare Buckets zurück.
+Auch ein direkter Diagnose-Check mittels `GET /storage/v1/bucket` (mit dem verifizierten `service_role` Token aus `.env.local`) liefert exakt **0** Buckets zurück.
 
-### Mögliche Ursachen:
-1. Der Bucket wurde versehentlich in einem **anderen Supabase-Projekt** angelegt als dem, dessen URL/Keys in `.env.local` hinterlegt sind.
-2. Der Erstellvorgang im Dashboard wurde noch nicht vollständig abgeschlossen (z.B. Button "Save" nicht geklickt).
-3. Die `.env.local` Daten verweisen auf eine falsche/veraltete Instanz.
+### Beobachtungen:
+1. Die Umgebungsvariablen (`SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY`) werden erfolgreich aus `.env.local` gelesen.
+2. Der Key wird intern als valider `service_role` Token erkannt und Supabase akzeptiert ihn (kein 401/403).
+3. Supabase listet unter dieser URL und diesem Key jedoch keinerlei Buckets auf, was unweigerlich zum `404 Bucket not found` Fehler beim Upload in `map-intelligence` führt.
+4. Möglicherweise ist das Storage-Modul auf der spezifischen Instanz nicht korrekt hochgefahren, oder es gibt ein Caching-Problem auf der API-Ebene in Supabase.
 
 ## Test Summary
 
 - **Branch:** `experiment/map-intelligence-supabase-publisher`
 - **Aktueller Fehler:** `Bucket not found` (404)
-- **Erkannte Ursache:** Der Bucket existiert physisch nicht in der konfigurierten Supabase-Instanz.
+- **Erkannte Ursache:** Die Storage-API der adressierten Supabase-Instanz meldet keine existierenden Buckets für diesen Key.
 
 ## Upload Ergebnis
 
@@ -25,13 +26,10 @@ Ein direkter API-Check (Abruf aller verfügbaren Buckets mit dem konfigurierten 
 - **failedObjectCount:** 94
 - **bucket:** `map-intelligence`
 - **objectPrefix:** `map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0`
-- **Public/private Zugriff:** Konnte nicht geprüft werden, da der Bucket nicht existiert.
+- **Public/private Zugriff:** Konnte nicht geprüft werden, da der Bucket nicht gefunden wurde.
 - **Beispiel URL ohne Secrets:** `N/A`
 
 ## Nächster Schritt
 
-Bitte prüfe im Supabase Dashboard:
-1. Ob das ausgewählte Projekt mit der `SUPABASE_URL` aus deiner `.env.local` übereinstimmt.
-2. Ob unter `Storage > Buckets` der Bucket `map-intelligence` wirklich existiert.
-
-Sobald der Bucket im korrekten Projekt angelegt ist, können wir den Vorgang wiederholen.
+Da lokal (im Worker Code) keine Geheimnisse oder Buckets erstellt werden und der Key eindeutig von der API als legitim (ohne 403-Fehler) akzeptiert wird, liegt das Problem außerhalb des Workers. 
+Bitte das Supabase Backend / Logs im Dashboard überprüfen, warum Storage Requests mit diesem `service_role` Key einen 404 Fehler werfen.

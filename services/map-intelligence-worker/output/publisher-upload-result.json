@@ -106,7 +106,7 @@
     "[SupabaseStoragePublisher] HTTP BadRequest for map-intel:286:1321:4750:c7ab7ff1d6c599d5b5d20f1d1d33efed7c6932de5e05946df38dab4e5dc3cfd0:resource-density-v0.2:v1.0/tiles/resource-density-v0.2/overlay/metal-ore-potential/2/3/3.png: {\u0022statusCode\u0022:\u0022404\u0022,\u0022error\u0022:\u0022Bucket not found\u0022,\u0022message\u0022:\u0022Bucket not found\u0022}"
   ],
   "warnings": [],
-  "uploadedAt": "2026-07-10T01:28:45.3808840Z",
+  "uploadedAt": "2026-07-10T01:48:56.3406860Z",
   "selectedKeyFormat": "LegacyJwtServiceRole",
   "authorizationBearerUsed": true,
   "apikeyHeaderUsed": true,

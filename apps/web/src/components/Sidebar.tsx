@@ -95,7 +95,7 @@ export function Sidebar({ currentView = 'dashboard', onViewChange }: SidebarProp
         <NavGroup title="In-Game • Live Companion">
           <NavItem icon={Activity} label="Current Connection" view="current_connection" currentView={currentView} onViewChange={onViewChange} badge="partial" />
           <NavItem icon={MapPin} label="Live Map" view="live_map" currentView={currentView} onViewChange={onViewChange} badge="gated" />
-          <NavItem icon={Calculator} label="Raid Calculator" view="raid_calculator" currentView={currentView} onViewChange={onViewChange} badge="roadmap" />
+          <NavItem icon={Calculator} label="Raid Calculator" view="raid_calculator" currentView={currentView} onViewChange={onViewChange} />
         </NavGroup>
 
         <NavGroup title="After-Game">

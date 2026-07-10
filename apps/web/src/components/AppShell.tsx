@@ -11,6 +11,7 @@ import { ServerPulseView } from '../features/dashboard/ServerPulseView';
 import { LearnHub } from '../features/learn/LearnHub';
 import { RustGuidesView } from '../features/learn/rust-guides/RustGuidesView';
 import { MapIntelView } from '../features/learn/map-intel/MapIntelView';
+import { RaidCalculatorWorkbenchFrame } from '../features/tools/raid-calculator/RaidCalculatorWorkbenchFrame';
 import { useIsMobile } from './mobile/useIsMobile';
 import { consumeLayerPop } from './mobile/useInAppBack';
 import { MobileAppShell } from './mobile/MobileAppShell';
@@ -36,6 +37,9 @@ export type ViewState =
 
 export function AppShell() {
   const [currentView, setCurrentView] = useState<ViewState>(() => {
+    const path = window.location.pathname;
+    if (path === '/app/tools/raid-calculator') return 'raid_calculator';
+    
     const savedView = window.sessionStorage.getItem('serverExplorer.view');
     return (savedView as ViewState) || 'dashboard';
   });
@@ -134,10 +138,7 @@ export function AppShell() {
         />
       )}
       {currentView === 'raid_calculator' && (
-        <RoadmapView
-          title="Raid Calculator"
-          message="Live raid cost tool — compare raid paths, sulfur cost and required explosives. Coming later."
-        />
+        <RaidCalculatorWorkbenchFrame />
       )}
       {currentView === 'session_battle_log' && (
         <RoadmapView

@@ -1,0 +1,71 @@
+.workbench-frame-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: #0a0908;
+  padding: 1rem;
+}
+
+.workbench-image-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1600px;
+  aspect-ratio: 16 / 9;
+  background-image: url('../../../assets/Gemini_Generated_Image_4ana8h4ana8h4ana.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.workbench-screen-overlay {
+  position: absolute;
+  top: 17.5%; 
+  left: 25%;
+  width: 51.5%;
+  height: 54.5%;
+  background-color: rgba(30, 33, 28, 0.95);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+.screen-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.15) 50%), 
+              linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03));
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.screen-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+}
+
+@media (max-width: 1024px) {
+  .workbench-image-wrapper {
+    background-image: none;
+    aspect-ratio: auto;
+    height: 100%;
+  }
+  .workbench-screen-overlay {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+  }
+}

@@ -1,0 +1,408 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto+Condensed:wght@400;700&display=swap');
+
+.raid-calculator {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5cqw;
+  overflow-y: auto; /* Allow scrolling again */
+  font-family: 'Roboto Condensed', sans-serif;
+  color: #ddd;
+  
+  /* Make the component a container so everything inside can scale with it */
+  container-type: size;
+  
+  /* Base font size scales perfectly with the container width */
+  font-size: 1.15cqw; /* Slightly smaller to fit better */
+}
+
+/* Hide all scrollbars to make it look clean like a game UI */
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Scrollbar for the main container (hidden as requested, but keep logical code) */
+.raid-calculator {
+  scrollbar-width: none;
+}
+
+/* HEADER */
+.raid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 0.2cqw solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.8em;
+  margin-bottom: 1em;
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.rust-logo-placeholder {
+  width: 2.2em;
+  height: 2.2em;
+  background-color: #ce422b;
+  border-radius: 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.rust-logo-placeholder::after {
+  content: '';
+  width: 0.8em;
+  height: 0.8em;
+  background-color: #1a1a1a;
+  border-radius: 50%;
+}
+
+.header-left h2 {
+  font-family: 'Russo One', sans-serif;
+  color: #fff;
+  margin: 0;
+  font-size: 1.8em;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.stats-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.stat-row {
+  display: flex;
+  gap: 0.5em;
+}
+
+.stat-label {
+  color: #bbb;
+}
+
+.hp-color {
+  color: #e54c4c;
+}
+
+.explo-color {
+  color: #7ab536;
+}
+
+.total-badge {
+  background-color: #557224;
+  color: #fff;
+  font-family: 'Russo One', sans-serif;
+  font-size: 1.2em; /* Smaller as requested */
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  border: 0.1em solid #7ab536;
+  box-shadow: 0 0.2em 0.5em rgba(0,0,0,0.5);
+  line-height: 1;
+}
+
+/* COLUMNS */
+.raid-columns {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 0.8em; /* Reduced gap as requested */
+  height: 100%;
+  min-height: 0; /* Important for preventing overflow in flex/grid children */
+}
+
+.raid-col {
+  display: flex;
+  flex-direction: column;
+  background: rgba(40, 42, 35, 0.6);
+  border: 0.1em solid rgba(0,0,0,0.3);
+  border-radius: 0.4em;
+  padding: 0.8em;
+  min-height: 0; /* Let contents shrink */
+}
+
+.col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8em;
+  flex-shrink: 0;
+}
+
+.col-header h3 {
+  font-family: 'Russo One', sans-serif;
+  color: #fff;
+  margin: 0;
+  font-size: 1em;
+  letter-spacing: 0.05em;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.25em;
+}
+
+.icon-btn {
+  background: #cd412b;
+  color: white;
+  border: none;
+  padding: 0.2em;
+  border-radius: 0.2em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:disabled {
+  background: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+.icon-btn:hover:not(:disabled) {
+  background: #e54c4c;
+}
+
+/* COLUMN 1: TARGET STRUCTURES */
+.targets-grid-3x2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5em;
+  margin-bottom: 0.8em;
+  flex-shrink: 0;
+}
+
+.target-card {
+  background: #353830;
+  border: 0.15em solid #222;
+  border-radius: 0.3em;
+  padding: 0.5em 0.2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #ccc;
+}
+.target-card:hover {
+  background: #3f4239;
+}
+.target-card.selected {
+  border-color: #639c2c;
+  background: #2a3024;
+}
+
+.card-icon {
+  font-size: 2em;
+  margin-bottom: 0.1em;
+  filter: drop-shadow(0 0.1em 0.1em rgba(0,0,0,0.5));
+}
+
+.card-name {
+  font-size: 0.7em;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.2em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.card-hp {
+  font-size: 0.7em;
+  font-weight: bold;
+}
+.hp-white { color: #bbb; }
+.hp-red { color: #e54c4c; }
+.hp-green { color: #7ab536; }
+
+.selected-targets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  overflow-y: auto; /* Internal scrolling only if really needed, but it should fit */
+}
+
+.selected-targets-list::-webkit-scrollbar { width: 4px; }
+.selected-targets-list::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+
+.selected-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.25);
+  padding: 0.2em 0.4em;
+  border-radius: 0.3em;
+  font-size: 0.85em;
+}
+
+.qty-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-right: 0.5em;
+  color: #fff;
+  font-weight: bold;
+}
+.qty-arrows {
+  display: flex;
+  flex-direction: column;
+}
+.qty-arrows button {
+  background: none;
+  border: none;
+  color: #7ab536;
+  font-size: 0.6em;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+.qty-arrows button:hover {
+  color: #fff;
+}
+
+.row-icon {
+  margin-right: 0.4em;
+  font-size: 1.2em;
+}
+.row-name {
+  flex: 1;
+  color: #ccc;
+}
+.check-icon {
+  color: #7ab536;
+}
+.uncheck-icon {
+  color: #555;
+}
+
+/* COLUMN 2: EXPLOSIVES REQUIRED */
+.explosives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  overflow-y: auto;
+}
+.explosives-list::-webkit-scrollbar { width: 4px; }
+.explosives-list::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+
+.explosive-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.25);
+  padding: 0.4em;
+  border-radius: 0.3em;
+  gap: 0.5em;
+}
+
+.ex-icon-box {
+  position: relative;
+  width: 2.5em;
+  height: 2.5em;
+  background: rgba(255,255,255,0.05);
+  border-radius: 0.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ex-icon {
+  font-size: 1.4em;
+}
+.ex-static-qty {
+  position: absolute;
+  bottom: -0.2em;
+  right: -0.2em;
+  font-size: 0.6em;
+  background: #333;
+  padding: 0 0.3em;
+  border-radius: 0.2em;
+  font-weight: bold;
+}
+
+.ex-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.ex-name {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #ddd;
+}
+
+.ex-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #222;
+  border: 0.1em solid #444;
+  border-radius: 0.2em;
+  width: 3.5em;
+  padding: 0.1em 0.2em;
+}
+.ex-input-wrap .prefix {
+  font-size: 0.8em;
+  color: #888;
+}
+.ex-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 100%;
+  font-weight: bold;
+  outline: none;
+  text-align: right;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 0.9em;
+}
+
+/* COLUMN 3: PLANNING & COST */
+.sub-title {
+  margin: 0 0 0.4em 0;
+  font-size: 0.85em;
+  color: #aaa;
+  text-transform: uppercase;
+}
+
+.resources-section {
+  margin-bottom: 0.8em;
+  flex-shrink: 0;
+}
+
+.resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.resource-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.res-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.res-icon {
+  font-size: 1em;
+}
+.res-name {
+  color: #ccc;
+}
+.res-amount {
+  color: #7ab536;
+}

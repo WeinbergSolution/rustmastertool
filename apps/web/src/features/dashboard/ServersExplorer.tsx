@@ -312,7 +312,7 @@ export function ServersExplorer() {
               <Filter size={14} /> Filters
               {filters.monuments.length > 0 && <span style={{ marginLeft: '4px', background: 'var(--accent-rust)', color: '#fff', borderRadius: '50%', padding: '0 4px', fontSize: '10px' }}>{filters.monuments.length}</span>}
             </button>
-            {rawServers.length > 0 && <span className="mobile-servers-count">{visibleServers.length} shown / {rawServers.length} loaded / {serversWithMapIntel} with map intel</span>}
+            {rawServers.length > 0 && <span className="mobile-servers-count">{visibleServers.length} shown / {rawServers.length} loaded</span>}
           </div>
 
           {pendingActionMsg && status === 'authenticated' && (
@@ -340,7 +340,24 @@ export function ServersExplorer() {
               <AlertTriangle size={26} /><strong>Search failed</strong><span>{searchError}</span>
             </div>
           ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 && !isAutoScanning && !isSearching && !isLoadingMore ? (
-            <div className="mobile-servers-state">No matching servers found after scanning {rawServers.length} loaded servers. Try relaxing your filters.</div>
+            <div className="mobile-servers-state" style={{ padding: '2rem 1rem' }}>
+              <Filter size={28} style={{ opacity: 0.5, marginBottom: '0.5rem' }} />
+              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>No servers found</div>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                Your current filters hide all {rawServers.length} loaded servers.
+              </p>
+              {(filters.hasRaidWindows || filters.hasScheduledRestart || filters.mode !== null || filters.teamLimit !== null || filters.lootMultiplier !== null) && (
+                <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: 'rgba(255, 170, 0, 0.1)', border: '1px solid rgba(255, 170, 0, 0.3)', borderRadius: '4px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  <strong>Note:</strong> Some heuristic filters (like Raid Windows, Mode, or Group Limit) depend on server tags and name metadata. If a server hasn't tagged itself properly, it will be hidden.
+                </div>
+              )}
+              <button 
+                onClick={() => setFilters(defaultFilters)} 
+                style={{ marginTop: '1.5rem', padding: '0.5rem 1rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', cursor: 'pointer' }}
+              >
+                Reset Filters
+              </button>
+            </div>
           ) : visibleServers.length > 0 ? (
             <div className="mobile-servers-list">
               {visibleServers.map(server => (
@@ -502,6 +519,7 @@ export function ServersExplorer() {
                         <option value="any">Any Mode</option>
                         <option value="vanilla">Vanilla</option>
                         <option value="pve">PvE</option>
+                        <option value="pvp">PvP</option>
                         <option value="roleplay">Roleplay</option>
                         <option value="combat">Combat / Arena</option>
                         <option value="creative">Creative / Build</option>
@@ -510,13 +528,13 @@ export function ServersExplorer() {
                      </select>
                    </div>
                    
-                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }} title="Strictly filters for servers containing ORP/Raid Window tags.">
                      <input type="checkbox" checked={filters.hasRaidWindows} onChange={e => setFilters({ ...filters, hasRaidWindows: e.target.checked })} />
-                     Raid Windows / ORP
+                     Raid Windows / ORP <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--status-warning)', color: '#000', padding: '0.1rem 0.3rem', borderRadius: '4px' }}>Heur</span>
                    </label>
-                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }} title="Strictly filters for servers containing restart tags.">
                      <input type="checkbox" checked={filters.hasScheduledRestart} onChange={e => setFilters({ ...filters, hasScheduledRestart: e.target.checked })} />
-                     Scheduled Restarts
+                     Scheduled Restarts <span style={{ fontSize: '0.65rem', backgroundColor: 'var(--status-warning)', color: '#000', padding: '0.1rem 0.3rem', borderRadius: '4px' }}>Heur</span>
                    </label>
                 </div>
 
@@ -871,6 +889,7 @@ export function ServersExplorer() {
                            <option value="any">Any Mode</option>
                            <option value="vanilla">Vanilla</option>
                            <option value="pve">PvE</option>
+                           <option value="pvp">PvP</option>
                            <option value="roleplay">Roleplay</option>
                            <option value="combat">Combat / Arena</option>
                            <option value="creative">Creative / Build</option>
@@ -917,7 +936,7 @@ export function ServersExplorer() {
              </details>
              
              <div className="filter-chip" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.75rem', backgroundColor: 'transparent', border: '1px dashed var(--border-color)', borderRadius: '16px', fontSize: '0.75rem', color: 'var(--text-disabled)', alignSelf: 'flex-start' }}>
-                <HelpCircle size={12} /> {visibleServers.length} shown / {rawServers.length} scanned / {serversWithMapIntel} with map intel / sorted by {sortBy.replace('_', ' ')}
+                <HelpCircle size={12} /> {visibleServers.length} shown / {rawServers.length} scanned / {serversWithMapIntel} with map intel
              </div>
           </div>
         </div>
@@ -948,7 +967,22 @@ export function ServersExplorer() {
           </div>
         ) : (hasSearched || activeTab === 'saved') && visibleServers.length === 0 && !isAutoScanning && !isSearching && !isLoadingMore ? (
           <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', borderRadius: '4px' }}>
-            No matching servers found after scanning {rawServers.length} loaded servers. Try relaxing your filters.
+            <Filter size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
+            <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', fontSize: '1.1rem', color: 'var(--text-primary)' }}>No servers found</div>
+            <p style={{ marginBottom: '1rem' }}>
+              Your current filters hide all {rawServers.length} loaded servers.
+            </p>
+            {(filters.hasRaidWindows || filters.hasScheduledRestart || filters.mode !== null || filters.teamLimit !== null || filters.lootMultiplier !== null) && (
+              <div style={{ maxWidth: '500px', margin: '0 auto 1.5rem auto', padding: '0.75rem', backgroundColor: 'rgba(255, 170, 0, 0.1)', border: '1px solid rgba(255, 170, 0, 0.3)', borderRadius: '4px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <strong>Note:</strong> Some heuristic filters (like Raid Windows, Mode, or Group Limit) depend on server tags and name metadata. If a server hasn't tagged itself properly, it will be hidden.
+              </div>
+            )}
+            <button 
+              onClick={() => setFilters(defaultFilters)} 
+              style={{ padding: '0.5rem 1.5rem', backgroundColor: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Reset Filters
+            </button>
           </div>
         ) : visibleServers.length > 0 ? (
           <div className="server-list" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
